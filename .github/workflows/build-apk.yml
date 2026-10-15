@@ -41,14 +41,15 @@ jobs:
           {
             "appId": "com.mvzvpn.app",
             "appName": "MVZ",
-            "webDir": "www"
+            "webDir": "www",
+            "backgroundColor": "#090514"
           }
           EOF
 
           npx cap add android
           npx cap sync android
 
-      - name: Генерация точной 3D-иконки клоуна MVZ (PNG 512x512)
+      - name: Генерация 3D-иконки клоуна MVZ и удаление белых полос в стилях
         run: |
           sudo apt-get update && sudo apt-get install -y librsvg2-bin imagemagick
           rm -rf android/app/src/main/res/mipmap-anydpi-v26
@@ -90,42 +91,24 @@ jobs:
                 <stop offset="100%" stop-color="#8f0600"/>
               </linearGradient>
             </defs>
-
-            <!-- Фон как на картинке -->
             <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
-
-            <!-- Левые 3D-пучки волос -->
             <circle cx="152" cy="148" r="44" fill="url(#hairGrad)"/>
             <circle cx="112" cy="186" r="46" fill="url(#hairGrad)"/>
             <circle cx="104" cy="242" r="42" fill="url(#hairGrad)"/>
-
-            <!-- Правые 3D-пучки волос -->
             <circle cx="360" cy="148" r="44" fill="url(#hairGrad)"/>
             <circle cx="400" cy="186" r="46" fill="url(#hairGrad)"/>
             <circle cx="408" cy="242" r="42" fill="url(#hairGrad)"/>
-
-            <!-- 3D-голова клоуна -->
             <circle cx="256" cy="276" r="168" fill="url(#faceGrad)"/>
-
-            <!-- Мягкий оранжевый румянец на щеках -->
             <circle cx="144" cy="292" r="52" fill="url(#cheeks)"/>
             <circle cx="368" cy="292" r="52" fill="url(#cheeks)"/>
-
-            <!-- Дужки бровей -->
             <path d="M168 156 Q198 124 228 154" fill="none" stroke="#181210" stroke-width="10.5" stroke-linecap="round"/>
             <path d="M284 154 Q314 124 344 156" fill="none" stroke="#181210" stroke-width="10.5" stroke-linecap="round"/>
-
-            <!-- Глаза с объемным синим контуром -->
             <ellipse cx="198" cy="222" rx="34" ry="54" fill="#ffffff" stroke="#1e6296" stroke-width="14"/>
             <ellipse cx="314" cy="222" rx="34" ry="54" fill="#ffffff" stroke="#1e6296" stroke-width="14"/>
             <ellipse cx="198" cy="224" rx="16.5" ry="33" fill="#0d0d0d"/>
             <ellipse cx="314" cy="224" rx="16.5" ry="33" fill="#0d0d0d"/>
-
-            <!-- Широкая красная улыбка с белыми зубами -->
             <path d="M148 318 C184 358, 328 358, 364 318 C354 398, 298 422, 256 422 C214 422, 158 398, 148 318 Z"
                   fill="#ffffff" stroke="url(#lipGrad)" stroke-width="26" stroke-linejoin="round" stroke-linecap="round"/>
-
-            <!-- Глянцевый 3D красный нос -->
             <circle cx="256" cy="272" r="31" fill="url(#noseGrad)"/>
             <ellipse cx="246" cy="261" rx="9" ry="6" fill="#ffffff" opacity="0.45" transform="rotate(-20 246 261)"/>
           </svg>
@@ -156,6 +139,28 @@ jobs:
           </resources>
           EOF
 
+          cat << 'EOF' > android/app/src/main/res/values/styles.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+                  <item name="colorPrimary">#090514</item>
+                  <item name="colorPrimaryDark">#090514</item>
+                  <item name="colorAccent">#c084fc</item>
+                  <item name="android:windowBackground">#090514</item>
+                  <item name="android:statusBarColor">#090514</item>
+                  <item name="android:navigationBarColor">#090514</item>
+                  <item name="android:windowLightStatusBar">false</item>
+              </style>
+              <style name="AppTheme.NoActionBar" parent="AppTheme">
+                  <item name="windowActionBar">false</item>
+                  <item name="windowNoTitle">true</item>
+              </style>
+              <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
+                  <item name="android:background">#090514</item>
+              </style>
+          </resources>
+          EOF
+
       - name: Скачивание официального ядра Xray-core (arm64-v8a)
         run: |
           mkdir -p android/app/src/main/jniLibs/arm64-v8a
@@ -164,7 +169,7 @@ jobs:
           cp xray_bin/xray android/app/src/main/jniLibs/arm64-v8a/libxray.so
           chmod 755 android/app/src/main/jniLibs/arm64-v8a/libxray.so
 
-      - name: Внедрение Android VpnService, HTTPS-загрузчика подписок и Xray
+      - name: Внедрение Android VpnService и Happ-загрузчика подписок
         run: |
           mkdir -p android/app/src/main/java/com/mvzvpn/app
 
@@ -343,9 +348,11 @@ jobs:
           package com.mvzvpn.app;
 
           import android.content.Intent;
+          import android.graphics.Color;
           import android.net.TrafficStats;
           import android.net.VpnService;
           import android.os.Bundle;
+          import android.view.Window;
           import android.webkit.JavascriptInterface;
 
           import com.getcapacitor.BridgeActivity;
@@ -353,12 +360,20 @@ jobs:
           import org.json.JSONObject;
 
           import java.io.BufferedReader;
+          import java.io.InputStream;
           import java.io.InputStreamReader;
           import java.net.HttpURLConnection;
           import java.net.InetSocketAddress;
           import java.net.Socket;
           import java.net.URL;
           import java.nio.charset.StandardCharsets;
+          import java.security.SecureRandom;
+          import java.security.cert.X509Certificate;
+
+          import javax.net.ssl.HttpsURLConnection;
+          import javax.net.ssl.SSLContext;
+          import javax.net.ssl.TrustManager;
+          import javax.net.ssl.X509TrustManager;
 
           public class MainActivity extends BridgeActivity {
               private static final int VPN_REQUEST_CODE = 1901;
@@ -367,9 +382,23 @@ jobs:
               @Override
               public void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
+                  applyBarsColor("#090514");
                   if (getBridge() != null && getBridge().getWebView() != null) {
+                      getBridge().getWebView().setBackgroundColor(Color.parseColor("#090514"));
                       getBridge().getWebView().addJavascriptInterface(new XrayBridge(), "AndroidXray");
                   }
+              }
+
+              private void applyBarsColor(String hexColor) {
+                  runOnUiThread(() -> {
+                      try {
+                          int c = Color.parseColor(hexColor);
+                          Window window = getWindow();
+                          window.setStatusBarColor(c);
+                          window.setNavigationBarColor(c);
+                          window.getDecorView().setBackgroundColor(c);
+                      } catch (Exception ignored) {}
+                  });
               }
 
               private void launchVpnService(String configJson) {
@@ -391,6 +420,11 @@ jobs:
               }
 
               public class XrayBridge {
+                  @JavascriptInterface
+                  public void setSystemBarsColor(String hexColor) {
+                      applyBarsColor(hexColor);
+                  }
+
                   @JavascriptInterface
                   public String startXray(String configJson) {
                       pendingConfigJson = configJson;
@@ -431,7 +465,7 @@ jobs:
                   public int pingHost(String host, int port) {
                       long start = System.currentTimeMillis();
                       try (Socket socket = new Socket()) {
-                          socket.connect(new InetSocketAddress(host, port), 2500);
+                          socket.connect(new InetSocketAddress(host, port), 2200);
                           return (int) (System.currentTimeMillis() - start);
                       } catch (Exception e) {
                           return -1;
@@ -448,22 +482,35 @@ jobs:
                   @JavascriptInterface
                   public String fetchSubscription(String urlStr) {
                       try {
-                          URL url = new URL(urlStr);
+                          TrustManager[] trustAllCerts = new TrustManager[]{
+                              new X509TrustManager() {
+                                  public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+                                  public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                                  public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                              }
+                          };
+                          SSLContext sc = SSLContext.getInstance("TLS");
+                          sc.init(null, trustAllCerts, new SecureRandom());
+                          HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+                          URL url = new URL(urlStr.trim());
                           HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                           conn.setRequestMethod("GET");
-                          conn.setConnectTimeout(8000);
-                          conn.setReadTimeout(8000);
-                          conn.setRequestProperty("User-Agent", "MVZ-VPN/2.0 (v2rayNG; Xray-core)");
+                          conn.setConnectTimeout(10000);
+                          conn.setReadTimeout(10000);
+                          conn.setRequestProperty("User-Agent", "Happ/2.4.0 (Android; v2rayNG/1.8.29; Xray-core)");
+                          conn.setRequestProperty("Accept", "*/*");
                           conn.setInstanceFollowRedirects(true);
 
                           int code = conn.getResponseCode();
                           String userInfo = conn.getHeaderField("Subscription-Userinfo");
-                          if (userInfo == null) {
-                              userInfo = conn.getHeaderField("subscription-userinfo");
-                          }
+                          if (userInfo == null) userInfo = conn.getHeaderField("subscription-userinfo");
 
-                          BufferedReader reader = new BufferedReader(
-                                  new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+                          String profileTitle = conn.getHeaderField("Profile-Title");
+                          if (profileTitle == null) profileTitle = conn.getHeaderField("profile-title");
+
+                          InputStream is = (code >= 200 && code < 400) ? conn.getInputStream() : conn.getErrorStream();
+                          BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
                           StringBuilder sb = new StringBuilder();
                           String line;
                           while ((line = reader.readLine()) != null) {
@@ -475,6 +522,7 @@ jobs:
                           res.put("ok", code >= 200 && code < 400);
                           res.put("status", code);
                           res.put("userinfo", userInfo != null ? userInfo : "");
+                          res.put("title", profileTitle != null ? profileTitle : "");
                           res.put("body", sb.toString().trim());
                           return res.toString();
                       } catch (Exception e) {
