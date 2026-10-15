@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AetherVPN — Мобильный прототип</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            cyber: {
+              bg: '#070A12',
+              card: 'rgba(17, 24, 39, 0.65)',
+              emerald: '#00F5A0',
+              cyan: '#00D9F5',
+              amber: '#F59E0B',
+              rose: '#F43F5E',
+              indigo: '#6366F1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+      --theme-primary: #6366f1;
+      --theme-secondary: #38bdf8;
+      --theme-glow: rgba(99, 102, 241, 0.28);
+    }
+
+    [data-vpn-state="connecting"] {
+      --theme-primary: #00d9f5;
+      --theme-secondary: #818cf8;
+      --theme-glow: rgba(0, 217, 245, 0.42);
+    }
+
+    [data-vpn-state="connected"] {
+      --theme-primary: #00f5a0;
+      --theme-secondary: #00d9f5;
+      --theme-glow: rgba(0, 245, 160, 0.45);
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #111827 0%, #05070e 75%);
+      font-family: 'Inter', sans-serif;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+
+    /* Кастомный скроллбар внутри смартфона */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Эффект матового стекла (Glassmorphism) */
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.58);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+      transition: all 0.45s var(--ease-spring);
+    }
+
+    .glass-panel-interactive:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+      background: rgba(22, 32, 56, 0.68);
+    }
+
+    .glass-panel-interactive:active {
+      transform: scale(0.985);
+    }
+
+    /* Корпус смартфона на десктопе */
+    @media (min-width: 640px) {
+      .phone-frame {
+        width: 400px;
+        height: 844px;
+        border-radius: 52px;
+        box-shadow:
+          0 0 0 2px #1e293b,
+          0 0 0 8px #0f172a,
+          0 0 0 10px rgba(255, 255, 255, 0.1),
+          0 30px 90px -15px rgba(0, 0, 0, 0.85),
+          0 0 80px -20px var(--theme-glow);
+        transition: box-shadow 0.8s var(--ease-spring);
+      }
+    }
+
+    @media (max-width: 639px) {
+      .phone-frame {
+        width: 100vw;
+        height: 100dvh;
+        border-radius: 0px;
+      }
+    }
+
+    /* Динамическое фоновое свечение экрана */
+    .ambient-bg {
+      background:
+        radial-gradient(circle at 50% 26%, var(--theme-glow) 0%, transparent 62%),
+        radial-gradient(circle at 85% 85%, rgba(0, 217, 245, 0.08) 0%, transparent 45%),
+        linear-gradient(180deg, #070B14 0%, #090D18 50%, #060911 100%);
+      transition: background 0.9s var(--ease-spring);
+    }
+
+    /* Пульсация кнопки в состоянии Отключено */
+    @keyframes idleBreathing {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.35), inset 0 0 20px rgba(99, 102, 241, 0.15);
+      }
+      50% {
+        transform: scale(1.035);
+        box-shadow: 0 0 42px 2px rgba(99, 102, 241, 0.55), inset 0 0 28px rgba(99, 102, 241, 0.25);
+      }
+    }
+
+    .btn-idle {
+      animation: idleBreathing 3.2s infinite ease-in-out;
+    }
+
+    /* Вращающиеся неоновые кольца при подключении */
+    @keyframes spinClockwise {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes spinCounterClockwise {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .ring-spin-fast {
+      animation: spinClockwise 1.8s linear infinite;
+    }
+
+    .ring-spin-reverse {
+      animation: spinCounterClockwise 2.6s linear infinite;
+    }
+
+    /* Радар-волны и Ripple-эффект */
+    @keyframes radarWave {
+      0% {
+        transform: scale(0.82);
+        opacity: 0.75;
+      }
+      70% {
+        opacity: 0.25;
+      }
+      100% {
+        transform: scale(1.68);
+        opacity: 0;
+      }
+    }
+
+    .radar-ripple-1 {
+      animation: radarWave 2.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+    .radar-ripple-2 {
+      animation: radarWave 2.6s cubic-bezier(0.16, 1, 0.3, 1) 0.85s infinite;
+    }
+    .radar-ripple-3 {
+      animation: radarWave 2.6s cubic-bezier(0.16, 1, 0.3, 1) 1.7s infinite;
+    }
+
+    /* Свечение в состоянии Подключено */
+    @keyframes connectedPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 35px rgba(0, 245, 160, 0.55),
+          0 0 70px rgba(0, 217, 245, 0.25),
+          inset 0 0 25px rgba(0, 245, 160, 0.35);
+      }
+      50% {
+        box-shadow:
+          0 0 50px rgba(0, 245, 160, 0.75),
+          0 0 95px rgba(0, 217, 245, 0.4),
+          inset 0 0 35px rgba(0, 245, 160, 0.5);
+      }
+    }
+
+    .btn-connected {
+      animation: connectedPulse 3s infinite ease-in-out;
+    }
+
+    /* Анимация линии маршрута на карте мира */
+    @keyframes dashFlow {
+      to {
+        stroke-dashoffset: -40;
+      }
+    }
+
+    .map-arc-active {
+      stroke-dasharray: 5 5;
+      animation: dashFlow 1.2s linear infinite;
+    }
+
+    /* Выезжающая шторка (Bottom Sheet) */
+    .bottom-sheet {
+      transform: translateY(104%);
+      transition: transform 0.52s var(--ease-spring);
+    }
+
+    .bottom-sheet.open {
+      transform: translateY(0%);
+    }
+
+    .sheet-backdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s var(--ease-smooth);
+    }
+
+    .sheet-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Кастомные переключатели (Toggles) с пружинной физикой */
+    .cyber-toggle {
+      transition: background-color 0.35s var(--ease-spring), border-color 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-spring);
+    }
+
+    .cyber-toggle-thumb {
+      transition: transform 0.4s var(--ease-bounce), background-color 0.3s ease;
+    }
+
+    .cyber-toggle[aria-checked="true"] {
+      background: linear-gradient(135deg, rgba(0, 245, 160, 0.28), rgba(0, 217, 245, 0.28));
+      border-color: rgba(0, 245, 160, 0.65);
+      box-shadow: 0 0 16px rgba(0, 245, 160, 0.25);
+    }
+
+    .cyber-toggle[aria-checked="true"] .cyber-toggle-thumb {
+      transform: translateX(22px);
+      background: #00F5A0;
+      box-shadow: 0 0 10px #00F5A0;
+    }
+
+    /* Анимация точек на карте */
+    @keyframes mapPinPulse {
+      0% { r: 3; opacity: 0.9; }
+      100% { r: 14; opacity: 0; }
+    }
+    .map-pin-wave {
+      animation: mapPinPulse 2s infinite ease-out;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center justify-center sm:py-6 relative selection:bg-emerald-400 selection:text-slate-950">
+
+  <!-- Внешняя панель быстрых подсказок (видна только на больших экранах) -->
+  <div class="hidden lg:flex items-center gap-3 mb-4 px-4 py-2 rounded-full bg-slate-900/80 border border-slate-800/80 text-xs text-slate-400 backdrop-blur-md">
+    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    <span>Интерактивный прототип <strong class="text-slate-200">AetherVPN</strong></span>
+    <span class="text-slate-700">|</span>
+    <span>Нажмите на главную кнопку, выберите страну в шторке или смените протокол</span>
+    <button id="simulateSpikeBtnDesktop" onclick="triggerSpeedBoost()" class="ml-2 px-2.5 py-1 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 transition cursor-pointer font-medium">
+      ⚡ Тест 4K-нагрузки
+    </button>
+  </div>
+
+  <!-- ЭКРАН СМАРТФОНА -->
+  <div id="phoneRoot" data-vpn-state="disconnected" class="phone-frame ambient-bg relative overflow-hidden flex flex-col justify-between select-none">
+
+    <!-- ================= КАРТА МИРА НА ФОНЕ ================= -->
+    <div class="absolute inset-x-0 top-10 h-72 pointer-events-none overflow-hidden z-0 opacity-85 transition-opacity duration-700">
+      <svg id="worldMapSvg" viewBox="0 0 400 220" class="w-full h-full">
+        <defs>
+          <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6366F1" stop-opacity="0.2" />
+            <stop offset="50%" stop-color="#00D9F5" stop-opacity="0.95" />
+            <stop offset="100%" stop-color="#00F5A0" stop-opacity="1" />
+          </linearGradient>
+          <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00F5A0" stop-opacity="0.6" />
+            <stop offset="100%" stop-color="#00F5A0" stop-opacity="0" />
+          </radialGradient>
+          <!-- Паттерн точечной матрицы мира -->
+          <pattern id="dotGrid" width="8" height="8" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="0.85" fill="rgba(148, 163, 184, 0.16)" />
+          </pattern>
+        </defs>
+
+        <!-- Фоновая координатная сетка -->
+        <rect width="400" height="220" fill="url(#dotGrid)" />
+
+        <!-- Стилизованные контуры материков (Кибер-минимализм) -->
+        <g id="continentsGroup" fill="rgba(51, 65, 85, 0.34)" stroke="rgba(148, 163, 184, 0.18)" stroke-width="0.6" class="transition-all duration-1000">
+          <!-- Северная Америка -->
+          <path d="M28,42 L75,35 L108,54 L96,88 L74,104 L55,95 L32,68 Z" />
+          <!-- Южная Америка -->
+          <path d="M88,118 L116,125 L126,158 L106,195 L90,185 L84,145 Z" />
+          <!-- Европа -->
+          <path d="M168,36 L218,30 L236,52 L222,78 L184,82 L166,64 Z" />
+          <!-- Африка -->
+          <path d="M174,92 L220,90 L236,128 L216,176 L192,172 L176,130 Z" />
+          <!-- Азия -->
+          <path d="M236,34 L338,38 L358,76 L332,118 L276,116 L242,84 Z" />
+          <!-- Австралия -->
+          <path d="M308,144 L354,142 L362,174 L326,182 L306,166 Z" />
+        </g>
+
+        <!-- Широтные линии -->
+        <line x1="0" y1="65" x2="400" y2="65" stroke="rgba(148,163,184,0.06)" stroke-dasharray="3 3" />
+        <line x1="0" y1="115" x2="400" y2="115" stroke="rgba(148,163,184,0.08)" stroke-dasharray="3 3" />
+        <line x1="0" y1="165" x2="400" y2="165" stroke="rgba(148,163,184,0.06)" stroke-dasharray="3 3" />
+
+        <!-- Все доступные серверные узлы на карте -->
+        <g id="mapServerNodes"></g>
+
+        <!-- Дуга активного VPN-туннеля (от исходной точки к выбранному серверу) -->
+        <path id="vpnTunnelArcBg" d="" fill="none" stroke="rgba(0, 217, 245, 0.18)" stroke-width="3" stroke-linecap="round" class="opacity-0 transition-opacity duration-500" />
+        <path id="vpnTunnelArc" d="" fill="none" stroke="url(#arcGradient)" stroke-width="2" stroke-linecap="round" class=" map-arc-active opacity-0 transition-opacity duration-500" />
+
+        <!-- Домашняя точка пользователя (Исходный узел) -->
+        <g id="originNode" transform="translate(228, 56)">
+          <circle r="3" fill="#94a3b8" />
+          <circle r="6" fill="none" stroke="#94a3b8" stroke-width="0.8" stroke-opacity="0.5" />
+        </g>
+
+        <!-- Целевой узел выбранного VPN-сервера -->
+        <g id="targetMapNode" transform="translate(190, 58)">
+          <circle id="targetGlowCircle" r="22" fill="url(#nodeGlow)" class="opacity-40 transition-opacity duration-500" />
+          <circle id="targetWaveCircle" r="4" fill="none" stroke="#00F5A0" stroke-width="1.5" class="map-pin-wave" />
+          <circle id="targetCoreCircle" r="4" fill="#00D9F5" class="transition-colors duration-500" />
+        </g>
+      </svg>
+
+      <!-- Плашка локации на самой карте -->
+      <div id="mapFloatingBadge" class="absolute top-12 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-slate-900/80 border border-white/10 backdrop-blur-md flex items-center gap-2 text-[11px] text-slate-300 shadow-lg transition-all duration-500">
+        <span id="mapBadgeDot" class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+        <span id="mapBadgeText" class="font-mono tracking-tight">Маршрут: Прямое соединение</span>
+      </div>
+    </div>
+
+    <!-- ================= ВЕРХНИЙ СТАТУС-БАР СМАРТФОНА ================= -->
+    <header class="relative z-30 pt-3 px-6 pb-2 flex items-center justify-between text-xs font-medium text-slate-300">
+      <span id="phoneClock" class="font-mono font-semibold tracking-tight text-white">20:10</span>
+
+      <!-- Dynamic Island / Капсула состояния -->
+      <div id="dynamicIsland" onclick="toggleQuickDiagnostic()" class="cursor-pointer px-3.5 py-1 rounded-full bg-black/90 border border-white/10 flex items-center gap-2 shadow-inner transition-all duration-500 hover:border-white/25">
+        <span id="islandDot" class="w-2 h-2 rounded-full bg-rose-500 transition-colors duration-300"></span>
+        <span id="islandText" class="text-[11px] font-mono text-slate-200 tracking-tight">Трафик открыт</span>
+      </div>
+
+      <!-- Иконки связи и батареи -->
+      <div class="flex items-center gap-1.5 text-slate-300">
+        <!-- Сигнал сотовой сети -->
+        <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+          <rect x="1" y="11" width="2.2" height="4" rx="0.6" />
+          <rect x="4.5" y="8.5" width="2.2" height="6.5" rx="0.6" />
+          <rect x="8" y="5.5" width="2.2" height="9.5" rx="0.6" />
+          <rect x="11.5" y="2.5" width="2.2" height="12.5" rx="0.6" />
+        </svg>
+        <!-- Батарея -->
+        <div class="flex items-center">
+          <div class="w-5 h-2.5 rounded-[3px] border border-slate-400 p-[1.5px] flex items-center">
+            <div class="w-4/5 h-full bg-emerald-400 rounded-[1px]"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= ШАПКА ПРИЛОЖЕНИЯ ================= -->
+    <div class="relative z-20 px-5 pt-1 pb-2 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div id="brandLogoBox" class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500/30 to-cyan-500/20 border border-white/15 flex items-center justify-center shadow-md transition-all duration-500">
+          <!-- Иконка щита с неоновым контуром -->
+          <svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 4v5c0 5-3.5 8.5-7 9.5-3.5-1-7-4.5-7-9.5V7l7-4z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.5 12l1.8 1.8 3.7-3.6" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-bold text-base tracking-tight text-white">AETHER</span>
+            <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-400/25 font-semibold">PRO</span>
+          </div>
+          <p id="activeProtocolLabel" class="text-[11px] text-slate-400 font-mono">Протокол: VLESS Reality</p>
+        </div>
+      </div>
+
+      <!-- Кнопка открытия настроек и протоколов -->
+      <button onclick="switchMainView('settings')" id="topSettingsBtn" class="w-9 h-9 rounded-xl glass-panel glass-panel-interactive flex items-center justify-center text-slate-300 hover:text-white cursor-pointer" title="Настройки и протоколы">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- ================= ОСНОВНОЙ КОНТЕНТ (ЭКРАН ПОДКЛЮЧЕНИЯ) ================= -->
+    <main id="homeView" class="relative z-20 flex-1 flex flex-col justify-between px-5 pb-3 pt-1 transition-all duration-500">
+
+      <!-- Статус защиты + Виртуальный IP + Таймер -->
+      <div class="text-center mt-1">
+        <!-- Бейдж статуса -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full glass-panel mb-2">
+          <span id="protectionStatusDot" class="w-2 h-2 rounded-full bg-slate-400 transition-all duration-300"></span>
+          <span id="protectionStatusText" class="text-xs font-semibold tracking-wide text-slate-300 uppercase">Отключено</span>
+        </div>
+
+        <!-- Таймер сессии -->
+        <div id="sessionTimer" class="font-mono text-3xl font-bold tracking-wider text-slate-400 transition-colors duration-500">
+          00:00:00
+        </div>
+
+        <!-- Виртуальный IP и статус шифрования -->
+        <div class="mt-1 flex items-center justify-center gap-2 text-xs text-slate-400">
+          <span>IP:</span>
+          <button onclick="copyVirtualIp()" class="font-mono text-slate-200 hover:text-cyan-300 transition flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-md border border-white/10 cursor-pointer" title="Нажмите, чтобы скопировать IP">
+            <span id="virtualIpDisplay">185.220.101.42 (Реальный)</span>
+            <svg class="w-3 h-3 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= ЦЕНТРАЛЬНАЯ КНОПКА ПОДКЛЮЧЕНИЯ ================= -->
+      <div class="relative flex flex-col items-center justify-center my-2">
+        <div class="relative w-48 h-48 flex items-center justify-center">
+
+          <!-- Расходящиеся волны (Ripple / Radar) — активны при Подключении и Подключено -->
+          <div id="rippleContainer" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-500">
+            <div id="ripple1" class="w-36 h-36 rounded-full border border-cyan-400/40 radar-ripple-1"></div>
+            <div id="ripple2" class="absolute w-36 h-36 rounded-full border border-emerald-400/35 radar-ripple-2"></div>
+            <div id="ripple3" class="absolute w-36 h-36 rounded-full border border-cyan-400/25 radar-ripple-3"></div>
+          </div>
+
+          <!-- Вращающиеся неоновые кольца (активны при состоянии Подключение...) -->
+          <svg id="connectingRings" class="absolute inset-0 w-full h-full pointer-events-none opacity-0 transition-opacity duration-300" viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="neonRingGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00D9F5" stop-opacity="1" />
+                <stop offset="50%" stop-color="#6366F1" stop-opacity="0.6" />
+                <stop offset="100%" stop-color="#00F5A0" stop-opacity="0" />
+              </linearGradient>
+              <linearGradient id="neonRingGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#00F5A0" stop-opacity="1" />
+                <stop offset="100%" stop-color="#00D9F5" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <!-- Внешнее быстрое кольцо -->
+            <g class="ring-spin-fast" style="transform-origin: 100px 100px;">
+              <circle cx="100" cy="100" r="84" fill="none" stroke="url(#neonRingGrad1)" stroke-width="3" stroke-linecap="round" stroke-dasharray="140 160" />
+            </g>
+            <!-- Внутреннее встречное кольцо -->
+            <g class="ring-spin-reverse" style="transform-origin: 100px 100px;">
+              <circle cx="100" cy="100" r="75" fill="none" stroke="url(#neonRingGrad2)" stroke-width="2" stroke-linecap="round" stroke-dasharray="60 90 30 90" />
+            </g>
+          </svg>
+
+          <!-- Декоративное статичное кибер-кольцо вокруг кнопки -->
+          <div class="absolute w-40 h-40 rounded-full border border-white/10 pointer-events-none"></div>
+
+          <!-- САМА ГЛАВНАЯ КНОПКА -->
+          <button
+            id="mainConnectBtn"
+            onclick="handleConnectButtonClick()"
+            aria-label="Подключить VPN"
+            class="btn-idle relative z-10 w-32 h-32 rounded-full bg-gradient-to-b from-slate-800/95 via-slate-900/95 to-slate-950 border-2 border-indigo-500/45 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all duration-500 active:scale-95 group"
+          >
+            <!-- Внутренний стеклянный блик -->
+            <div id="btnInnerGlow" class="absolute inset-2 rounded-full bg-gradient-to-tr from-indigo-500/10 via-transparent to-white/5 pointer-events-none transition-all duration-500"></div>
+
+            <!-- Иконка питания -->
+            <svg id="powerIcon" class="w-11 h-11 text-indigo-400 group-hover:text-indigo-300 transition-all duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v9m6.364-5.364a9 9 0 11-12.728 0" />
+            </svg>
+
+            <!-- Подпись внутри кнопки -->
+            <span id="btnActionSubtext" class="text-[10px] font-mono uppercase tracking-widest text-slate-400 group-hover:text-slate-200 transition-colors">
+              СТАРТ
+            </span>
+          </button>
+        </div>
+
+        <!-- Подпись этапа подключения («Поиск сервера...», «Обмен ключами...», «Установка туннеля...») -->
+        <div class="h-5 flex items-center justify-center">
+          <p id="connectionSubStatus" class="text-xs font-mono text-slate-400 transition-all duration-300">
+            Нажмите для защищенного входа
+          </p>
+        </div>
+      </div>
+
+      <!-- ================= ЖИВАЯ СТАТИСТИКА (DOWNLOAD / UPLOAD + ГРАФИКИ) ================= -->
+      <div class="grid grid-cols-2 gap-3 my-1">
+        <!-- Карточка Скачивания (Download) -->
+        <div class="glass-panel rounded-2xl p-3 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-1.5">
+              <div class="w-5 h-5 rounded-lg bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
+              <span class="text-[11px] text-slate-400 font-medium">Скачивание</span>
+            </div>
+            <span id="totalDownloadBadge" class="text-[10px] font-mono text-slate-400">0 МБ</span>
+          </div>
+
+          <div class="flex items-baseline gap-1 mt-0.5">
+            <span id="downloadSpeedValue" class="font-mono text-xl font-bold text-white tracking-tight">0.0</span>
+            <span class="text-[10px] font-mono text-slate-400">Мбит/с</span>
+          </div>
+
+          <!-- Мини-график скорости скачивания в реальном времени -->
+          <div class="mt-2 h-8 w-full">
+            <canvas id="downloadChartCanvas" class="w-full h-full block"></canvas>
+          </div>
+        </div>
+
+        <!-- Карточка Отдачи (Upload) -->
+        <div class="glass-panel rounded-2xl p-3 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-1.5">
+              <div class="w-5 h-5 rounded-lg bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center text-cyan-400">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+              </div>
+              <span class="text-[11px] text-slate-400 font-medium">Отдача</span>
+            </div>
+            <span id="totalUploadBadge" class="text-[10px] font-mono text-slate-400">0 МБ</span>
+          </div>
+
+          <div class="flex items-baseline gap-1 mt-0.5">
+            <span id="uploadSpeedValue" class="font-mono text-xl font-bold text-white tracking-tight">0.0</span>
+            <span class="text-[10px] font-mono text-slate-400">Мбит/с</span>
+          </div>
+
+          <!-- Мини-график скорости отдачи в реальном времени -->
+          <div class="mt-2 h-8 w-full">
+            <canvas id="uploadChartCanvas" class="w-full h-full block"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= КНОПКА ВЫБОРА ТЕКУЩЕЙ ЛОКАЦИИ (ОТКРЫВАЕТ ШТОРКУ) ================= -->
+      <div
+        onclick="openServerSheet()"
+        class="glass-panel glass-panel-interactive rounded-2xl p-3.5 mt-1 flex items-center justify-between cursor-pointer group"
+      >
+        <div class="flex items-center gap-3">
+          <div id="currentServerFlag" class="w-10 h-10 rounded-xl bg-slate-800/90 border border-white/10 flex items-center justify-center text-2xl shadow-inner">
+            🇳🇱
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="currentServerCountry" class="font-semibold text-sm text-white">Нидерланды</span>
+              <span id="currentServerTag" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
+                10 Гбит/с
+              </span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+              <span id="currentServerCity">Амстердам #4</span>
+              <span>•</span>
+              <span id="currentServerLoad" class="font-mono text-[11px] text-slate-300">Нагрузка 24%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <!-- Индикатор пинга -->
+          <div class="text-right">
+            <div class="flex items-center justify-end gap-1">
+              <span id="currentServerPingDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span id="currentServerPing" class="font-mono text-xs font-semibold text-emerald-400">28 мс</span>
+            </div>
+            <span class="text-[10px] text-slate-400">Сменить</span>
+          </div>
+          <div class="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:translate-x-0.5 transition-all">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ================= ЭКРАН НАСТРОЕК И ПРОТОКОЛОВ ================= -->
+    <section id="settingsView" class="hidden relative z-20 flex-1 flex flex-col px-5 pb-3 pt-1 overflow-y-auto no-scrollbar">
+      <!-- Заголовок вкладки настроек -->
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-base font-bold text-white">Протоколы и защита</h2>
+          <p class="text-xs text-slate-400">Тонкая настройка туннелирования и шифрования</p>
+        </div>
+        <button onclick="switchMainView('home')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-300 cursor-pointer transition">
+          Готово
+        </button>
+      </div>
+
+      <!-- Выбор протокола -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Протокол соединения</span>
+          <span class="text-[11px] font-mono text-cyan-400">Автопорт 443</span>
+        </div>
+
+        <div id="protocolsList" class="grid grid-cols-2 gap-2.5">
+          <!-- Генерируется из JS: VLESS Reality, WireGuard, OpenVPN, Shadowsocks -->
+        </div>
+      </div>
+
+      <!-- Переключатели безопасности (Toggles) -->
+      <div class="space-y-2.5 mb-3">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Функции безопасности</span>
+
+        <!-- Kill Switch -->
+        <div class="glass-panel rounded-2xl p-3.5 flex items-center justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0 mt-0.5">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-white">Kill Switch</div>
+              <p class="text-[11px] text-slate-400 leading-snug">Экстренная блокировка трафика при разрыве VPN</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked="true"
+            onclick="toggleSettingSwitch(this, 'Kill Switch')"
+            class="cyber-toggle w-12 h-6 rounded-full bg-slate-800 border border-slate-600 p-0.5 flex items-center shrink-0 cursor-pointer"
+          >
+            <span class="cyber-toggle-thumb w-4 h-4 rounded-full bg-slate-400 block"></span>
+          </button>
+        </div>
+
+        <!-- Раздельное туннелирование (Split Tunneling) -->
+        <div class="glass-panel rounded-2xl p-3.5">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-xs font-semibold text-white">Раздельное туннелирование</div>
+                <p class="text-[11px] text-slate-400 leading-snug">Выбор приложений, работающих через VPN</p>
+              </div>
+            </div>
+            <button
+              id="splitTunnelToggleBtn"
+              type="button"
+              role="switch"
+              aria-checked="true"
+              onclick="toggleSettingSwitch(this, 'Раздельное туннелирование', true)"
+              class="cyber-toggle w-12 h-6 rounded-full bg-slate-800 border border-slate-600 p-0.5 flex items-center shrink-0 cursor-pointer"
+            >
+              <span class="cyber-toggle-thumb w-4 h-4 rounded-full bg-slate-400 block"></span>
+            </button>
+          </div>
+
+          <!-- Чипы приложений для Split Tunneling -->
+          <div id="splitAppsContainer" class="mt-2.5 pt-2.5 border-t border-white/10 flex flex-wrap gap-1.5 transition-all duration-300">
+            <button onclick="toggleAppChip(this)" data-active="true" class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer transition">
+              ✓ YouTube
+            </button>
+            <button onclick="toggleAppChip(this)" data-active="true" class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer transition">
+              ✓ Discord
+            </button>
+            <button onclick="toggleAppChip(this)" data-active="true" class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer transition">
+              ✓ Telegram
+            </button>
+            <button onclick="toggleAppChip(this)" data-active="false" class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-white/5 text-slate-400 border border-white/10 cursor-pointer transition">
+              Банки РФ (Напрямую)
+            </button>
+          </div>
+        </div>
+
+        <!-- Блокировка рекламы и трекеров -->
+        <div class="glass-panel rounded-2xl p-3.5 flex items-center justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-semibold text-white">Блокировка рекламы и трекеров</span>
+                <span id="adblockCounterBadge" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">DNS Shield</span>
+              </div>
+              <p class="text-[11px] text-slate-400 leading-snug">Фильтрация рекламных доменов и телеметрии</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked="true"
+            onclick="toggleSettingSwitch(this, 'Блокировка рекламы')"
+            class="cyber-toggle w-12 h-6 rounded-full bg-slate-800 border border-slate-600 p-0.5 flex items-center shrink-0 cursor-pointer"
+          >
+            <span class="cyber-toggle-thumb w-4 h-4 rounded-full bg-slate-400 block"></span>
+          </button>
+        </div>
+
+        <!-- Автоподключение -->
+        <div class="glass-panel rounded-2xl p-3.5 flex items-center justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-white">Автоподключение</div>
+              <p class="text-[11px] text-slate-400 leading-snug">Защита при входе в открытые Wi-Fi сети</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked="false"
+            onclick="toggleSettingSwitch(this, 'Автоподключение')"
+            class="cyber-toggle w-12 h-6 rounded-full bg-slate-800 border border-slate-600 p-0.5 flex items-center shrink-0 cursor-pointer"
+          >
+            <span class="cyber-toggle-thumb w-4 h-4 rounded-full bg-slate-400 block"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= НИЖНЯЯ НАВИГАЦИОННАЯ ПАНЕЛЬ ================= -->
+    <nav class="relative z-20 mx-5 mb-4 p-1.5 rounded-2xl glass-panel flex items-center justify-around">
+      <button
+        id="navBtnHome"
+        onclick="switchMainView('home')"
+        class="flex-1 py-2 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold bg-white/10 text-white shadow-sm transition-all cursor-pointer"
+      >
+        <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span>Туннель</span>
+      </button>
+
+      <button
+        id="navBtnServers"
+        onclick="openServerSheet()"
+        class="flex-1 py-2 rounded-xl flex items-center justify-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Локации</span>
+      </button>
+
+      <button
+        id="navBtnSettings"
+        onclick="switchMainView('settings')"
+        class="flex-1 py-2 rounded-xl flex items-center justify-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        </svg>
+        <span>Протоколы</span>
+      </button>
+    </nav>
+
+    <!-- ================= ВЫЕЗЖАЮЩАЯ СНИЗУ ШТОРКА ВЫБОРА СЕРВЕРА ================= -->
+    <div id="sheetBackdrop" onclick="closeServerSheet()" class="sheet-backdrop absolute inset-0 bg-black/65 backdrop-blur-xs z-40"></div>
+
+    <div id="serverBottomSheet" class="bottom-sheet absolute inset-x-0 bottom-0 h-[82%] bg-slate-950/95 backdrop-blur-2xl border-t border-white/15 rounded-t-[32px] z-50 flex flex-col px-5 pt-3 pb-5 shadow-2xl">
+      <!-- Ручка перетаскивания шторки -->
+      <div onclick="closeServerSheet()" class="w-12 h-1.5 rounded-full bg-slate-700 mx-auto mb-3 cursor-pointer hover:bg-slate-500 transition"></div>
+
+      <!-- Шапка шторки -->
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h3 class="text-base font-bold text-white">Выбор локации</h3>
+          <p class="text-xs text-slate-400">7 стран • Оптимизация маршрутов BGP</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="refreshServerPings()" id="pingRefreshBtn" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-cyan-300 flex items-center gap-1.5 cursor-pointer transition" title="Обновить пинг">
+            <svg id="pingRefreshIcon" class="w-3.5 h-3.5 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Пинг</span>
+          </button>
+          <button onclick="closeServerSheet()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Поле поиска -->
+      <div class="relative mb-3">
+        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          id="serverSearchInput"
+          type="text"
+          oninput="renderServerList()"
+          placeholder="Поиск страны или города (напр. Германия, Токио)..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400/60 transition"
+        />
+      </div>
+
+      <!-- Вкладки фильтрации («Все серверы», «Быстрые», «Для стриминга/игр») -->
+      <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-900/90 border border-white/5 mb-3 text-xs">
+        <button onclick="setServerFilter('all')" id="tabFilter_all" class="py-1.5 px-2 rounded-lg font-semibold bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-300 border border-emerald-500/30 transition cursor-pointer">
+          Все серверы
+        </button>
+        <button onclick="setServerFilter('fast')" id="tabFilter_fast" class="py-1.5 px-2 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition cursor-pointer">
+          Быстрые
+        </button>
+        <button onclick="setServerFilter('streaming')" id="tabFilter_streaming" class="py-1.5 px-2 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition cursor-pointer">
+          Стриминг / Игры
+        </button>
+      </div>
+
+      <!-- Список стран -->
+      <div id="serverListContainer" class="flex-1 overflow-y-auto no-scrollbar space-y-2 pr-0.5">
+        <!-- Заполняется динамически -->
+      </div>
+    </div>
+
+    <!-- Всплывающее уведомление (Toast) внутри смартфона -->
+    <div id="toastNotification" class="pointer-events-none opacity-0 translate-y-3 transition-all duration-300 absolute bottom-20 inset-x-6 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/95 border border-cyan-400/40 backdrop-blur-xl shadow-2xl flex items-center gap-2.5 text-xs text-slate-100">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+      <span id="toastMessage" class="font-medium">Настройка обновлена</span>
+    </div>
+
+    <!-- Индикатор Home Bar внизу экрана смартфона -->
+    <div class="w-32 h-1 rounded-full bg-white/25 mx-auto mb-2 relative z-20"></div>
+  </div>
+
+  <!-- ================= JAVASCRIPT ЛОГИКА И АНИМАЦИИ ================= -->
+  <script>
+    // База данных серверов (7 стран по ТЗ) с координатами на SVG-карте
+    const SERVERS = [
+      {
+        id: 'nl',
+        country: 'Нидерланды',
+        city: 'Амстердам #4',
+        flag: '🇳🇱',
+        ping: 28,
+        load: 24,
+        ip: '185.107.56.194',
+        bandwidth: '10 Гбит/с',
+        categories: ['all', 'fast', 'streaming'],
+        badge: 'Оптимальный',
+        coords: { x: 185, y: 54 }
+      },
+      {
+        id: 'de',
+        country: 'Германия',
+        city: 'Франкфурт #12',
+        flag: '🇩🇪',
+        ping: 31,
+        load: 38,
+        ip: '91.198.174.208',
+        bandwidth: '10 Гбит/с',
+        categories: ['all', 'fast', 'streaming'],
+        badge: 'Низкий пинг',
+        coords: { x: 193, y: 59 }
+      },
+      {
+        id: 'fi',
+        country: 'Финляндия',
+        city: 'Хельсинки #2',
+        flag: '🇫🇮',
+        ping: 19,
+        load: 18,
+        ip: '95.216.142.77',
+        bandwidth: '25 Гбит/с',
+        categories: ['all', 'fast'],
+        badge: 'Ультра-быстрый',
+        coords: { x: 208, y: 40 }
+      },
+      {
+        id: 'gb',
+        country: 'Великобритания',
+        city: 'Лондон Docklands',
+        flag: '🇬🇧',
+        ping: 42,
+        load: 45,
+        ip: '51.89.153.112',
+        bandwidth: '10 Гбит/с',
+        categories: ['all', 'streaming'],
+        badge: '4K Стриминг',
+        coords: { x: 176, y: 55 }
+      },
+      {
+        id: 'tr',
+        country: 'Турция',
+        city: 'Стамбул #3',
+        flag: '🇹🇷',
+        ping: 54,
+        load: 62,
+        ip: '212.156.84.39',
+        bandwidth: '5 Гбит/с',
+        categories: ['all', 'streaming'],
+        badge: 'Стриминг / Игры',
+        coords: { x: 220, y: 74 }
+      },
+      {
+        id: 'us',
+        country: 'США',
+        city: 'Нью-Йорк Core',
+        flag: '🇺🇸',
+        ping: 96,
+        load: 31,
+        ip: '104.244.72.115',
+        bandwidth: '20 Гбит/с',
+        categories: ['all', 'streaming'],
+        badge: 'AI & Netflix',
+        coords: { x: 92, y: 70 }
+      },
+      {
+        id: 'jp',
+        country: 'Япония',
+        city: 'Токио Shibuya',
+        flag: '🇯🇵',
+        ping: 138,
+        load: 29,
+        ip: '45.32.248.61',
+        bandwidth: '10 Гбит/с',
+        categories: ['all', 'streaming'],
+        badge: 'Gaming Asia',
+        coords: { x: 344, y: 76 }
+      }
+    ];
+
+    // Протоколы из ТЗ
+    const PROTOCOLS = [
+      {
+        id: 'vless',
+        name: 'VLESS Reality',
+        tag: 'Рекомендуем',
+        desc: 'Маскировка под TLS 1.3 трафик, обход DPI без задержек',
+        speedBonus: 1.05
+      },
+      {
+        id: 'wireguard',
+        name: 'WireGuard',
+        tag: 'Макс. скорость',
+        desc: 'Современный криптопротокол на базе ChaCha20',
+        speedBonus: 1.15
+      },
+      {
+        id: 'openvpn',
+        name: 'OpenVPN',
+        tag: 'Классика',
+        desc: 'Надежное туннелирование AES-256-GCM по TCP/UDP',
+        speedBonus: 0.85
+      },
+      {
+        id: 'shadowsocks',
+        name: 'Shadowsocks',
+        tag: 'Stealth',
+        desc: 'Легковесный шифрованный прокси AEAD-2022',
+        speedBonus: 0.95
+      }
+    ];
+
+    // Глобальное состояние приложения
+    let vpnState = 'disconnected'; // 'disconnected' | 'connecting' | 'connected'
+    let selectedServer = SERVERS[0];
+    let selectedProtocol = PROTOCOLS[0];
+    let currentFilter = 'all';
+
+    // Таймеры подключения и сессии
+    let connectingTimeouts = [];
+    let sessionSeconds = 0;
+    let sessionInterval = null;
+
+    // Статистика скорости и графики
+    let currentDownSpeed = 0;
+    let currentUpSpeed = 0;
+    let totalDownMB = 0;
+    let totalUpMB = 0;
+    let downHistory = new Array(28).fill(0);
+    let upHistory = new Array(28).fill(0);
+    let boostFramesRemaining = 0;
+
+    // Исходная точка на карте
+    const ORIGIN_COORDS = { x: 228, y: 56 };
+
+    // Инициализация при загрузке
+    window.addEventListener('DOMContentLoaded', () => {
+      updateClock();
+      setInterval(updateClock, 15000);
+
+      renderMapNodes();
+      updateMapRoute();
+      renderServerList();
+      renderProtocols();
+      initSparklines();
+
+      // Запуск цикла обновления живой телеметрии и графиков
+      setInterval(updateLiveTelemetry, 450);
+    });
+
+    function updateClock() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('phoneClock').textContent = `${hh}:${mm}`;
+    }
+
+    // ================= ОТРИСОВКА КАРТЫ МИРА И МАРШРУТА =================
+    function renderMapNodes() {
+      const container = document.getElementById('mapServerNodes');
+      container.innerHTML = SERVERS.map(srv => `
+        <g transform="translate(${srv.coords.x}, ${srv.coords.y})">
+          <circle r="2.2" fill="${srv.id === selectedServer.id ? '#00F5A0' : 'rgba(148, 163, 184, 0.55)'}" />
+        </g>
+      `).join('');
+    }
+
+    function updateMapRoute() {
+      const targetGroup = document.getElementById('targetMapNode');
+      targetGroup.setAttribute('transform', `translate(${selectedServer.coords.x}, ${selectedServer.coords.y})`);
+
+      // Вычисляем красивую кривую Безье от ORIGIN_COORDS до выбранного сервера
+      const x1 = ORIGIN_COORDS.x;
+      const y1 = ORIGIN_COORDS.y;
+      const x2 = selectedServer.coords.x;
+      const y2 = selectedServer.coords.y;
+
+      const midX = (x1 + x2) / 2;
+      const dist = Math.hypot(x2 - x1, y2 - y1);
+      const midY = Math.min(y1, y2) - Math.max(18, dist * 0.28);
+
+      const pathData = `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`;
+      const arc = document.getElementById('vpnTunnelArc');
+      const arcBg = document.getElementById('vpnTunnelArcBg');
+
+      arc.setAttribute('d', pathData);
+      arcBg.setAttribute('d', pathData);
+
+      renderMapNodes();
+    }
+
+    // ================= УПРАВЛЕНИЕ СОСТОЯНИЕМ ПОДКЛЮЧЕНИЯ =================
+    function handleConnectButtonClick() {
+      if (vpnState === 'disconnected') {
+        startConnectionSequence();
+      } else if (vpnState === 'connecting') {
+        cancelConnectionSequence();
+      } else if (vpnState === 'connected') {
+        disconnectVpn();
+      }
+    }
+
+    function clearConnectingTimeouts() {
+      connectingTimeouts.forEach(t => clearTimeout(t));
+      connectingTimeouts = [];
+    }
+
+    function startConnectionSequence() {
+      clearConnectingTimeouts();
+      vpnState = 'connecting';
+      applyVisualState('connecting');
+
+      const statuses = [
+        { delay: 0, text: `Поиск сервера (${selectedServer.city})...` },
+        { delay: 950, text: `Обмен ключами (${selectedProtocol.name})...` },
+        { delay: 1900, text: 'Установка защищенного туннеля...' }
+      ];
+
+      statuses.forEach(step => {
+        const t = setTimeout(() => {
+          const el = document.getElementById('connectionSubStatus');
+          el.style.opacity = '0';
+          setTimeout(() => {
+            el.textContent = step.text;
+            el.style.opacity = '1';
+          }, 120);
+        }, step.delay);
+        connectingTimeouts.push(t);
+      });
+
+      const finalTimeout = setTimeout(() => {
+        completeConnection();
+      }, 2850);
+      connectingTimeouts.push(finalTimeout);
+    }
+
+    function completeConnection() {
+      vpnState = 'connected';
+      applyVisualState('connected');
+
+      // Запуск таймера сессии
+      if (!sessionInterval) {
+        sessionInterval = setInterval(() => {
+          sessionSeconds++;
+          document.getElementById('sessionTimer').textContent = formatDuration(sessionSeconds);
+        }, 1000);
+      }
+
+      // Начальный импульс скорости при подключении
+      boostFramesRemaining = 6;
+      showToast(`Подключено к ${selectedServer.country} (${selectedProtocol.name})`);
+    }
+
+    function cancelConnectionSequence() {
+      clearConnectingTimeouts();
+      vpnState = 'disconnected';
+      applyVisualState('disconnected');
+      showToast('Подключение отменено');
+    }
+
+    function disconnectVpn() {
+      clearConnectingTimeouts();
+      vpnState = 'disconnected';
+      if (sessionInterval) {
+        clearInterval(sessionInterval);
+        sessionInterval = null;
+      }
+      sessionSeconds = 0;
+      document.getElementById('sessionTimer').textContent = '00:00:00';
+      applyVisualState('disconnected');
+      showToast('VPN-туннель отключен');
+    }
+
+    // Применение всех визуальных эффектов и анимаций для 3 состояний
+    function applyVisualState(state) {
+      const root = document.getElementById('phoneRoot');
+      const btn = document.getElementById('mainConnectBtn');
+      const powerIcon = document.getElementById('powerIcon');
+      const btnSub = document.getElementById('btnActionSubtext');
+      const rings = document.getElementById('connectingRings');
+      const ripples = document.getElementById('rippleContainer');
+      const statusDot = document.getElementById('protectionStatusDot');
+      const statusText = document.getElementById('protectionStatusText');
+      const subStatus = document.getElementById('connectionSubStatus');
+      const timerEl = document.getElementById('sessionTimer');
+      const ipDisplay = document.getElementById('virtualIpDisplay');
+      const islandDot = document.getElementById('islandDot');
+      const islandText = document.getElementById('islandText');
+      const arc = document.getElementById('vpnTunnelArc');
+      const arcBg = document.getElementById('vpnTunnelArcBg');
+      const mapBadgeDot = document.getElementById('mapBadgeDot');
+      const mapBadgeText = document.getElementById('mapBadgeText');
+      const continents = document.getElementById('continentsGroup');
+
+      root.setAttribute('data-vpn-state', state);
+
+      if (state === 'disconnected') {
+        btn.className = 'btn-idle relative z-10 w-32 h-32 rounded-full bg-gradient-to-b from-slate-800/95 via-slate-900/95 to-slate-950 border-2 border-indigo-500/45 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all duration-500 active:scale-95 group';
+        powerIcon.className = 'w-11 h-11 text-indigo-400 group-hover:text-indigo-300 transition-all duration-500';
+        btnSub.textContent = 'СТАРТ';
+        btnSub.className = 'text-[10px] font-mono uppercase tracking-widest text-slate-400';
+
+        rings.classList.add('opacity-0');
+        ripples.classList.add('opacity-0');
+
+        statusDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+        statusText.textContent = 'Отключено';
+        statusText.className = 'text-xs font-semibold tracking-wide text-slate-300 uppercase';
+        subStatus.textContent = 'Нажмите для защищенного входа';
+        subStatus.className = 'text-xs font-mono text-slate-400 transition-all duration-300';
+
+        timerEl.className = 'font-mono text-3xl font-bold tracking-wider text-slate-500 transition-colors duration-500';
+        ipDisplay.textContent = '185.220.101.42 (Открыт)';
+
+        islandDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+        islandText.textContent = 'Трафик открыт';
+
+        arc.classList.add('opacity-0');
+        arcBg.classList.add('opacity-0');
+        continents.setAttribute('fill', 'rgba(51, 65, 85, 0.34)');
+        continents.setAttribute('stroke', 'rgba(148, 163, 184, 0.18)');
+        mapBadgeDot.className = 'w-1.5 h-1.5 rounded-full bg-indigo-400';
+        mapBadgeText.textContent = 'Маршрут: Прямое соединение';
+      }
+
+      if (state === 'connecting') {
+        btn.className = 'relative z-10 w-32 h-32 rounded-full bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 border-2 border-cyan-400/70 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all duration-500 scale-[1.02]';
+        powerIcon.className = 'w-11 h-11 text-cyan-300 animate-pulse transition-all duration-300';
+        btnSub.textContent = 'ОТМЕНА';
+        btnSub.className = 'text-[10px] font-mono uppercase tracking-widest text-cyan-300';
+
+        rings.classList.remove('opacity-0');
+        ripples.classList.remove('opacity-0');
+
+        statusDot.className = 'w-2 h-2 rounded-full bg-cyan-400 animate-ping';
+        statusText.textContent = 'Подключение...';
+        statusText.className = 'text-xs font-semibold tracking-wide text-cyan-300 uppercase';
+        subStatus.className = 'text-xs font-mono text-cyan-300 transition-all duration-300';
+
+        islandDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+        islandText.textContent = 'Шифрование...';
+
+        arc.classList.remove('opacity-0');
+        arcBg.classList.remove('opacity-0');
+        mapBadgeDot.className = 'w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping';
+        mapBadgeText.textContent = `Туннель → ${selectedServer.city}`;
+      }
+
+      if (state === 'connected') {
+        btn.className = 'btn-connected relative z-10 w-32 h-32 rounded-full bg-gradient-to-b from-emerald-950/90 via-slate-900/95 to-cyan-950/90 border-2 border-emerald-400 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all duration-500 active:scale-95 group';
+        powerIcon.className = 'w-11 h-11 text-emerald-400 drop-shadow-[0_0_12px_rgba(0,245,160,0.8)] transition-all duration-500';
+        btnSub.textContent = 'ЗАЩИЩЕНО';
+        btnSub.className = 'text-[10px] font-mono uppercase tracking-widest text-emerald-300 font-semibold';
+
+        rings.classList.add('opacity-0');
+        ripples.classList.remove('opacity-0');
+
+        statusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#00F5A0]';
+        statusText.textContent = 'Подключено';
+        statusText.className = 'text-xs font-semibold tracking-wide text-emerald-300 uppercase';
+
+        subStatus.textContent = `Защита активна • ${selectedProtocol.name}`;
+        subStatus.className = 'text-xs font-mono text-emerald-300/90 transition-all duration-300';
+
+        timerEl.className = 'font-mono text-3xl font-bold tracking-wider text-white drop-shadow-[0_0_18px_rgba(0,245,160,0.25)] transition-colors duration-500';
+        ipDisplay.textContent = `${selectedServer.ip} (${selectedServer.id.toUpperCase()})`;
+
+        islandDot.className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#00F5A0]';
+        islandText.textContent = `VPN • ${selectedServer.id.toUpperCase()} • ${selectedServer.ping} мс`;
+
+        arc.classList.remove('opacity-0');
+        arcBg.classList.remove('opacity-0');
+        continents.setAttribute('fill', 'rgba(16, 185, 129, 0.16)');
+        continents.setAttribute('stroke', 'rgba(0, 245, 160, 0.32)');
+        mapBadgeDot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#00F5A0]';
+        mapBadgeText.textContent = `${selectedServer.country} • Защищено AES/TLS`;
+      }
+    }
+
+    function formatDuration(sec) {
+      const hrs = String(Math.floor(sec / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${hrs}:${mins}:${s}`;
+    }
+
+    // ================= ЖИВАЯ СТАТИСТИКА СКОРОСТИ И ГРАФИКИ CANVAS =================
+    let downCtx, upCtx;
+
+    function initSparklines() {
+      const downCanvas = document.getElementById('downloadChartCanvas');
+      const upCanvas = document.getElementById('uploadChartCanvas');
+
+      const dpr = window.devicePixelRatio || 1;
+      [downCanvas, upCanvas].forEach(c => {
+        const rect = c.getBoundingClientRect();
+        c.width = (rect.width || 140) * dpr;
+        c.height = (rect.height || 32) * dpr;
+      });
+
+      downCtx = downCanvas.getContext('2d');
+      upCtx = upCanvas.getContext('2d');
+      drawSparkline(downCtx, downCanvas, downHistory, '#00F5A0', 'rgba(0, 245, 160, 0.22)');
+      drawSparkline(upCtx, upCanvas, upHistory, '#00D9F5', 'rgba(0, 217, 245, 0.22)');
+    }
+
+    function updateLiveTelemetry() {
+      if (vpnState === 'connected') {
+        const factor = selectedProtocol.speedBonus || 1;
+        if (boostFramesRemaining > 0) {
+          boostFramesRemaining--;
+          currentDownSpeed = +(85 + Math.random() * 65 * factor).toFixed(1);
+          currentUpSpeed = +(42 + Math.random() * 28 * factor).toFixed(1);
+        } else {
+          // Плавное колебание в реальном времени
+          const targetDown = (24 + Math.sin(Date.now() / 1400) * 14 + Math.random() * 18) * factor;
+          const targetUp = (11 + Math.cos(Date.now() / 1700) * 6 + Math.random() * 8) * factor;
+          currentDownSpeed = +(currentDownSpeed * 0.55 + targetDown * 0.45).toFixed(1);
+          currentUpSpeed = +(currentUpSpeed * 0.55 + targetUp * 0.45).toFixed(1);
+        }
+
+        // Накопление суммарного трафика
+        totalDownMB += (currentDownSpeed * 0.45) / 8;
+        totalUpMB += (currentUpSpeed * 0.45) / 8;
+      } else if (vpnState === 'connecting') {
+        currentDownSpeed = +(Math.random() * 2.4).toFixed(1);
+        currentUpSpeed = +(Math.random() * 1.8).toFixed(1);
+      } else {
+        currentDownSpeed = 0.0;
+        currentUpSpeed = 0.0;
+      }
+
+      document.getElementById('downloadSpeedValue').textContent = currentDownSpeed.toFixed(1);
+      document.getElementById('uploadSpeedValue').textContent = currentUpSpeed.toFixed(1);
+
+      document.getElementById('totalDownloadBadge').textContent =
+        totalDownMB >= 1024 ? `${(totalDownMB / 1024).toFixed(2)} ГБ` : `${Math.floor(totalDownMB)} МБ`;
+      document.getElementById('totalUploadBadge').textContent =
+        totalUpMB >= 1024 ? `${(totalUpMB / 1024).toFixed(2)} ГБ` : `${Math.floor(totalUpMB)} МБ`;
+
+      downHistory.push(currentDownSpeed);
+      downHistory.shift();
+      upHistory.push(currentUpSpeed);
+      upHistory.shift();
+
+      const downCanvas = document.getElementById('downloadChartCanvas');
+      const upCanvas = document.getElementById('uploadChartCanvas');
+      if (downCtx && upCtx) {
+        drawSparkline(downCtx, downCanvas, downHistory, '#00F5A0', 'rgba(0, 245, 160, 0.25)');
+        drawSparkline(upCtx, upCanvas, upHistory, '#00D9F5', 'rgba(0, 217, 245, 0.25)');
+      }
+    }
+
+    function drawSparkline(ctx, canvas, data, strokeColor, fillColor) {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const maxVal = Math.max(60, ...data);
+      const stepX = w / (data.length - 1);
+
+      ctx.beginPath();
+      data.forEach((val, idx) => {
+        const x = idx * stepX;
+        const y = h - (val / maxVal) * (h * 0.82) - 2;
+        if (idx === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          const prevX = (idx - 1) * stepX;
+          const prevY = h - (data[idx - 1] / maxVal) * (h * 0.82) - 2;
+          const cx = (prevX + x) / 2;
+          ctx.bezierCurveTo(cx, prevY, cx, y, x, y);
+        }
+      });
+
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
+      ctx.stroke();
+
+      // Градиентная заливка под кривой
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, fillColor);
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    function triggerSpeedBoost() {
+      if (vpnState !== 'connected') {
+        startConnectionSequence();
+        showToast('Запуск VPN и теста 4K-потока...');
+      } else {
+        boostFramesRemaining = 12;
+        showToast('⚡ Симуляция пиковой нагрузки 4K-стриминга');
+      }
+    }
+
+    // ================= ШТОРКА ВЫБОРА ЛОКАЦИИ (BOTTOM SHEET) =================
+    function openServerSheet() {
+      document.getElementById('sheetBackdrop').classList.add('open');
+      document.getElementById('serverBottomSheet').classList.add('open');
+      renderServerList();
+    }
+
+    function closeServerSheet() {
+      document.getElementById('sheetBackdrop').classList.remove('open');
+      document.getElementById('serverBottomSheet').classList.remove('open');
+    }
+
+    function setServerFilter(filterKey) {
+      currentFilter = filterKey;
+      ['all', 'fast', 'streaming'].forEach(k => {
+        const btn = document.getElementById(`tabFilter_${k}`);
+        if (k === filterKey) {
+          btn.className = 'py-1.5 px-2 rounded-lg font-semibold bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-300 border border-emerald-500/30 transition cursor-pointer';
+        } else {
+          btn.className = 'py-1.5 px-2 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition cursor-pointer';
+        }
+      });
+      renderServerList();
+    }
+
+    function renderServerList() {
+      const container = document.getElementById('serverListContainer');
+      const query = (document.getElementById('serverSearchInput')?.value || '').trim().toLowerCase();
+
+      const filtered = SERVERS.filter(srv => {
+        const matchesTab = srv.categories.includes(currentFilter);
+        const matchesSearch =
+          srv.country.toLowerCase().includes(query) ||
+          srv.city.toLowerCase().includes(query) ||
+          srv.badge.toLowerCase().includes(query);
+        return matchesTab && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="py-10 text-center text-xs text-slate-400">
+            Серверы по запросу не найдены
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(srv => {
+        const isSelected = srv.id === selectedServer.id;
+        const pingColor = srv.ping < 45 ? 'text-emerald-400' : srv.ping < 100 ? 'text-amber-400' : 'text-cyan-300';
+        const pingDot = srv.ping < 45 ? 'bg-emerald-400' : srv.ping < 100 ? 'bg-amber-400' : 'bg-cyan-400';
+        const loadColor = srv.load < 40 ? 'bg-emerald-400' : srv.load < 70 ? 'bg-amber-400' : 'bg-rose-400';
+
+        return `
+          <div
+            onclick="selectServer('${srv.id}')"
+            class="p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+              isSelected
+                ? 'bg-gradient-to-r from-emerald-500/15 via-cyan-500/10 to-transparent border-emerald-400/50 shadow-lg'
+                : 'bg-slate-900/75 hover:bg-slate-900 border-white/8 hover:border-white/15'
+            }"
+          >
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-slate-800/90 border border-white/10 flex items-center justify-center text-2xl">
+                ${srv.flag}
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold text-white">${srv.country}</span>
+                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">
+                    ${srv.badge}
+                  </span>
+                </div>
+                <div class="flex items-center gap-2.5 mt-1">
+                  <span class="text-xs text-slate-400">${srv.city}</span>
+                  <!-- Индикатор нагрузки сервера -->
+                  <div class="flex items-center gap-1.5" title="Нагрузка сервера ${srv.load}%">
+                    <div class="w-12 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                      <div class="h-full ${loadColor} rounded-full" style="width: ${srv.load}%"></div>
+                    </div>
+                    <span class="text-[10px] font-mono text-slate-400">${srv.load}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="text-right">
+                <div class="flex items-center justify-end gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full ${pingDot}"></span>
+                  <span class="font-mono text-xs font-semibold ${pingColor}">${srv.ping} мс</span>
+                </div>
+                <span class="text-[10px] font-mono text-slate-400">${srv.bandwidth}</span>
+              </div>
+
+              <div class="w-5 h-5 rounded-full border flex items-center justify-center ${
+                isSelected ? 'border-emerald-400 bg-emerald-400 text-slate-950' : 'border-slate-600'
+              }">
+                ${isSelected ? '✓' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectServer(serverId) {
+      const found = SERVERS.find(s => s.id === serverId);
+      if (!found) return;
+      selectedServer = found;
+
+      // Обновляем плашку на главном экране
+      document.getElementById('currentServerFlag').textContent = found.flag;
+      document.getElementById('currentServerCountry').textContent = found.country;
+      document.getElementById('currentServerTag').textContent = found.bandwidth;
+      document.getElementById('currentServerCity').textContent = found.city;
+      document.getElementById('currentServerLoad').textContent = `Нагрузка ${found.load}%`;
+      document.getElementById('currentServerPing').textContent = `${found.ping} мс`;
+
+      updateMapRoute();
+      renderServerList();
+      closeServerSheet();
+
+      // Если уже подключены или идет подключение — перезапускаем туннель на новую страну
+      if (vpnState === 'connected' || vpnState === 'connecting') {
+        startConnectionSequence();
+      } else {
+        showToast(`Выбрана локация: ${found.country} (${found.city})`);
+      }
+    }
+
+    function refreshServerPings() {
+      const icon = document.getElementById('pingRefreshIcon');
+      icon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        icon.style.transform = 'rotate(0deg)';
+      }, 520);
+
+      SERVERS.forEach(srv => {
+        const delta = Math.floor(Math.random() * 7) - 3;
+        srv.ping = Math.max(12, srv.ping + delta);
+      });
+
+      document.getElementById('currentServerPing').textContent = `${selectedServer.ping} мс`;
+      renderServerList();
+      showToast('Задержка до серверов обновлена');
+    }
+
+    // ================= НАСТРОЙКИ И ПРОТОКОЛЫ =================
+    function renderProtocols() {
+      const container = document.getElementById('protocolsList');
+      container.innerHTML = PROTOCOLS.map(p => {
+        const active = p.id === selectedProtocol.id;
+        return `
+          <div
+            onclick="selectProtocol('${p.id}')"
+            class="p-3 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+              active
+                ? 'bg-gradient-to-br from-emerald-500/20 via-cyan-500/10 to-slate-900 border-emerald-400/60 shadow-md'
+                : 'glass-panel hover:border-white/20'
+            }"
+          >
+            <div>
+              <div class="flex items-center justify-between gap-1 mb-1">
+                <span class="text-xs font-bold text-white">${p.name}</span>
+                <span class="w-2 h-2 rounded-full ${active ? 'bg-emerald-400 shadow-[0_0_8px_#00F5A0]' : 'bg-slate-600'}"></span>
+              </div>
+              <span class="inline-block text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-cyan-300 border border-white/10 mb-1.5">
+                ${p.tag}
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-tight">${p.desc}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectProtocol(protocolId) {
+      const found = PROTOCOLS.find(p => p.id === protocolId);
+      if (!found) return;
+      selectedProtocol = found;
+      document.getElementById('activeProtocolLabel').textContent = `Протокол: ${found.name}`;
+      renderProtocols();
+
+      if (vpnState === 'connected') {
+        document.getElementById('connectionSubStatus').textContent = `Защита активна • ${found.name}`;
+        boostFramesRemaining = 5;
+      }
+      showToast(`Активный протокол: ${found.name}`);
+    }
+
+    function toggleSettingSwitch(btnEl, labelName, isSplitTunnel = false) {
+      const isChecked = btnEl.getAttribute('aria-checked') === 'true';
+      const nextState = !isChecked;
+      btnEl.setAttribute('aria-checked', String(nextState));
+
+      if (isSplitTunnel) {
+        const appsBox = document.getElementById('splitAppsContainer');
+        appsBox.style.opacity = nextState ? '1' : '0.35';
+        appsBox.style.pointerEvents = nextState ? 'auto' : 'none';
+      }
+
+      showToast(`${labelName}: ${nextState ? 'Включено' : 'Выключено'}`);
+    }
+
+    function toggleAppChip(chipBtn) {
+      const isActive = chipBtn.getAttribute('data-active') === 'true';
+      const rawName = chipBtn.textContent.replace('✓ ', '').trim();
+      if (isActive) {
+        chipBtn.setAttribute('data-active', 'false');
+        chipBtn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-white/5 text-slate-400 border border-white/10 cursor-pointer transition';
+        chipBtn.textContent = rawName;
+      } else {
+        chipBtn.setAttribute('data-active', 'true');
+        chipBtn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer transition';
+        chipBtn.textContent = `✓ ${rawName}`;
+      }
+    }
+
+    // Переключение между главным экраном и экраном настроек/протоколов
+    function switchMainView(view) {
+      const homeView = document.getElementById('homeView');
+      const settingsView = document.getElementById('settingsView');
+      const navHome = document.getElementById('navBtnHome');
+      const navSettings = document.getElementById('navBtnSettings');
+
+      if (view === 'settings') {
+        homeView.classList.add('hidden');
+        settingsView.classList.remove('hidden');
+
+        navSettings.className = 'flex-1 py-2 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold bg-white/10 text-white shadow-sm transition-all cursor-pointer';
+        navHome.className = 'flex-1 py-2 rounded-xl flex items-center justify-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer';
+      } else {
+        settingsView.classList.add('hidden');
+        homeView.classList.remove('hidden');
+
+        navHome.className = 'flex-1 py-2 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold bg-white/10 text-white shadow-sm transition-all cursor-pointer';
+        navSettings.className = 'flex-1 py-2 rounded-xl flex items-center justify-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer';
+
+        setTimeout(initSparklines, 50);
+      }
+    }
+
+    // Копирование виртуального IP-адреса в буфер обмена
+    function copyVirtualIp() {
+      const ipText = vpnState === 'connected' ? selectedServer.ip : '185.220.101.42';
+      const tempInput = document.createElement('textarea');
+      tempInput.value = ipText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+
+      showToast(`IP-адрес ${ipText} скопирован`);
+    }
+
+    function toggleQuickDiagnostic() {
+      if (vpnState === 'connected') {
+        triggerSpeedBoost();
+      } else {
+        showToast(`Готов к подключению • Узел ${selectedServer.city}`);
+      }
+    }
+
+    // Всплывающее уведомление (Toast)
+    let toastTimer = null;
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const msgEl = document.getElementById('toastMessage');
+      msgEl.textContent = message;
+
+      toast.classList.remove('opacity-0', 'translate-y-3');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-3');
+      }, 2200);
+    }
+
+    window.addEventListener('resize', () => {
+      initSparklines();
+    });
+  </script>
+</body>
+</html>
