@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>AetherVPN — VLESS Client</title>
+  <title>AetherVPN — Xray Core</title>
   <style>
     :root {
       --bg-dark: #07090e;
-      --bg-card: rgba(18, 23, 35, 0.78);
-      --bg-card-solid: #121723;
+      --bg-card: rgba(18, 23, 35, 0.82);
       --border-glass: rgba(255, 255, 255, 0.08);
-      --border-active: rgba(0, 242, 254, 0.45);
       --text-main: #f1f5f9;
       --text-muted: #8b9bb4;
       --accent-cyan: #00f2fe;
@@ -35,10 +33,14 @@
       overflow: hidden;
       background-color: var(--bg-dark);
       color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Фоновое неоновое свечение */
+    svg {
+      display: block;
+      flex-shrink: 0;
+    }
+
     .app-shell {
       position: relative;
       width: 100%;
@@ -48,33 +50,24 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: calc(env(safe-area-inset-top, 16px) + 12px) 18px calc(env(safe-area-inset-bottom, 16px) + 12px);
-      background: radial-gradient(circle at 50% 28%, rgba(79, 172, 254, 0.12) 0%, rgba(7, 9, 14, 0) 65%);
-      transition: background 0.6s var(--ease-out);
+      padding: calc(env(safe-area-inset-top, 16px) + 10px) 16px calc(env(safe-area-inset-bottom, 16px) + 10px);
+      background: radial-gradient(circle at 50% 26%, rgba(79, 172, 254, 0.12) 0%, rgba(7, 9, 14, 0) 65%);
+      transition: background 0.5s var(--ease-out);
       overflow-y: auto;
-      overflow-x: hidden;
     }
 
     .app-shell.state-connecting {
-      background: radial-gradient(circle at 50% 28%, rgba(245, 158, 11, 0.16) 0%, rgba(7, 9, 14, 0) 65%);
+      background: radial-gradient(circle at 50% 26%, rgba(245, 158, 11, 0.16) 0%, rgba(7, 9, 14, 0) 65%);
     }
 
     .app-shell.state-connected {
-      background: radial-gradient(circle at 50% 28%, rgba(16, 185, 129, 0.18) 0%, rgba(0, 242, 254, 0.06) 45%, rgba(7, 9, 14, 0) 70%);
+      background: radial-gradient(circle at 50% 26%, rgba(16, 185, 129, 0.2) 0%, rgba(0, 242, 254, 0.06) 45%, rgba(7, 9, 14, 0) 70%);
     }
 
-    /* Фиксированный размер всех SVG, чтобы ничего не баговалось в WebView */
-    svg {
-      display: block;
-      flex-shrink: 0;
-    }
-
-    /* Верхняя шапка */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      z-index: 5;
     }
 
     .brand {
@@ -93,13 +86,11 @@
       align-items: center;
       justify-content: center;
       color: var(--accent-cyan);
-      box-shadow: 0 0 18px rgba(0, 242, 254, 0.15);
     }
 
     .brand-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
-      letter-spacing: 0.4px;
       background: linear-gradient(90deg, #ffffff, #a5f3fc);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -108,30 +99,28 @@
     .brand-sub {
       font-size: 11px;
       color: var(--text-muted);
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .top-actions {
       display: flex;
-      gap: 8px;
+      gap: 7px;
     }
 
     .icon-btn {
-      height: 38px;
-      padding: 0 12px;
-      border-radius: 12px;
+      height: 36px;
+      padding: 0 11px;
+      border-radius: 11px;
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
       color: var(--text-main);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      backdrop-filter: blur(12px);
-      transition: transform 0.2s var(--ease-out), border-color 0.2s;
     }
 
     .icon-btn:active {
@@ -144,11 +133,9 @@
       color: var(--accent-cyan);
     }
 
-    /* Статус и таймер */
     .status-block {
       text-align: center;
-      margin: 8px 0 4px;
-      z-index: 5;
+      margin: 4px 0;
     }
 
     .status-pill {
@@ -162,8 +149,7 @@
       font-size: 12px;
       font-weight: 600;
       color: var(--text-muted);
-      margin-bottom: 8px;
-      transition: all 0.3s var(--ease-out);
+      margin-bottom: 6px;
     }
 
     .status-dot {
@@ -171,7 +157,6 @@
       height: 8px;
       border-radius: 50%;
       background: #64748b;
-      transition: all 0.3s;
     }
 
     .state-connecting .status-pill {
@@ -195,12 +180,10 @@
     }
 
     .timer-display {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       letter-spacing: 1.5px;
-      color: var(--text-main);
-      text-shadow: 0 0 24px rgba(0, 242, 254, 0.2);
     }
 
     .step-hint {
@@ -210,75 +193,59 @@
       margin-top: 2px;
     }
 
-    /* Центральная кнопка с кольцами */
     .power-zone {
       position: relative;
-      height: 210px;
+      height: 195px;
       display: flex;
       align-items: center;
       justify-content: center;
-      my: 4px;
     }
 
     .ripple-ring {
       position: absolute;
-      width: 146px;
-      height: 146px;
+      width: 142px;
+      height: 142px;
       border-radius: 50%;
-      border: 1.5px solid rgba(0, 242, 254, 0.25);
+      border: 1.5px solid rgba(16, 185, 129, 0.4);
       opacity: 0;
       pointer-events: none;
     }
 
     .state-connected .ripple-ring.r1 {
-      border-color: rgba(16, 185, 129, 0.45);
-      animation: rippleWave 2.8s infinite cubic-bezier(0.16, 1, 0.3, 1);
+      animation: rippleWave 2.6s infinite cubic-bezier(0.16, 1, 0.3, 1);
     }
     .state-connected .ripple-ring.r2 {
-      border-color: rgba(0, 242, 254, 0.35);
-      animation: rippleWave 2.8s infinite 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: rippleWave 2.6s infinite 1.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes rippleWave {
       0% { transform: scale(1); opacity: 0.75; }
-      100% { transform: scale(1.52); opacity: 0; }
+      100% { transform: scale(1.5); opacity: 0; }
     }
 
     .spinner-ring {
       position: absolute;
-      width: 164px;
-      height: 164px;
+      width: 158px;
+      height: 158px;
       border-radius: 50%;
       border: 2.5px solid transparent;
       border-top-color: var(--accent-cyan);
       border-right-color: rgba(79, 172, 254, 0.35);
       opacity: 0;
-      transition: opacity 0.3s;
       pointer-events: none;
-    }
-
-    .spinner-ring.inner {
-      width: 152px;
-      height: 152px;
-      border-top-color: transparent;
-      border-bottom-color: var(--accent-amber);
     }
 
     .state-connecting .spinner-ring {
       opacity: 1;
-      animation: spinCW 1.15s linear infinite;
-    }
-    .state-connecting .spinner-ring.inner {
-      animation: spinCCW 1.5s linear infinite;
+      animation: spinCW 1.1s linear infinite;
     }
 
     @keyframes spinCW { to { transform: rotate(360deg); } }
-    @keyframes spinCCW { to { transform: rotate(-360deg); } }
 
     .power-btn {
       position: relative;
-      width: 136px;
-      height: 136px;
+      width: 132px;
+      height: 132px;
       border-radius: 50%;
       border: 2px solid rgba(255, 255, 255, 0.14);
       background: radial-gradient(circle at 35% 30%, #1e293b, #0f172a 75%);
@@ -289,8 +256,8 @@
       justify-content: center;
       gap: 6px;
       cursor: pointer;
-      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65), inset 0 2px 4px rgba(255, 255, 255, 0.08);
-      transition: all 0.4s var(--ease-out);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65);
+      transition: all 0.35s var(--ease-out);
       z-index: 2;
     }
 
@@ -298,17 +265,11 @@
       transform: scale(0.93);
     }
 
-    .state-connecting .power-btn {
-      border-color: rgba(245, 158, 11, 0.6);
-      color: var(--accent-amber);
-      box-shadow: 0 0 32px rgba(245, 158, 11, 0.25);
-    }
-
     .state-connected .power-btn {
-      border-color: rgba(16, 185, 129, 0.8);
-      background: radial-gradient(circle at 35% 30%, rgba(16, 185, 129, 0.28), #0f172a 75%);
+      border-color: rgba(16, 185, 129, 0.85);
+      background: radial-gradient(circle at 35% 30%, rgba(16, 185, 129, 0.3), #0f172a 75%);
       color: #34d399;
-      box-shadow: 0 0 42px rgba(16, 185, 129, 0.35), inset 0 0 18px rgba(16, 185, 129, 0.22);
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.35);
     }
 
     .power-label {
@@ -318,14 +279,11 @@
       letter-spacing: 0.8px;
     }
 
-    /* Карточка активного VLESS-узла (вместо старой карты маршрута) */
     .node-card {
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
       border-radius: 18px;
-      padding: 14px;
-      backdrop-filter: blur(14px);
-      transition: border-color 0.3s;
+      padding: 13px;
     }
 
     .state-connected .node-card {
@@ -343,20 +301,20 @@
     .node-main {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 11px;
       min-width: 0;
     }
 
     .node-badge-icon {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
       background: rgba(0, 242, 254, 0.1);
       border: 1px solid rgba(0, 242, 254, 0.25);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 19px;
       flex-shrink: 0;
     }
 
@@ -365,16 +323,15 @@
     }
 
     .node-name {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
-      color: var(--text-main);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .node-host {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       white-space: nowrap;
@@ -386,48 +343,44 @@
     .node-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
     }
 
     .ping-tag {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       padding: 4px 8px;
       border-radius: 8px;
       background: rgba(16, 185, 129, 0.14);
       color: #34d399;
-      font-variant-numeric: tabular-nums;
+      cursor: pointer;
     }
 
-    /* Теги протокола VLESS (gRPC, TLS, SNI, FP) */
     .node-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 12px;
-      padding-top: 10px;
+      gap: 5px;
+      margin-top: 10px;
+      padding-top: 9px;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .tech-chip {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 7px;
+      padding: 3px 7px;
+      border-radius: 6px;
       background: rgba(255, 255, 255, 0.05);
       color: #cbd5e1;
-      border: 1px solid rgba(255, 255, 255, 0.07);
       font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     }
 
     .tech-chip.highlight {
       background: rgba(0, 242, 254, 0.12);
       color: var(--accent-cyan);
-      border-color: rgba(0, 242, 254, 0.3);
     }
 
-    /* Сетка скорости и график */
     .telemetry-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -439,49 +392,46 @@
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
       border-radius: 16px;
-      padding: 12px;
-      backdrop-filter: blur(12px);
+      padding: 11px;
     }
 
     .speed-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--text-muted);
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     .speed-val {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
     }
 
     .speed-unit {
       font-size: 11px;
-      font-weight: 600;
       color: var(--text-muted);
       margin-left: 3px;
     }
 
     .speed-canvas {
       width: 100%;
-      height: 32px;
+      height: 28px;
       display: block;
-      margin-top: 6px;
+      margin-top: 5px;
     }
 
-    /* Модальные шторки (список ключей и добавление ссылки) */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(3, 5, 10, 0.78);
+      background: rgba(3, 5, 10, 0.8);
       backdrop-filter: blur(6px);
       z-index: 50;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s var(--ease-out);
+      transition: opacity 0.28s var(--ease-out);
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -498,13 +448,13 @@
       max-height: 86dvh;
       background: #101520;
       border-top: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 24px 24px 0 0;
-      padding: 18px 18px calc(env(safe-area-inset-bottom, 16px) + 16px);
+      border-radius: 22px 22px 0 0;
+      padding: 16px 16px calc(env(safe-area-inset-bottom, 16px) + 14px);
       transform: translateY(100%);
-      transition: transform 0.35s var(--ease-out);
+      transition: transform 0.32s var(--ease-out);
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
 
     .modal-backdrop.open .sheet {
@@ -518,30 +468,26 @@
     }
 
     .sheet-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
     }
 
     .close-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
       border: 1px solid var(--border-glass);
       background: rgba(255, 255, 255, 0.05);
       color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
     }
 
     .profiles-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       overflow-y: auto;
-      max-height: 50dvh;
-      padding-right: 2px;
+      max-height: 48dvh;
     }
 
     .profile-item {
@@ -549,12 +495,11 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      padding: 12px 14px;
-      border-radius: 14px;
+      padding: 11px 13px;
+      border-radius: 13px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-glass);
       cursor: pointer;
-      transition: all 0.2s;
     }
 
     .profile-item.active {
@@ -568,7 +513,7 @@
     }
 
     .profile-name {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
@@ -579,7 +524,7 @@
       font-size: 11px;
       color: var(--text-muted);
       font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      margin-top: 3px;
+      margin-top: 2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -587,103 +532,80 @@
 
     .profile-actions {
       display: flex;
-      align-items: center;
       gap: 6px;
     }
 
     .mini-btn {
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       border-radius: 8px;
       border: 1px solid var(--border-glass);
       background: rgba(255, 255, 255, 0.04);
       color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
     }
 
-    .mini-btn.delete:hover, .mini-btn.delete:active {
-      color: var(--accent-red);
-      border-color: rgba(239, 68, 68, 0.4);
-    }
-
-    /* Поле ввода ссылки vless:// */
-    .input-box {
+    .input-box, .code-view {
       width: 100%;
-      min-height: 92px;
-      border-radius: 14px;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      color: var(--text-main);
-      padding: 12px;
-      font-size: 12px;
+      min-height: 110px;
+      max-height: 42dvh;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #a5f3fc;
+      padding: 10px;
+      font-size: 11px;
       font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      resize: none;
-      outline: none;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
       user-select: text;
-    }
-
-    .input-box:focus {
-      border-color: var(--accent-cyan);
     }
 
     .btn-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
 
     .primary-btn {
       flex: 1;
-      height: 44px;
-      border-radius: 12px;
+      height: 42px;
+      border-radius: 11px;
       border: none;
       background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
       color: #041019;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
     }
 
     .secondary-btn {
-      height: 44px;
-      padding: 0 14px;
-      border-radius: 12px;
+      height: 42px;
+      padding: 0 13px;
+      border-radius: 11px;
       border: 1px solid var(--border-glass);
       background: rgba(255, 255, 255, 0.06);
       color: var(--text-main);
       font-weight: 600;
-      font-size: 13px;
+      font-size: 12.5px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
     }
 
-    /* Тост-уведомление */
     .toast {
       position: fixed;
-      top: 22px;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%) translateY(-80px);
       background: #1e293b;
       border: 1px solid rgba(0, 242, 254, 0.4);
       color: #f8fafc;
-      padding: 10px 16px;
-      border-radius: 12px;
-      font-size: 13px;
+      padding: 9px 15px;
+      border-radius: 11px;
+      font-size: 12.5px;
       font-weight: 600;
       z-index: 100;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      transition: transform 0.3s var(--ease-out);
+      transition: transform 0.28s var(--ease-out);
       pointer-events: none;
-      white-space: nowrap;
     }
 
     .toast.show {
@@ -693,63 +615,45 @@
 </head>
 <body>
 
-  <div id="toast" class="toast">Ключ успешно добавлен</div>
+  <div id="toast" class="toast">Готово</div>
 
   <div id="app" class="app-shell">
-    <!-- Шапка -->
     <header class="top-bar">
       <div class="brand">
         <div class="brand-logo">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
         </div>
         <div>
           <div class="brand-title">AetherVPN</div>
-          <div class="brand-sub">VLESS / Xray Core</div>
+          <div class="brand-sub" id="coreBadge">Xray-core Native</div>
         </div>
       </div>
 
       <div class="top-actions">
-        <button class="icon-btn add-btn" id="openAddModalBtn" type="button">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Ключ
-        </button>
-        <button class="icon-btn" id="openProfilesBtn" type="button" title="Список профилей">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="8" y1="6" x2="21" y2="6"></line>
-            <line x1="8" y1="12" x2="21" y2="12"></line>
-            <line x1="8" y1="18" x2="21" y2="18"></line>
-            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-          </svg>
-        </button>
+        <button class="icon-btn" id="openLogsBtn" type="button">Логи / Ядро</button>
+        <button class="icon-btn add-btn" id="openAddModalBtn" type="button">+ Ключ</button>
+        <button class="icon-btn" id="openProfilesBtn" type="button">☰</button>
       </div>
     </header>
 
-    <!-- Статус и таймер -->
     <section class="status-block">
       <div class="status-pill">
         <span class="status-dot"></span>
         <span id="statusText">Отключено</span>
       </div>
       <div class="timer-display" id="timerDisplay">00:00:00</div>
-      <div class="step-hint" id="stepHint">Нажмите на кнопку для запуска VLESS-туннеля</div>
+      <div class="step-hint" id="stepHint">Нажмите кнопку для запуска Xray-core</div>
     </section>
 
-    <!-- Центральная кнопка включения -->
     <section class="power-zone">
       <div class="ripple-ring r1"></div>
       <div class="ripple-ring r2"></div>
       <div class="spinner-ring"></div>
-      <div class="spinner-ring inner"></div>
 
       <button class="power-btn" id="powerBtn" type="button">
-        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
           <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
           <line x1="12" y1="2" x2="12" y2="12"></line>
         </svg>
@@ -757,117 +661,110 @@
       </button>
     </section>
 
-    <!-- Карточка активного VLESS-сервера и телеметрия -->
     <section>
-      <div class="node-card" id="activeNodeCard">
+      <div class="node-card">
         <div class="node-header" id="nodeHeaderClick">
           <div class="node-main">
             <div class="node-badge-icon" id="nodeIcon">🇵🇱</div>
             <div class="node-titles">
-              <div class="node-name" id="nodeName">Загрузка профиля...</div>
+              <div class="node-name" id="nodeName">Загрузка...</div>
               <div class="node-host" id="nodeHost">—</div>
             </div>
           </div>
           <div class="node-right">
-            <span class="ping-tag" id="nodePing">38 мс</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b9bb4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <span class="ping-tag" id="nodePing" title="Нажмите для проверки пинга">Пинг...</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b9bb4" stroke-width="2">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
         </div>
-
-        <div class="node-tags" id="nodeTags">
-          <!-- Генерируется автоматически из параметров vless:// -->
-        </div>
+        <div class="node-tags" id="nodeTags"></div>
       </div>
 
-      <!-- Живые графики скорости -->
       <div class="telemetry-grid">
         <div class="speed-box">
           <div class="speed-top">
             <span>СКАЧИВАНИЕ</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <polyline points="19 12 12 19 5 12"></polyline>
-            </svg>
+            <span style="color:#00f2fe">↓</span>
           </div>
           <div>
             <span class="speed-val" id="dlSpeed">0.0</span>
-            <span class="speed-unit">Мбит/с</span>
+            <span class="speed-unit" id="dlUnit">КБ/с</span>
           </div>
-          <canvas id="dlCanvas" class="speed-canvas" width="160" height="32"></canvas>
+          <canvas id="dlCanvas" class="speed-canvas" width="160" height="28"></canvas>
         </div>
 
         <div class="speed-box">
           <div class="speed-top">
             <span>ОТДАЧА</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="19" x2="12" y2="5"></line>
-              <polyline points="5 12 12 5 19 12"></polyline>
-            </svg>
+            <span style="color:#10b981">↑</span>
           </div>
           <div>
             <span class="speed-val" id="ulSpeed">0.0</span>
-            <span class="speed-unit">Мбит/с</span>
+            <span class="speed-unit" id="ulUnit">КБ/с</span>
           </div>
-          <canvas id="ulCanvas" class="speed-canvas" width="160" height="32"></canvas>
+          <canvas id="ulCanvas" class="speed-canvas" width="160" height="28"></canvas>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- Модальное окно: Список ваших ключей -->
+  <!-- Список профилей -->
   <div class="modal-backdrop" id="profilesModal">
     <div class="sheet">
       <div class="sheet-head">
-        <div class="sheet-title">Ваши VLESS профили</div>
+        <div class="sheet-title">Ваши VLESS ключи</div>
         <button class="close-btn" id="closeProfilesBtn" type="button">✕</button>
       </div>
       <div class="profiles-list" id="profilesList"></div>
-      <button class="primary-btn" id="switchToAddModalBtn" type="button">
-        + Добавить новую ссылку vless://
-      </button>
+      <button class="primary-btn" id="switchToAddModalBtn" type="button">+ Добавить ссылку vless://</button>
     </div>
   </div>
 
-  <!-- Модальное окно: Импорт ссылки vless:// -->
+  <!-- Добавление ключа -->
   <div class="modal-backdrop" id="addModal">
     <div class="sheet">
       <div class="sheet-head">
-        <div class="sheet-title">Добавить ключ (VLESS / VMess)</div>
+        <div class="sheet-title">Импорт ключа vless://</div>
         <button class="close-btn" id="closeAddBtn" type="button">✕</button>
       </div>
-      <textarea
-        id="vlessInput"
-        class="input-box"
-        placeholder="Вставьте ссылку vless://uuid@domain:port?security=tls&type=grpc#Название"
-      ></textarea>
+      <textarea id="vlessInput" class="input-box" placeholder="vless://uuid@host:443?security=tls&type=grpc#Название"></textarea>
       <div class="btn-row">
-        <button class="secondary-btn" id="pasteClipBtn" type="button">
-          Вставить из буфера
-        </button>
-        <button class="primary-btn" id="saveVlessBtn" type="button">
-          Сохранить ключ
-        </button>
+        <button class="secondary-btn" id="pasteClipBtn" type="button">Вставить</button>
+        <button class="primary-btn" id="saveVlessBtn" type="button">Сохранить</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Консоль логов Xray-core и JSON конфига -->
+  <div class="modal-backdrop" id="logsModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Консоль Xray-core и JSON</div>
+        <button class="close-btn" id="closeLogsBtn" type="button">✕</button>
+      </div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="showLiveLogsBtn" type="button" style="flex:1">Логи процесса Xray</button>
+        <button class="secondary-btn" id="showConfigJsonBtn" type="button" style="flex:1">JSON Конфиг</button>
+      </div>
+      <pre id="consoleBox" class="code-view">Ожидание запуска Xray-core...</pre>
     </div>
   </div>
 
   <script>
-    // 1. Ваш дефолтный ключ Польша — Reality 2
     const DEFAULT_VLESS_URI = "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=tls&alpn=h2&encryption=none&authority=parts.skodamotors.online&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Reality%202%20%F0%9F%9B%B0%EF%B8%8F";
 
-    // Парсер ссылки vless://
+    const hasNativeXray = typeof window.AndroidXray !== "undefined";
+    document.getElementById("coreBadge").textContent = hasNativeXray ? "Xray-core Embedded" : "Web Preview Mode";
+
     function parseVlessUri(rawUri) {
       const uri = rawUri.trim();
-      if (!uri.startsWith("vless://") && !uri.startsWith("trojan://") && !uri.startsWith("ss://")) {
-        throw new Error("Ссылка должна начинаться с vless://, trojan:// или ss://");
+      if (!uri.startsWith("vless://")) {
+        throw new Error("Поддерживаются ссылки формата vless://");
       }
 
-      const protocol = uri.split("://")[0].toUpperCase();
-      let rest = uri.split("://")[1];
-
-      let remark = "VLESS Профиль";
+      let rest = uri.slice(8);
+      let remark = "VLESS Server";
       if (rest.includes("#")) {
         const parts = rest.split("#");
         rest = parts[0];
@@ -885,355 +782,169 @@
         queryString = qParts.slice(1).join("?");
       }
 
-      let uuid = "";
-      let hostPort = rest;
-      if (rest.includes("@")) {
-        const atParts = rest.split("@");
-        uuid = atParts[0];
-        hostPort = atParts[1];
-      }
-
-      let host = hostPort;
-      let port = "443";
-      if (hostPort.includes(":")) {
-        const hp = hostPort.split(":");
-        host = hp[0];
-        port = hp[1].replace("/", "");
-      }
+      const atParts = rest.split("@");
+      const uuid = atParts[0] || "";
+      const hostPort = atParts[1] || "";
+      const hp = hostPort.split(":");
+      const host = hp[0] || "";
+      const port = parseInt((hp[1] || "443").replace("/", ""), 10);
 
       const params = new URLSearchParams(queryString);
-      // Извлекаем эмодзи флага из названия, если есть
       const flagMatch = remark.match(/(\p{Regional_Indicator}{2})/u);
-      const icon = flagMatch ? flagMatch[1] : "🛰️";
 
       return {
         id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
         raw: uri,
-        protocol,
         name: remark,
-        icon,
+        icon: flagMatch ? flagMatch[1] : "🛰️",
         uuid,
         host,
         port,
-        type: (params.get("type") || "tcp").toUpperCase(),
-        security: (params.get("security") || "none").toUpperCase(),
+        encryption: params.get("encryption") || "none",
+        flow: params.get("flow") || "",
+        type: (params.get("type") || "tcp").toLowerCase(),
+        security: (params.get("security") || "none").toLowerCase(),
         sni: params.get("sni") || params.get("authority") || host,
-        fp: params.get("fp") || "",
-        alpn: params.get("alpn") || "",
-        mode: params.get("mode") || "",
+        authority: params.get("authority") || params.get("sni") || host,
+        fp: params.get("fp") || "chrome",
+        alpn: params.get("alpn") || "h2",
+        mode: params.get("mode") || "gun",
         serviceName: params.get("serviceName") || "",
-        ping: Math.floor(Math.random() * 25) + 28
+        pbk: params.get("pbk") || "",
+        sid: params.get("sid") || "",
+        spx: params.get("spx") || "/",
+        path: params.get("path") || "/"
       };
     }
 
-    // Загрузка сохраненных профилей (без чужих серверов)
+    // Генерация реального JSON-конфига для бинарника libxray.so
+    function buildXrayConfig(node) {
+      const streamSettings = {
+        network: node.type,
+        security: node.security
+      };
+
+      if (node.security === "tls") {
+        streamSettings.tlsSettings = {
+          serverName: node.sni,
+          allowInsecure: false,
+          alpn: node.alpn ? node.alpn.split(",") : ["h2", "http/1.1"],
+          fingerprint: node.fp || "chrome"
+        };
+      } else if (node.security === "reality") {
+        streamSettings.realitySettings = {
+          serverName: node.sni,
+          fingerprint: node.fp || "chrome",
+          publicKey: node.pbk,
+          shortId: node.sid,
+          spiderX: node.spx || "/"
+        };
+      }
+
+      if (node.type === "grpc") {
+        streamSettings.grpcSettings = {
+          serviceName: node.serviceName,
+          multiMode: node.mode === "multi",
+          authority: node.authority || node.sni
+        };
+      } else if (node.type === "ws") {
+        streamSettings.wsSettings = {
+          path: node.path || "/",
+          headers: { Host: node.sni }
+        };
+      }
+
+      const userObj = {
+        id: node.uuid,
+        encryption: node.encryption || "none"
+      };
+      if (node.flow) userObj.flow = node.flow;
+
+      return {
+        log: { loglevel: "info" },
+        inbounds: [
+          {
+            tag: "socks-in",
+            port: 10808,
+            listen: "127.0.0.1",
+            protocol: "socks",
+            settings: { auth: "noauth", udp: true }
+          },
+          {
+            tag: "http-in",
+            port: 10809,
+            listen: "127.0.0.1",
+            protocol: "http",
+            settings: {}
+          }
+        ],
+        outbounds: [
+          {
+            tag: "proxy",
+            protocol: "vless",
+            settings: {
+              vnext: [
+                {
+                  address: node.host,
+                  port: Number(node.port),
+                  users: [userObj]
+                }
+              ]
+            },
+            streamSettings
+          },
+          { tag: "direct", protocol: "freedom" }
+        ]
+      };
+    }
+
     let profiles = [];
     let activeProfileId = null;
 
     function loadProfiles() {
       try {
-        const saved = localStorage.getItem("aether_vless_profiles_v2");
-        if (saved) {
-          profiles = JSON.parse(saved);
-        }
+        const saved = localStorage.getItem("aether_xray_profiles_v3");
+        if (saved) profiles = JSON.parse(saved);
       } catch (e) {
         profiles = [];
       }
-
-      if (!profiles || profiles.length === 0) {
-        const defaultNode = parseVlessUri(DEFAULT_VLESS_URI);
-        profiles = [defaultNode];
+      if (!profiles.length) {
+        profiles = [parseVlessUri(DEFAULT_VLESS_URI)];
         saveProfiles();
       }
-
-      activeProfileId = localStorage.getItem("aether_active_profile_v2") || profiles[0].id;
+      activeProfileId = localStorage.getItem("aether_xray_active_v3") || profiles[0].id;
       if (!profiles.some(p => p.id === activeProfileId)) {
         activeProfileId = profiles[0].id;
       }
     }
 
     function saveProfiles() {
-      localStorage.setItem("aether_vless_profiles_v2", JSON.stringify(profiles));
-      if (activeProfileId) {
-        localStorage.setItem("aether_active_profile_v2", activeProfileId);
-      }
+      localStorage.setItem("aether_xray_profiles_v3", JSON.stringify(profiles));
+      localStorage.setItem("aether_xray_active_v3", activeProfileId);
     }
 
     function getActiveProfile() {
       return profiles.find(p => p.id === activeProfileId) || profiles[0];
     }
 
-    // Элементы интерфейса
     const appEl = document.getElementById("app");
     const powerBtn = document.getElementById("powerBtn");
     const powerLabel = document.getElementById("powerLabel");
     const statusText = document.getElementById("statusText");
     const stepHint = document.getElementById("stepHint");
     const timerDisplay = document.getElementById("timerDisplay");
-
     const nodeIcon = document.getElementById("nodeIcon");
     const nodeName = document.getElementById("nodeName");
     const nodeHost = document.getElementById("nodeHost");
     const nodePing = document.getElementById("nodePing");
     const nodeTags = document.getElementById("nodeTags");
-
-    const profilesModal = document.getElementById("profilesModal");
-    const addModal = document.getElementById("addModal");
-    const profilesList = document.getElementById("profilesList");
-    const vlessInput = document.getElementById("vlessInput");
     const toastEl = document.getElementById("toast");
 
     function showToast(msg) {
       toastEl.textContent = msg;
       toastEl.classList.add("show");
-      setTimeout(() => toastEl.classList.remove("show"), 2400);
+      setTimeout(() => toastEl.classList.remove("show"), 2300);
     }
 
-    // Отрисовка карточки активного ключа
-    function renderActiveNode() {
+    function updateRealPing() {
       const node = getActiveProfile();
-      if (!node) return;
-
-      nodeIcon.textContent = node.icon || "🛰️";
-      nodeName.textContent = node.name;
-      nodeHost.textContent = `${node.host}:${node.port}`;
-      nodePing.textContent = `${node.ping} мс`;
-
-      const chips = [
-        `<span class="tech-chip highlight">${node.protocol}</span>`,
-        `<span class="tech-chip highlight">${node.type}${node.mode ? " (" + node.mode + ")" : ""}</span>`,
-        `<span class="tech-chip">${node.security}</span>`
-      ];
-
-      if (node.fp) chips.push(`<span class="tech-chip">FP: ${node.fp}</span>`);
-      if (node.alpn) chips.push(`<span class="tech-chip">ALPN: ${node.alpn}</span>`);
-      if (node.sni) chips.push(`<span class="tech-chip">SNI: ${node.sni}</span>`);
-      if (node.serviceName) chips.push(`<span class="tech-chip">gRPC ID: ${node.serviceName}</span>`);
-
-      nodeTags.innerHTML = chips.join("");
-    }
-
-    // Отрисовка списка профилей в модалке
-    function renderProfilesList() {
-      profilesList.innerHTML = "";
-      profiles.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "profile-item" + (item.id === activeProfileId ? " active" : "");
-        div.innerHTML = `
-          <div class="profile-info">
-            <div class="profile-name">${item.name}</div>
-            <div class="profile-sub">${item.host}:${item.port} • ${item.type} • ${item.security}</div>
-          </div>
-          <div class="profile-actions">
-            <button class="mini-btn copy" type="button" title="Скопировать ключ">📋</button>
-            ${profiles.length > 1 ? `<button class="mini-btn delete" type="button" title="Удалить">🗑</button>` : ""}
-          </div>
-        `;
-
-        div.querySelector(".profile-info").addEventListener("click", () => {
-          activeProfileId = item.id;
-          saveProfiles();
-          renderActiveNode();
-          renderProfilesList();
-          profilesModal.classList.remove("open");
-          showToast("Выбран: " + item.name);
-        });
-
-        div.querySelector(".copy").addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (navigator.clipboard) {
-            navigator.clipboard.writeText(item.raw);
-          }
-          showToast("Ссылка vless:// скопирована");
-        });
-
-        const delBtn = div.querySelector(".delete");
-        if (delBtn) {
-          delBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            profiles = profiles.filter(p => p.id !== item.id);
-            if (activeProfileId === item.id) {
-              activeProfileId = profiles[0].id;
-            }
-            saveProfiles();
-            renderActiveNode();
-            renderProfilesList();
-            showToast("Профиль удален");
-          });
-        }
-
-        profilesList.appendChild(div);
-      });
-    }
-
-    // Логика подключения (3 состояния с анимацией)
-    let connState = "disconnected"; // disconnected | connecting | connected
-    let timerSec = 0;
-    let timerInterval = null;
-    let stepTimeouts = [];
-
-    function clearSteps() {
-      stepTimeouts.forEach(t => clearTimeout(t));
-      stepTimeouts = [];
-    }
-
-    function formatTime(sec) {
-      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
-      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
-      const s = String(sec % 60).padStart(2, "0");
-      return `${h}:${m}:${s}`;
-    }
-
-    powerBtn.addEventListener("click", () => {
-      const node = getActiveProfile();
-      clearSteps();
-
-      if (connState === "disconnected") {
-        connState = "connecting";
-        appEl.className = "app-shell state-connecting";
-        statusText.textContent = "Подключение...";
-        powerLabel.textContent = "Отмена";
-        stepHint.textContent = `Рукопожатие TLS с ${node.host}:${node.port}...`;
-
-        stepTimeouts.push(setTimeout(() => {
-          stepHint.textContent = `Установка ${node.type} туннеля (FP: ${node.fp || "chrome"})...`;
-        }, 700));
-
-        stepTimeouts.push(setTimeout(() => {
-          connState = "connected";
-          appEl.className = "app-shell state-connected";
-          statusText.textContent = "Защищено • VLESS";
-          powerLabel.textContent = "Стоп";
-          stepHint.textContent = `Туннель активен: ${node.name}`;
-
-          timerSec = 0;
-          timerDisplay.textContent = "00:00:00";
-          clearInterval(timerInterval);
-          timerInterval = setInterval(() => {
-            timerSec++;
-            timerDisplay.textContent = formatTime(timerSec);
-          }, 1000);
-        }, 1500));
-
-      } else {
-        connState = "disconnected";
-        appEl.className = "app-shell";
-        statusText.textContent = "Отключено";
-        powerLabel.textContent = "Старт";
-        stepHint.textContent = "Туннель остановлен";
-        clearInterval(timerInterval);
-        timerDisplay.textContent = "00:00:00";
-      }
-    });
-
-    // Живые графики скорости на Canvas
-    const dlCanvas = document.getElementById("dlCanvas");
-    const ulCanvas = document.getElementById("ulCanvas");
-    const dlCtx = dlCanvas.getContext("2d");
-    const ulCtx = ulCanvas.getContext("2d");
-    const dlSpeedEl = document.getElementById("dlSpeed");
-    const ulSpeedEl = document.getElementById("ulSpeed");
-
-    const dlPoints = Array(28).fill(0);
-    const ulPoints = Array(28).fill(0);
-
-    function drawWave(ctx, points, color) {
-      const w = ctx.canvas.width;
-      const h = ctx.canvas.height;
-      ctx.clearRect(0, 0, w, h);
-
-      ctx.beginPath();
-      const step = w / (points.length - 1);
-      points.forEach((val, i) => {
-        const x = i * step;
-        const y = h - (Math.min(val, 100) / 100) * (h - 6) - 3;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-
-    setInterval(() => {
-      if (connState === "connected") {
-        const dl = (Math.random() * 42 + 18).toFixed(1);
-        const ul = (Math.random() * 16 + 6).toFixed(1);
-        dlSpeedEl.textContent = dl;
-        ulSpeedEl.textContent = ul;
-        dlPoints.push(parseFloat(dl));
-        dlPoints.shift();
-        ulPoints.push(parseFloat(ul) * 1.6);
-        ulPoints.shift();
-      } else {
-        dlSpeedEl.textContent = "0.0";
-        ulSpeedEl.textContent = "0.0";
-        dlPoints.push(0);
-        dlPoints.shift();
-        ulPoints.push(0);
-        ulPoints.shift();
-      }
-      drawWave(dlCtx, dlPoints, "#00f2fe");
-      drawWave(ulCtx, ulPoints, "#10b981");
-    }, 650);
-
-    // Открытие и закрытие модальных окон
-    document.getElementById("openProfilesBtn").addEventListener("click", () => {
-      renderProfilesList();
-      profilesModal.classList.add("open");
-    });
-    document.getElementById("nodeHeaderClick").addEventListener("click", () => {
-      renderProfilesList();
-      profilesModal.classList.add("open");
-    });
-    document.getElementById("closeProfilesBtn").addEventListener("click", () => {
-      profilesModal.classList.remove("open");
-    });
-
-    document.getElementById("openAddModalBtn").addEventListener("click", () => {
-      vlessInput.value = "";
-      addModal.classList.add("open");
-    });
-    document.getElementById("switchToAddModalBtn").addEventListener("click", () => {
-      profilesModal.classList.remove("open");
-      vlessInput.value = "";
-      addModal.classList.add("open");
-    });
-    document.getElementById("closeAddBtn").addEventListener("click", () => {
-      addModal.classList.remove("open");
-    });
-
-    document.getElementById("pasteClipBtn").addEventListener("click", async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        if (text) vlessInput.value = text;
-      } catch (e) {
-        showToast("Вставьте ссылку долгим нажатием в поле");
-      }
-    });
-
-    document.getElementById("saveVlessBtn").addEventListener("click", () => {
-      const raw = vlessInput.value.trim();
-      if (!raw) {
-        showToast("Вставьте ссылку vless://");
-        return;
-      }
-      try {
-        const parsed = parseVlessUri(raw);
-        profiles.unshift(parsed);
-        activeProfileId = parsed.id;
-        saveProfiles();
-        renderActiveNode();
-        addModal.classList.remove("open");
-        showToast("Профиль добавлен: " + parsed.name);
-      } catch (err) {
-        showToast(err.message || "Неверный формат ссылки");
-      }
-    });
-
-    // Инициализация при запуске
-    loadProfiles();
-    renderActiveNode();
-  </script>
-</body>
-</html>
