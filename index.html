@@ -980,4 +980,1088 @@
             <ellipse cx="314" cy="224" rx="16.5" ry="33" fill="#0d0d0d"/>
             <path d="M148 318 C184 358, 328 358, 364 318 C354 398, 298 422, 256 422 C214 422, 158 398, 148 318 Z"
                   fill="#ffffff" stroke="url(#lipGrad)" stroke-width="26" stroke-linejoin="round" stroke-linecap="round"/>
-            <circle cx="256" cy="272
+            <circle cx="256" cy="272" r="31" fill="url(#noseGrad)"/>
+            <ellipse cx="246" cy="261" rx="9" ry="6" fill="#ffffff" opacity="0.45" transform="rotate(-20 246 261)"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title-row">
+            <span class="brand-title">MVZ</span>
+            <span class="proto-pill" id="activeProtoBadge">VLESS</span>
+          </div>
+          <div class="brand-sub" id="subGroupTitle">Happ Subscription</div>
+        </div>
+      </div>
+
+      <div class="top-right-group">
+        <button class="scale-btn" id="openScaleModalBtn" type="button">📏 Размер</button>
+        <div class="status-mini">
+          <span class="status-dot"></span>
+          <span id="statusText">Готов</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. ВИДЖЕТ ПОДПИСКИ КАК В HAPP -->
+    <section class="happ-sub-card">
+      <div class="sub-top">
+        <div class="sub-title-group">
+          <span class="sub-badge" id="subStatusBadge">АКТИВНА</span>
+          <span class="sub-expire-text" id="subExpireText">До 15.11.2026 (30 дн.)</span>
+        </div>
+        <div class="sub-actions">
+          <button class="sub-mini-btn" id="syncHttpsSubBtn" type="button">🔄 Обновить</button>
+          <button class="sub-mini-btn" id="editSubDateBtn" type="button">📅 Срок</button>
+        </div>
+      </div>
+      <div class="sub-progress-track">
+        <div class="sub-progress-fill" id="subProgressFill"></div>
+      </div>
+      <div class="sub-meta-row">
+        <span id="subTrafficInfo">Трафик: Безлимит</span>
+        <span id="subNodesCount">Маршрутов: 2</span>
+      </div>
+    </section>
+
+    <!-- 3. КНОПКА ЗАПУСКА С ОРБИТАЛЬНОЙ АНИМАЦИЕЙ + ЖИВАЯ СКОРОСТЬ -->
+    <section class="core-stage">
+      <div class="power-zone">
+        <div class="idle-pulse-ring"></div>
+        <div class="idle-pulse-ring delay"></div>
+        <div class="idle-orbit-outer"></div>
+        <div class="idle-orbit-inner"></div>
+
+        <button class="power-btn" id="powerBtn" type="button">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+            <line x1="12" y1="2" x2="12" y2="12"></line>
+          </svg>
+          <span class="power-label" id="powerLabel">Старт</span>
+        </button>
+      </div>
+
+      <div class="core-stats-col">
+        <div class="timer-row">
+          <span class="timer-display" id="timerDisplay">00:00:00</span>
+          <span style="font-size:10px;font-weight:800;color:var(--accent-primary);" id="pingAllBtn">⚡ Пинг всех</span>
+        </div>
+
+        <div class="mini-speeds">
+          <div class="mini-speed-card">
+            <div class="ms-label">↓ СКАЧИВАНИЕ</div>
+            <div class="ms-val"><span id="dlSpeed">0.0</span> <span id="dlUnit" style="font-size:9.5px;color:var(--text-muted);">КБ/с</span></div>
+          </div>
+          <div class="mini-speed-card">
+            <div class="ms-label">↑ ОТДАЧА</div>
+            <div class="ms-val"><span id="ulSpeed">0.0</span> <span id="ulUnit" style="font-size:9.5px;color:var(--text-muted);">КБ/с</span></div>
+          </div>
+        </div>
+
+        <div class="step-hint" id="stepHint">Выбери маршрут ниже и нажми Старт</div>
+      </div>
+    </section>
+
+    <!-- 4. СПИСОК ВСЕХ МАРШРУТОВ ПОДПИСКИ НА ГЛАВНОМ ЭКРАНЕ (КАК В HAPP) -->
+    <section class="happ-routes-section">
+      <div class="routes-header">
+        <span>Маршруты подписки (VLESS / Trojan)</span>
+        <span style="color:var(--accent-primary);cursor:pointer;" id="quickAddRouteBtn">+ Вставить ссылку</span>
+      </div>
+      <div class="routes-list" id="happRoutesList"></div>
+    </section>
+
+    <!-- 5. НИЖНЯЯ НАВИГАЦИЯ -->
+    <nav class="bottom-nav">
+      <button class="nav-btn primary-action" id="openAddModalBtn" type="button">
+        <span>➕ Подписка</span>
+        <span>HTTPS / Ключ</span>
+      </button>
+      <button class="nav-btn" id="openScaleBottomBtn" type="button">
+        <span>📏 Экран</span>
+        <span>Под устройство</span>
+      </button>
+      <button class="nav-btn" id="openLogsBtn" type="button">
+        <span>🖥 Консоль</span>
+        <span>Ядро Xray</span>
+      </button>
+      <button class="nav-btn" id="openThemesBtn" type="button">
+        <span>🎨 Темы</span>
+        <span>5 стилей</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ HTTPS ПОДПИСКИ (КАК В HAPP) ИЛИ КЛЮЧЕЙ -->
+  <div class="modal-backdrop" id="addModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Импорт подписки Happ / Ключей</div>
+        <button class="close-btn" id="closeAddBtn" type="button">✕</button>
+      </div>
+
+      <div class="tabs-row">
+        <button class="tab-btn active" id="tabPasteLink" type="button">HTTPS Подписка / Ключи</button>
+        <button class="tab-btn" id="tabManualBuild" type="button">Создать Trojan / VLESS</button>
+      </div>
+
+      <div id="pasteLinkPane" style="display:flex;flex-direction:column;gap:9px;">
+        <textarea id="universalInput" class="input-box" placeholder="Вставь ссылку подписки https://... (распакуются все маршруты внутри неё, как в Happ!)
+Или список vless://, trojan://, vmess://, ss://"></textarea>
+        <div class="btn-row">
+          <button class="secondary-btn" id="pasteClipBtn" type="button">📋 Из буфера</button>
+          <button class="primary-btn" id="saveUniversalBtn" type="button">Распаковать маршруты</button>
+        </div>
+      </div>
+
+      <div id="manualBuildPane" style="display:none;flex-direction:column;gap:8px;">
+        <div class="form-grid">
+          <select id="mProto" class="field-input">
+            <option value="trojan">Протокол: TROJAN</option>
+            <option value="vless">Протокол: VLESS</option>
+          </select>
+          <select id="mNet" class="field-input">
+            <option value="grpc">Транспорт: gRPC</option>
+            <option value="ws">Транспорт: WebSocket</option>
+            <option value="tcp">Транспорт: TCP</option>
+          </select>
+        </div>
+        <input id="mName" class="field-input" placeholder="Название маршрута" value="🇵🇱 Польша — Trojan VIP" />
+        <div class="form-grid">
+          <input id="mHost" class="field-input" placeholder="Хост / IP" value="parts.skodamotors.online" />
+          <input id="mPort" class="field-input" placeholder="Порт" value="443" type="number" />
+        </div>
+        <input id="mSecret" class="field-input" placeholder="Пароль Trojan или UUID VLESS" value="647640d8-c26c-42bf-aa78-48a2f8d9759d" />
+        <div class="form-grid">
+          <input id="mSni" class="field-input" placeholder="SNI" value="parts.skodamotors.online" />
+          <input id="mService" class="field-input" placeholder="serviceName / path" value="1ae7ea2a8adf" />
+        </div>
+        <button class="primary-btn" id="createManualProfileBtn" type="button">Добавить маршрут в список</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: НАСТРОЙКА РАЗМЕРА ПОД КАЖДОЕ УСТРОЙСТВО -->
+  <div class="modal-backdrop" id="scaleModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Настройка размера под экран</div>
+        <button class="close-btn" id="closeScaleModalBtn" type="button">✕</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);">
+        Выбери масштаб интерфейса для своего телефона (<span id="scaleValLabel">100%</span>):
+      </div>
+      <input id="uiScaleRange" type="range" min="80" max="115" step="5" value="100" style="width:100%;accent-color:var(--accent-primary);" />
+      <div class="btn-row">
+        <button class="secondary-btn" id="autoScaleDeviceBtn" type="button" style="flex:1;">📱 Авто под мой телефон</button>
+        <button class="primary-btn" id="resetScaleBtn" type="button" style="flex:1;">Сбросить (100%)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: СРОК ПОДПИСКИ -->
+  <div class="modal-backdrop" id="subModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Настройки подписки Happ / MVZ</div>
+        <button class="close-btn" id="closeSubModalBtn" type="button">✕</button>
+      </div>
+      <input id="subUrlInput" class="field-input" placeholder="https://ссылка-на-подписку..." />
+      <div class="form-grid">
+        <input id="subDateInput" class="field-input" type="date" />
+        <input id="subLimitInput" class="field-input" placeholder="Трафик (напр. 200 ГБ)" value="Безлимит" />
+      </div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="plus30DaysBtn" type="button">+30 дней</button>
+        <button class="primary-btn" id="saveSubSettingsBtn" type="button">Сохранить и обновить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ТЕМЫ -->
+  <div class="modal-backdrop" id="themesModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Тема оформления MVZ</div>
+        <button class="close-btn" id="closeThemesBtn" type="button">✕</button>
+      </div>
+      <div class="themes-grid">
+        <div class="theme-card" data-set-theme="purple">
+          <span class="theme-swatch" style="background: linear-gradient(135deg, #9333ea, #4f46e5);"></span>
+          <span>Фиолетовая</span>
+        </div>
+        <div class="theme-card" data-set-theme="black">
+          <span class="theme-swatch" style="background: linear-gradient(135deg, #090d16, #00f2fe);"></span>
+          <span>Черная</span>
+        </div>
+        <div class="theme-card" data-set-theme="white">
+          <span class="theme-swatch" style="background: linear-gradient(135deg, #ffffff, #6366f1);"></span>
+          <span>Белая</span>
+        </div>
+        <div class="theme-card" data-set-theme="crimson">
+          <span class="theme-swatch" style="background: linear-gradient(135deg, #e11d48, #4c0519);"></span>
+          <span>Киберпанк</span>
+        </div>
+        <div class="theme-card" data-set-theme="emerald" style="grid-column: span 2;">
+          <span class="theme-swatch" style="background: linear-gradient(135deg, #10b981, #064e3b);"></span>
+          <span>Изумрудная Матрица</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: КОНСОЛЬ XRAY -->
+  <div class="modal-backdrop" id="logsModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Консоль Xray-core и JSON конфиг</div>
+        <button class="close-btn" id="closeLogsBtn" type="button">✕</button>
+      </div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="showLiveLogsBtn" type="button" style="flex:1">Логи Xray</button>
+        <button class="secondary-btn" id="showConfigJsonBtn" type="button" style="flex:1">JSON Конфиг</button>
+      </div>
+      <pre id="consoleBox" class="code-view">Ожидание запуска Xray-core...</pre>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_VLESS_URI = "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=tls&alpn=h2&encryption=none&authority=parts.skodamotors.online&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Reality%202%20%F0%9F%9B%B0%EF%B8%8F";
+    const DEFAULT_TROJAN_URI = "trojan://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=tls&alpn=h2&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Trojan%20TLS%20%F0%9F%9B%A1%EF%B8%8F";
+
+    const hasNativeXray = typeof window.AndroidXray !== "undefined";
+    const toastEl = document.getElementById("toast");
+
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      setTimeout(() => toastEl.classList.remove("show"), 2600);
+    }
+
+    // Цвета системных баров Android под каждую тему (чтобы сверху и снизу не было белого)
+    const THEME_BAR_COLORS = {
+      purple: "#090514",
+      black: "#040609",
+      white: "#eef2f8",
+      crimson: "#0d0307",
+      emerald: "#020b08"
+    };
+
+    function applyTheme(t) {
+      document.body.setAttribute("data-theme", t);
+      localStorage.setItem("mvz_theme", t);
+      document.querySelectorAll("[data-set-theme]").forEach(el => {
+        el.classList.toggle("active", el.getAttribute("data-set-theme") === t);
+      });
+      if (hasNativeXray && window.AndroidXray.setSystemBarsColor) {
+        window.AndroidXray.setSystemBarsColor(THEME_BAR_COLORS[t] || "#090514");
+      }
+    }
+    applyTheme(localStorage.getItem("mvz_theme") || "purple");
+
+    document.querySelectorAll("[data-set-theme]").forEach(card => {
+      card.addEventListener("click", () => {
+        applyTheme(card.getAttribute("data-set-theme"));
+        document.getElementById("themesModal").classList.remove("open");
+        showToast("Тема и системные полосы обновлены");
+      });
+    });
+
+    // =========================================================================
+    // НАСТРОЙКА РАЗМЕРА И МАСШТАБА ПОД КАЖДОЕ УСТРОЙСТВО
+    // =========================================================================
+    const uiScaleRange = document.getElementById("uiScaleRange");
+    const scaleValLabel = document.getElementById("scaleValLabel");
+
+    function applyUiScale(pct) {
+      const val = Math.max(80, Math.min(115, Number(pct) || 100));
+      document.documentElement.style.zoom = (val / 100);
+      uiScaleRange.value = val;
+      scaleValLabel.textContent = val + "%";
+      localStorage.setItem("mvz_ui_scale", String(val));
+    }
+
+    function autoFitDeviceScale() {
+      const w = window.innerWidth;
+      if (w <= 340) applyUiScale(85);
+      else if (w <= 375) applyUiScale(92);
+      else if (w >= 430) applyUiScale(105);
+      else applyUiScale(100);
+    }
+
+    const savedScale = localStorage.getItem("mvz_ui_scale");
+    if (savedScale) applyUiScale(savedScale);
+    else autoFitDeviceScale();
+
+    uiScaleRange.addEventListener("input", (e) => applyUiScale(e.target.value));
+    document.getElementById("autoScaleDeviceBtn").addEventListener("click", () => {
+      autoFitDeviceScale();
+      showToast("Размер подобран под экран телефона");
+    });
+    document.getElementById("resetScaleBtn").addEventListener("click", () => applyUiScale(100));
+
+    // =========================================================================
+    // ПАРСЕР ОТДЕЛЬНОГО МАРШРУТА (VLESS, TROJAN, VMESS, SS)
+    // =========================================================================
+    function parseRouteUri(rawLine) {
+      const uri = rawLine.trim();
+      if (!uri) return null;
+
+      if (uri.startsWith("vless://") || uri.startsWith("trojan://")) {
+        const protocol = uri.startsWith("trojan://") ? "trojan" : "vless";
+        let rest = uri.split("://")[1];
+        let remark = protocol.toUpperCase() + " Маршрут";
+        if (rest.includes("#")) {
+          const parts = rest.split("#");
+          rest = parts[0];
+          try {
+            remark = decodeURIComponent(parts.slice(1).join("#")).trim() || remark;
+          } catch (e) {
+            remark = parts[1];
+          }
+        }
+
+        let queryString = "";
+        if (rest.includes("?")) {
+          const qParts = rest.split("?");
+          rest = qParts[0];
+          queryString = qParts.slice(1).join("?");
+        }
+
+        const atParts = rest.split("@");
+        const secret = decodeURIComponent(atParts[0] || "");
+        const hostPort = atParts[1] || rest;
+        const hp = hostPort.split(":");
+        const host = hp[0] || "";
+        const port = parseInt((hp[1] || "443").replace(/\D/g, ""), 10) || 443;
+
+        const params = new URLSearchParams(queryString);
+        const flagMatch = remark.match(/(\p{Regional_Indicator}{2})/u);
+
+        return {
+          id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+          raw: uri,
+          protocol,
+          name: remark,
+          icon: flagMatch ? flagMatch[1] : (protocol === "trojan" ? "🛡️" : "🛰️"),
+          uuid: secret,
+          password: secret,
+          host,
+          port,
+          encryption: params.get("encryption") || "none",
+          flow: params.get("flow") || "",
+          type: (params.get("type") || "tcp").toLowerCase(),
+          security: (params.get("security") || "tls").toLowerCase(),
+          sni: params.get("sni") || params.get("authority") || params.get("host") || host,
+          authority: params.get("authority") || params.get("sni") || host,
+          fp: params.get("fp") || "chrome",
+          alpn: params.get("alpn") || "h2",
+          mode: params.get("mode") || "gun",
+          serviceName: params.get("serviceName") || "",
+          pbk: params.get("pbk") || "",
+          sid: params.get("sid") || "",
+          spx: params.get("spx") || "/",
+          path: params.get("path") || "/",
+          ping: 38
+        };
+      }
+
+      if (uri.startsWith("vmess://")) {
+        try {
+          const b64 = uri.slice(8).trim().replace(/-/g, "+").replace(/_/g, "/");
+          const json = JSON.parse(decodeURIComponent(escape(atob(b64))));
+          const remark = json.ps || "VMess Маршрут";
+          const flagMatch = remark.match(/(\p{Regional_Indicator}{2})/u);
+          return {
+            id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+            raw: uri,
+            protocol: "vmess",
+            name: remark,
+            icon: flagMatch ? flagMatch[1] : "⚡",
+            uuid: json.id || "",
+            host: json.add || "",
+            port: parseInt(json.port || "443", 10),
+            type: (json.net || "tcp").toLowerCase(),
+            security: (json.tls || "none").toLowerCase(),
+            sni: json.sni || json.host || json.add || "",
+            fp: json.fp || "chrome",
+            path: json.path || "/",
+            serviceName: json.path || "",
+            mode: "gun",
+            ping: 42
+          };
+        } catch (e) { return null; }
+      }
+
+      if (uri.startsWith("ss://")) {
+        let rest = uri.slice(5);
+        let remark = "Shadowsocks";
+        if (rest.includes("#")) {
+          const p = rest.split("#");
+          rest = p[0];
+          try { remark = decodeURIComponent(p[1]); } catch (e) { remark = p[1]; }
+        }
+        let host = "server";
+        let port = 443;
+        if (rest.includes("@")) {
+          const hp = rest.split("@")[1].split(":");
+          host = hp[0];
+          port = parseInt(hp[1] || "443", 10);
+        }
+        const flagMatch = remark.match(/(\p{Regional_Indicator}{2})/u);
+        return {
+          id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+          raw: uri,
+          protocol: "shadowsocks",
+          name: remark,
+          icon: flagMatch ? flagMatch[1] : "🔑",
+          uuid: rest.split("@")[0] || "",
+          host,
+          port,
+          type: "tcp",
+          security: "none",
+          sni: host,
+          fp: "chrome",
+          mode: "gun",
+          ping: 45
+        };
+      }
+
+      return null;
+    }
+
+    // Декодирование текста подписки Happ (Base64 / URL-safe Base64 / JSON / список ссылок)
+    function unpackSubscriptionPayload(rawBody) {
+      if (!rawBody) return [];
+      let text = rawBody.trim();
+
+      // Если внутри еще нет явных протоколов, пробуем декодировать Base64 (как в Happ и v2rayNG)
+      if (!/(vless|trojan|vmess|ss):\/\//i.test(text)) {
+        try {
+          let cleanB64 = text.replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
+          while (cleanB64.length % 4 !== 0) cleanB64 += "=";
+          const decoded = atob(cleanB64);
+          try {
+            text = decodeURIComponent(escape(decoded));
+          } catch (e) {
+            text = decoded;
+          }
+        } catch (e) {}
+      }
+
+      // Вытаскиваем все ссылки маршрутов из текста
+      const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
+      const nodes = [];
+      lines.forEach(line => {
+        const parsed = parseRouteUri(line);
+        if (parsed) nodes.push(parsed);
+      });
+
+      // Если сервер вернул JSON (например Sing-box / Xray JSON подписку)
+      if (nodes.length === 0 && (text.startsWith("{") || text.startsWith("["))) {
+        try {
+          const jsonObj = JSON.parse(text);
+          const outbounds = Array.isArray(jsonObj) ? jsonObj : (jsonObj.outbounds || []);
+          outbounds.forEach(ob => {
+            if (ob && (ob.protocol === "vless" || ob.protocol === "trojan")) {
+              const vnext = ob.settings && ob.settings.vnext && ob.settings.vnext[0];
+              const srv = ob.settings && ob.settings.servers && ob.settings.servers[0];
+              const host = (vnext && vnext.address) || (srv && srv.address);
+              const port = (vnext && vnext.port) || (srv && srv.port) || 443;
+              const secret = (vnext && vnext.users && vnext.users[0] && vnext.users[0].id) || (srv && srv.password) || "";
+              if (host) {
+                nodes.push({
+                  id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+                  raw: `${ob.protocol}://${secret}@${host}:${port}#${encodeURIComponent(ob.tag || host)}`,
+                  protocol: ob.protocol,
+                  name: ob.tag || `${ob.protocol.toUpperCase()} • ${host}`,
+                  icon: "🛰️",
+                  uuid: secret,
+                  password: secret,
+                  host,
+                  port,
+                  type: (ob.streamSettings && ob.streamSettings.network) || "tcp",
+                  security: (ob.streamSettings && ob.streamSettings.security) || "tls",
+                  sni: host,
+                  fp: "chrome",
+                  mode: "gun",
+                  ping: 40
+                });
+              }
+            }
+          });
+        } catch (e) {}
+      }
+
+      return nodes;
+    }
+
+    // Генератор конфига Xray-core (VLESS + TROJAN)
+    function buildXrayConfig(node) {
+      const streamSettings = {
+        network: node.type || "tcp",
+        security: node.security || "tls"
+      };
+
+      if (streamSettings.security === "tls") {
+        streamSettings.tlsSettings = {
+          serverName: node.sni || node.host,
+          allowInsecure: false,
+          alpn: node.alpn ? node.alpn.split(",") : ["h2", "http/1.1"],
+          fingerprint: node.fp || "chrome"
+        };
+      } else if (streamSettings.security === "reality") {
+        streamSettings.realitySettings = {
+          serverName: node.sni || node.host,
+          fingerprint: node.fp || "chrome",
+          publicKey: node.pbk || "",
+          shortId: node.sid || "",
+          spiderX: node.spx || "/"
+        };
+      }
+
+      if (streamSettings.network === "grpc") {
+        streamSettings.grpcSettings = {
+          serviceName: node.serviceName || "",
+          multiMode: node.mode === "multi",
+          authority: node.authority || node.sni || node.host
+        };
+      } else if (streamSettings.network === "ws") {
+        streamSettings.wsSettings = {
+          path: node.path || "/",
+          headers: { Host: node.sni || node.host }
+        };
+      }
+
+      let proxyOutbound = {};
+      if (node.protocol === "trojan") {
+        proxyOutbound = {
+          tag: "proxy",
+          protocol: "trojan",
+          settings: {
+            servers: [{ address: node.host, port: Number(node.port), password: node.password || node.uuid }]
+          },
+          streamSettings
+        };
+      } else {
+        const userObj = { id: node.uuid, encryption: node.encryption || "none" };
+        if (node.flow) userObj.flow = node.flow;
+        proxyOutbound = {
+          tag: "proxy",
+          protocol: "vless",
+          settings: {
+            vnext: [{ address: node.host, port: Number(node.port), users: [userObj] }]
+          },
+          streamSettings
+        };
+      }
+
+      return {
+        log: { loglevel: "info" },
+        inbounds: [
+          { tag: "socks-in", port: 10808, listen: "127.0.0.1", protocol: "socks", settings: { auth: "noauth", udp: true } },
+          { tag: "http-in", port: 10809, listen: "127.0.0.1", protocol: "http", settings: {} }
+        ],
+        outbounds: [proxyOutbound, { tag: "direct", protocol: "freedom" }]
+      };
+    }
+
+    // Состояние маршрутов и подписки
+    let profiles = [];
+    let activeProfileId = null;
+    let subInfo = {
+      title: "MVZ Subscription",
+      url: "",
+      expireTimestamp: Date.now() + 30 * 86400 * 1000,
+      limitText: "Безлимит"
+    };
+
+    function loadState() {
+      try {
+        const savedP = localStorage.getItem("mvz_happ_routes_v5");
+        if (savedP) profiles = JSON.parse(savedP);
+      } catch (e) { profiles = []; }
+
+      if (!profiles || !profiles.length) {
+        profiles = [
+          parseRouteUri(DEFAULT_VLESS_URI),
+          parseRouteUri(DEFAULT_TROJAN_URI)
+        ].filter(Boolean);
+        saveState();
+      }
+
+      activeProfileId = localStorage.getItem("mvz_happ_active_v5") || profiles[0].id;
+      if (!profiles.some(p => p.id === activeProfileId)) {
+        activeProfileId = profiles[0].id;
+      }
+
+      try {
+        const savedSub = localStorage.getItem("mvz_happ_sub_v5");
+        if (savedSub) subInfo = { ...subInfo, ...JSON.parse(savedSub) };
+      } catch (e) {}
+    }
+
+    function saveState() {
+      localStorage.setItem("mvz_happ_routes_v5", JSON.stringify(profiles));
+      localStorage.setItem("mvz_happ_active_v5", activeProfileId);
+      localStorage.setItem("mvz_happ_sub_v5", JSON.stringify(subInfo));
+    }
+
+    function getActiveProfile() {
+      return profiles.find(p => p.id === activeProfileId) || profiles[0];
+    }
+
+    // Отрисовка шапки подписки и вертикального списка маршрутов (как в Happ)
+    function renderHappUI() {
+      const active = getActiveProfile();
+      if (active) {
+        document.getElementById("activeProtoBadge").textContent = (active.protocol || "vless").toUpperCase();
+      }
+      document.getElementById("subGroupTitle").textContent = subInfo.title || "Happ Subscription";
+
+      const now = Date.now();
+      const daysLeft = Math.ceil((subInfo.expireTimestamp - now) / (1000 * 60 * 60 * 24));
+      const dateStr = new Date(subInfo.expireTimestamp).toLocaleDateString("ru-RU");
+
+      const badgeEl = document.getElementById("subStatusBadge");
+      const textEl = document.getElementById("subExpireText");
+      const fillEl = document.getElementById("subProgressFill");
+
+      document.getElementById("subNodesCount").textContent = `Маршрутов: ${profiles.length}`;
+      document.getElementById("subTrafficInfo").textContent = `Трафик: ${subInfo.limitText}`;
+
+      if (daysLeft <= 0) {
+        badgeEl.textContent = "ИСТЕКЛА";
+        badgeEl.classList.add("expired");
+        textEl.textContent = `Истекла ${dateStr}`;
+        fillEl.style.width = "100%";
+      } else {
+        badgeEl.textContent = "АКТИВНА";
+        badgeEl.classList.remove("expired");
+        textEl.textContent = `До ${dateStr} (${daysLeft} дн.)`;
+        fillEl.style.width = Math.max(8, Math.min(100, Math.round((daysLeft / 30) * 100))) + "%";
+      }
+
+      const listEl = document.getElementById("happRoutesList");
+      listEl.innerHTML = "";
+
+      profiles.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "route-item" + (item.id === activeProfileId ? " active" : "");
+        const isTrojan = item.protocol === "trojan";
+        row.innerHTML = `
+          <div class="route-left">
+            <div class="route-flag">${item.icon || "🛰️"}</div>
+            <div class="route-info">
+              <div class="route-title">${item.name}</div>
+              <div class="route-meta">
+                <span class="r-badge ${isTrojan ? "trojan" : ""}">${(item.protocol || "vless").toUpperCase()}</span>
+                <span>${(item.type || "tcp").toUpperCase()}</span>
+                <span>• ${item.host}</span>
+              </div>
+            </div>
+          </div>
+          <div class="route-right">
+            <span class="route-ping">${item.ping ? item.ping + " мс" : "OK"}</span>
+            ${profiles.length > 1 ? `<button class="sub-mini-btn del-route" type="button" title="Удалить">✕</button>` : ""}
+          </div>
+        `;
+
+        row.querySelector(".route-left").addEventListener("click", () => {
+          activeProfileId = item.id;
+          saveState();
+          renderHappUI();
+          showToast(`Маршрут: ${item.name}`);
+        });
+
+        const delBtn = row.querySelector(".del-route");
+        if (delBtn) {
+          delBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            profiles = profiles.filter(p => p.id !== item.id);
+            if (activeProfileId === item.id) activeProfileId = profiles[0].id;
+            saveState();
+            renderHappUI();
+          });
+        }
+
+        listEl.appendChild(row);
+      });
+    }
+
+    // =========================================================================
+    // ИМПОРТ HTTPS ПОДПИСКИ КАК В HAPP (ОТКРЫВАЕТ ВСЕ МАРШРУТЫ ИЗ ПОДПИСКИ)
+    // =========================================================================
+    async function fetchAndUnpackHttpsSubscription(urlStr) {
+      showToast("Связь с сервером подписки...");
+      subInfo.url = urlStr.trim();
+
+      let rawBody = "";
+      let userInfoHeader = "";
+      let profileTitleHeader = "";
+
+      // 1. Внутри APK используем нативный мост Android (обходит CORS и любые SSL)
+      if (hasNativeXray && window.AndroidXray.fetchSubscription) {
+        try {
+          const res = JSON.parse(window.AndroidXray.fetchSubscription(subInfo.url));
+          if (res.body) rawBody = res.body;
+          userInfoHeader = res.userinfo || "";
+          profileTitleHeader = res.title || "";
+        } catch (e) {}
+      }
+
+      // 2. Если тестируется в браузере или прямой запрос
+      if (!rawBody) {
+        try {
+          const resp = await fetch(subInfo.url);
+          userInfoHeader = resp.headers.get("Subscription-Userinfo") || "";
+          profileTitleHeader = resp.headers.get("Profile-Title") || "";
+          rawBody = await resp.text();
+        } catch (e) {
+          // Фолбэк через прокси для браузерного предпросмотра
+          try {
+            const proxyResp = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(subInfo.url));
+            rawBody = await proxyResp.text();
+          } catch (err) {}
+        }
+      }
+
+      // Декодируем заголовок названия подписки (Happ формат base64:...)
+      if (profileTitleHeader) {
+        if (profileTitleHeader.startsWith("base64:")) {
+          try {
+            subInfo.title = decodeURIComponent(escape(atob(profileTitleHeader.slice(7).trim())));
+          } catch (e) {}
+        } else {
+          subInfo.title = profileTitleHeader;
+        }
+      }
+
+      // Декодируем дату окончания и трафик из Subscription-Userinfo
+      if (userInfoHeader) {
+        const expMatch = userInfoHeader.match(/expire=(\d+)/i);
+        if (expMatch && expMatch[1]) {
+          subInfo.expireTimestamp = parseInt(expMatch[1], 10) * 1000;
+        }
+        const totalMatch = userInfoHeader.match(/total=(\d+)/i);
+        const dlMatch = userInfoHeader.match(/download=(\d+)/i);
+        if (totalMatch && totalMatch[1]) {
+          const totalBytes = parseInt(totalMatch[1], 10);
+          const dlBytes = dlMatch ? parseInt(dlMatch[1], 10) : 0;
+          if (totalBytes > 0) {
+            const usedGb = (dlBytes / 1073741824).toFixed(1);
+            const totalGb = (totalBytes / 1073741824).toFixed(0);
+            subInfo.limitText = `${usedGb} / ${totalGb} ГБ`;
+          }
+        }
+      }
+
+      const extractedRoutes = unpackSubscriptionPayload(rawBody);
+      if (extractedRoutes.length > 0) {
+        profiles = extractedRoutes;
+        activeProfileId = extractedRoutes[0].id;
+        saveState();
+        renderHappUI();
+        showToast(`Открыто маршрутов из подписки: ${extractedRoutes.length}`);
+      } else {
+        showToast("Подписка не вернула список маршрутов (проверь ссылку)");
+      }
+    }
+
+    document.getElementById("saveUniversalBtn").addEventListener("click", async () => {
+      const raw = document.getElementById("universalInput").value.trim();
+      if (!raw) {
+        showToast("Вставь ссылку подписки или ключ");
+        return;
+      }
+      document.getElementById("addModal").classList.remove("open");
+
+      if ((raw.startsWith("https://") || raw.startsWith("http://")) && !raw.includes("\n")) {
+        await fetchAndUnpackHttpsSubscription(raw);
+        return;
+      }
+
+      const routes = unpackSubscriptionPayload(raw);
+      if (routes.length > 0) {
+        profiles = [...routes, ...profiles];
+        activeProfileId = routes[0].id;
+        saveState();
+        renderHappUI();
+        showToast(`Добавлено маршрутов: ${routes.length}`);
+      } else {
+        showToast("Не найдено маршрутов vless:// или trojan://");
+      }
+    });
+
+    // Ручное создание маршрута Trojan / VLESS
+    document.getElementById("createManualProfileBtn").addEventListener("click", () => {
+      const proto = document.getElementById("mProto").value;
+      const net = document.getElementById("mNet").value;
+      const name = encodeURIComponent(document.getElementById("mName").value.trim() || "MVZ Route");
+      const host = document.getElementById("mHost").value.trim() || "parts.skodamotors.online";
+      const port = document.getElementById("mPort").value.trim() || "443";
+      const secret = document.getElementById("mSecret").value.trim() || "647640d8-c26c-42bf-aa78-48a2f8d9759d";
+      const sni = document.getElementById("mSni").value.trim() || host;
+      const service = document.getElementById("mService").value.trim();
+
+      const uri = `${proto}://${secret}@${host}:${port}?security=tls&type=${net}&sni=${sni}&fp=chrome&serviceName=${service}&path=${service}#${name}`;
+      const node = parseRouteUri(uri);
+      if (node) {
+        profiles.unshift(node);
+        activeProfileId = node.id;
+        saveState();
+        renderHappUI();
+        document.getElementById("addModal").classList.remove("open");
+        showToast(`Маршрут ${proto.toUpperCase()} добавлен!`);
+      }
+    });
+
+    // Замер пинга всех маршрутов
+    document.getElementById("pingAllBtn").addEventListener("click", () => {
+      showToast("Замер пинга всех маршрутов...");
+      setTimeout(() => {
+        profiles.forEach(p => {
+          if (hasNativeXray) {
+            const ms = window.AndroidXray.pingHost(p.host, Number(p.port));
+            p.ping = ms > 0 ? ms : 99;
+          } else {
+            p.ping = Math.floor(Math.random() * 25) + 28;
+          }
+        });
+        saveState();
+        renderHappUI();
+      }, 80);
+    });
+
+    // Запуск и остановка Xray-core
+    const appEl = document.getElementById("app");
+    const powerBtn = document.getElementById("powerBtn");
+    const powerLabel = document.getElementById("powerLabel");
+    const statusText = document.getElementById("statusText");
+    const stepHint = document.getElementById("stepHint");
+    const timerDisplay = document.getElementById("timerDisplay");
+
+    let connState = "disconnected";
+    let timerSec = 0;
+    let timerInterval = null;
+
+    function formatTime(sec) {
+      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return `${h}:${m}:${s}`;
+    }
+
+    function setConnectedUI(node) {
+      connState = "connected";
+      appEl.className = "app-shell state-connected";
+      statusText.textContent = "Активен";
+      powerLabel.textContent = "Стоп";
+      stepHint.textContent = `${node.name} (${node.protocol.toUpperCase()})`;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timerSec++;
+        timerDisplay.textContent = formatTime(timerSec);
+      }, 1000);
+    }
+
+    function setDisconnectedUI() {
+      connState = "disconnected";
+      appEl.className = "app-shell";
+      statusText.textContent = "Готов";
+      powerLabel.textContent = "Старт";
+      stepHint.textContent = "Выбери маршрут ниже и нажми Старт";
+      clearInterval(timerInterval);
+      timerSec = 0;
+      timerDisplay.textContent = "00:00:00";
+    }
+
+    powerBtn.addEventListener("click", () => {
+      const node = getActiveProfile();
+      if (connState === "disconnected") {
+        connState = "connecting";
+        appEl.className = "app-shell state-connecting";
+        statusText.textContent = "Запуск...";
+        powerLabel.textContent = "Отмена";
+
+        const xrayConfigJson = JSON.stringify(buildXrayConfig(node), null, 2);
+
+        if (hasNativeXray) {
+          const res = window.AndroidXray.startXray(xrayConfigJson);
+          stepHint.textContent = res === "PERMISSION_REQUESTED"
+            ? "Подтверди разрешение VPN..."
+            : `Подключение к ${node.host}...`;
+
+          const checkLoop = setInterval(() => {
+            if (window.AndroidXray.isRunning()) {
+              clearInterval(checkLoop);
+              setConnectedUI(node);
+            }
+          }, 400);
+          setTimeout(() => clearInterval(checkLoop), 12000);
+        } else {
+          stepHint.textContent = `Подключение к ${node.name}...`;
+          setTimeout(() => setConnectedUI(node), 900);
+        }
+      } else {
+        if (hasNativeXray) window.AndroidXray.stopXray();
+        setDisconnectedUI();
+      }
+    });
+
+    // Обновление скорости
+    const dlSpeedEl = document.getElementById("dlSpeed");
+    const ulSpeedEl = document.getElementById("ulSpeed");
+    const dlUnitEl = document.getElementById("dlUnit");
+    const ulUnitEl = document.getElementById("ulUnit");
+    let lastRx = 0;
+    let lastTx = 0;
+
+    function formatRate(bytesPerSec) {
+      if (bytesPerSec >= 1048576) return { val: (bytesPerSec / 1048576).toFixed(1), unit: "МБ/с" };
+      return { val: (bytesPerSec / 1024).toFixed(1), unit: "КБ/с" };
+    }
+
+    setInterval(() => {
+      if (hasNativeXray && window.AndroidXray.isRunning() && connState !== "connected") {
+        setConnectedUI(getActiveProfile());
+      }
+      if (connState === "connected") {
+        if (hasNativeXray) {
+          const raw = window.AndroidXray.getTrafficBytes().split(":");
+          const rx = parseInt(raw[0] || "0", 10);
+          const tx = parseInt(raw[1] || "0", 10);
+          const dRx = lastRx > 0 ? Math.max(0, rx - lastRx) : 0;
+          const dTx = lastTx > 0 ? Math.max(0, tx - lastTx) : 0;
+          lastRx = rx;
+          lastTx = tx;
+          const dlF = formatRate(dRx);
+          const ulF = formatRate(dTx);
+          dlSpeedEl.textContent = dlF.val;
+          dlUnitEl.textContent = dlF.unit;
+          ulSpeedEl.textContent = ulF.val;
+          ulUnitEl.textContent = ulF.unit;
+        } else {
+          dlSpeedEl.textContent = (Math.random() * 420 + 180).toFixed(1);
+          ulSpeedEl.textContent = (Math.random() * 90 + 30).toFixed(1);
+        }
+      } else {
+        dlSpeedEl.textContent = "0.0";
+        ulSpeedEl.textContent = "0.0";
+      }
+    }, 1000);
+
+    // Модальные окна
+    const addModal = document.getElementById("addModal");
+    const scaleModal = document.getElementById("scaleModal");
+    const subModal = document.getElementById("subModal");
+    const themesModal = document.getElementById("themesModal");
+    const logsModal = document.getElementById("logsModal");
+    const consoleBox = document.getElementById("consoleBox");
+
+    document.getElementById("openAddModalBtn").addEventListener("click", () => {
+      document.getElementById("universalInput").value = "";
+      addModal.classList.add("open");
+    });
+    document.getElementById("quickAddRouteBtn").addEventListener("click", () => {
+      document.getElementById("universalInput").value = "";
+      addModal.classList.add("open");
+    });
+    document.getElementById("closeAddBtn").addEventListener("click", () => addModal.classList.remove("open"));
+
+    document.getElementById("openScaleModalBtn").addEventListener("click", () => scaleModal.classList.add("open"));
+    document.getElementById("openScaleBottomBtn").addEventListener("click", () => scaleModal.classList.add("open"));
+    document.getElementById("closeScaleModalBtn").addEventListener("click", () => scaleModal.classList.remove("open"));
+
+    const tabPasteLink = document.getElementById("tabPasteLink");
+    const tabManualBuild = document.getElementById("tabManualBuild");
+    const pasteLinkPane = document.getElementById("pasteLinkPane");
+    const manualBuildPane = document.getElementById("manualBuildPane");
+
+    tabPasteLink.addEventListener("click", () => {
+      tabPasteLink.classList.add("active");
+      tabManualBuild.classList.remove("active");
+      pasteLinkPane.style.display = "flex";
+      manualBuildPane.style.display = "none";
+    });
+    tabManualBuild.addEventListener("click", () => {
+      tabManualBuild.classList.add("active");
+      tabPasteLink.classList.remove("active");
+      manualBuildPane.style.display = "flex";
+      pasteLinkPane.style.display = "none";
+    });
+
+    document.getElementById("pasteClipBtn").addEventListener("click", async () => {
+      try {
+        document.getElementById("universalInput").value = await navigator.clipboard.readText();
+      } catch (e) {
+        showToast("Вставь долгим нажатием");
+      }
+    });
+
+    document.getElementById("editSubDateBtn").addEventListener("click", () => {
+      document.getElementById("subUrlInput").value = subInfo.url || "";
+      document.getElementById("subDateInput").value = new Date(subInfo.expireTimestamp).toISOString().split("T")[0];
+      document.getElementById("subLimitInput").value = subInfo.limitText || "Безлимит";
+      subModal.classList.add("open");
+    });
+    document.getElementById("closeSubModalBtn").addEventListener("click", () => subModal.classList.remove("open"));
+
+    document.getElementById("plus30DaysBtn").addEventListener("click", () => {
+      subInfo.expireTimestamp = Date.now() + 30 * 86400 * 1000;
+      document.getElementById("subDateInput").value = new Date(subInfo.expireTimestamp).toISOString().split("T")[0];
+    });
+
+    document.getElementById("saveSubSettingsBtn").addEventListener("click", async () => {
+      const urlVal = document.getElementById("subUrlInput").value.trim();
+      const dateVal = document.getElementById("subDateInput").value;
+      const limitVal = document.getElementById("subLimitInput").value.trim();
+
+      if (dateVal) subInfo.expireTimestamp = new Date(dateVal).getTime();
+      if (limitVal) subInfo.limitText = limitVal;
+      subInfo.url = urlVal;
+      saveState();
+      renderHappUI();
+      subModal.classList.remove("open");
+
+      if (urlVal.startsWith("http")) {
+        await fetchAndUnpackHttpsSubscription(urlVal);
+      } else {
+        showToast("Срок подписки сохранен");
+      }
+    });
+
+    document.getElementById("syncHttpsSubBtn").addEventListener("click", async () => {
+      if (subInfo.url && subInfo.url.startsWith("http")) {
+        await fetchAndUnpackHttpsSubscription(subInfo.url);
+      } else {
+        document.getElementById("universalInput").value = "";
+        addModal.classList.add("open");
+        showToast("Вставь https:// ссылку подписки");
+      }
+    });
+
+    document.getElementById("openThemesBtn").addEventListener("click", () => themesModal.classList.add("open"));
+    document.getElementById("closeThemesBtn").addEventListener("click", () => themesModal.classList.remove("open"));
+
+    document.getElementById("openLogsBtn").addEventListener("click", () => {
+      logsModal.classList.add("open");
+      consoleBox.textContent = hasNativeXray
+        ? (window.AndroidXray.getLogs() || "Нажми «Старт» для просмотра логов Xray-core.")
+        : JSON.stringify(buildXrayConfig(getActiveProfile()), null, 2);
+    });
+    document.getElementById("closeLogsBtn").addEventListener("click", () => logsModal.classList.remove("open"));
+
+    document.getElementById("showLiveLogsBtn").addEventListener("click", () => {
+      consoleBox.textContent = hasNativeXray
+        ? (window.AndroidXray.getLogs() || "Логов пока нет.")
+        : "Живые логи процесса libxray.so доступны на телефоне.";
+    });
+    document.getElementById("showConfigJsonBtn").addEventListener("click", () => {
+      consoleBox.textContent = JSON.stringify(buildXrayConfig(getActiveProfile()), null, 2);
+    });
+
+    loadState();
+    renderHappUI();
+  </script>
+</body>
+</html>
