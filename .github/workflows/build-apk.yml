@@ -1,4 +1,4 @@
-name: Build Android APK with Xray Core
+name: Build MVZ APK with Xray Core
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Инициализация Capacitor и Android-проекта
+      - name: Инициализация Capacitor (MVZ)
         run: |
           mkdir -p www
           if [ -f "index.html" ]; then
@@ -39,14 +39,66 @@ jobs:
 
           cat << 'EOF' > capacitor.config.json
           {
-            "appId": "com.aethervpn.app",
-            "appName": "AetherVPN",
+            "appId": "com.mvzvpn.app",
+            "appName": "MVZ",
             "webDir": "www"
           }
           EOF
 
           npx cap add android
           npx cap sync android
+
+      - name: Установка иконки клоуна MVZ для Android APK
+        run: |
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26
+          rm -f android/app/src/main/res/mipmap-*/ic_launcher*.png
+          rm -f android/app/src/main/res/mipmap-*/ic_launcher*.webp
+
+          cat << 'EOF' > android/app/src/main/res/drawable/ic_mvz_logo.xml
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp"
+              android:height="108dp"
+              android:viewportWidth="108"
+              android:viewportHeight="108">
+              <!-- Фиолетово-индиговый фон -->
+              <path android:fillColor="#5B21B6" android:pathData="M0,0h108v108h-108z"/>
+              <path android:fillColor="#7E22CE" android:pathData="M0,0 L108,0 L0,108 Z"/>
+              <!-- Рыжие волосы по бокам -->
+              <path android:fillColor="#DC2626" android:pathData="M24,42m-11,0a11,11 0,1 1,22 0a11,11 0,1 1,-22 0"/>
+              <path android:fillColor="#EF4444" android:pathData="M29,31m-9,0a9,9 0,1 1,18 0a9,9 0,1 1,-18 0"/>
+              <path android:fillColor="#B91C1C" android:pathData="M22,52m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"/>
+              <path android:fillColor="#DC2626" android:pathData="M84,42m-11,0a11,11 0,1 1,22 0a11,11 0,1 1,-22 0"/>
+              <path android:fillColor="#EF4444" android:pathData="M79,31m-9,0a9,9 0,1 1,18 0a9,9 0,1 1,-18 0"/>
+              <path android:fillColor="#B91C1C" android:pathData="M86,52m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"/>
+              <!-- Лицо -->
+              <path android:fillColor="#F5F3E6" android:pathData="M54,56m-30,0a30,30 0,1 1,60 0a30,30 0,1 1,-60 0"/>
+              <!-- Румянец -->
+              <path android:fillColor="#FB923C" android:fillAlpha="0.55" android:pathData="M34,58m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"/>
+              <path android:fillColor="#FB923C" android:fillAlpha="0.55" android:pathData="M74,58m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"/>
+              <!-- Брови -->
+              <path android:strokeColor="#111827" android:strokeWidth="2.4" android:strokeLineCap="round" android:pathData="M37,35 Q43,29 49,35"/>
+              <path android:strokeColor="#111827" android:strokeWidth="2.4" android:strokeLineCap="round" android:pathData="M59,35 Q65,29 71,35"/>
+              <!-- Глаза с синим контуром -->
+              <path android:fillColor="#FFFFFF" android:strokeColor="#1D4ED8" android:strokeWidth="2.8" android:pathData="M37,46a6,9.5 0,1 0,12 0a6,9.5 0,1 0,-12 0z"/>
+              <path android:fillColor="#FFFFFF" android:strokeColor="#1D4ED8" android:strokeWidth="2.8" android:pathData="M59,46a6,9.5 0,1 0,12 0a6,9.5 0,1 0,-12 0z"/>
+              <path android:fillColor="#090D16" android:pathData="M40.2,46a2.8,5.8 0,1 0,5.6 0a2.8,5.8 0,1 0,-5.6 0z"/>
+              <path android:fillColor="#090D16" android:pathData="M62.2,46a2.8,5.8 0,1 0,5.6 0a2.8,5.8 0,1 0,-5.6 0z"/>
+              <!-- Улыбка -->
+              <path android:fillColor="#FFFFFF" android:strokeColor="#DC2626" android:strokeWidth="4.2" android:strokeLineJoin="round" android:pathData="M36,63 Q54,73 72,63 Q67,79 54,79 Q41,79 36,63 Z"/>
+              <!-- Красный нос -->
+              <path android:fillColor="#EF4444" android:pathData="M54,54m-5.8,0a5.8,5.8 0,1 1,11.6 0a5.8,5.8 0,1 1,-11.6 0"/>
+          </vector>
+          EOF
+
+          cat << 'EOF' > android/app/src/main/res/values/strings.xml
+          <?xml version='1.0' encoding='utf-8'?>
+          <resources>
+              <string name="app_name">MVZ</string>
+              <string name="title_activity_main">MVZ</string>
+              <string name="package_name">com.mvzvpn.app</string>
+              <string name="custom_url_scheme">com.mvzvpn.app</string>
+          </resources>
+          EOF
 
       - name: Скачивание официального ядра Xray-core (arm64-v8a)
         run: |
@@ -58,6 +110,8 @@ jobs:
 
       - name: Внедрение Android VpnService и моста Xray
         run: |
+          mkdir -p android/app/src/main/java/com/mvzvpn/app
+
           cat << 'EOF' > android/app/src/main/AndroidManifest.xml
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
@@ -68,9 +122,9 @@ jobs:
 
               <application
                   android:allowBackup="true"
-                  android:icon="@mipmap/ic_launcher"
-                  android:label="@string/app_name"
-                  android:roundIcon="@mipmap/ic_launcher_round"
+                  android:icon="@drawable/ic_mvz_logo"
+                  android:label="MVZ"
+                  android:roundIcon="@drawable/ic_mvz_logo"
                   android:supportsRtl="true"
                   android:extractNativeLibs="true"
                   android:usesCleartextTraffic="true"
@@ -78,8 +132,8 @@ jobs:
 
                   <activity
                       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
-                      android:name=".MainActivity"
-                      android:label="@string/title_activity_main"
+                      android:name="com.mvzvpn.app.MainActivity"
+                      android:label="MVZ"
                       android:theme="@style/AppTheme.NoActionBarLaunch"
                       android:launchMode="singleTask"
                       android:exported="true">
@@ -90,7 +144,7 @@ jobs:
                   </activity>
 
                   <service
-                      android:name=".AetherVpnService"
+                      android:name="com.mvzvpn.app.AetherVpnService"
                       android:permission="android.permission.BIND_VPN_SERVICE"
                       android:exported="false">
                       <intent-filter>
@@ -102,8 +156,8 @@ jobs:
           </manifest>
           EOF
 
-          cat << 'EOF' > android/app/src/main/java/com/aethervpn/app/AetherVpnService.java
-          package com.aethervpn.app;
+          cat << 'EOF' > android/app/src/main/java/com/mvzvpn/app/AetherVpnService.java
+          package com.mvzvpn.app;
 
           import android.content.Intent;
           import android.net.ProxyInfo;
@@ -161,7 +215,7 @@ jobs:
                       File xrayBin = new File(xrayPath);
                       xrayBin.setExecutable(true);
 
-                      addLog("[CORE] Запуск бинарника: " + xrayPath);
+                      addLog("[MVZ-CORE] Запуск Xray: " + xrayPath);
                       ProcessBuilder pb = new ProcessBuilder(xrayPath, "run", "-c", configFile.getAbsolutePath());
                       pb.directory(getFilesDir());
                       pb.redirectErrorStream(true);
@@ -180,7 +234,7 @@ jobs:
                       }).start();
 
                       Builder builder = new Builder();
-                      builder.setSession("AetherVPN (Xray-core)");
+                      builder.setSession("MVZ VPN (Xray-core)");
                       builder.setMtu(1500);
                       builder.addAddress("10.10.0.1", 32);
                       builder.addDnsServer("1.1.1.1");
@@ -192,7 +246,7 @@ jobs:
 
                       vpnInterface = builder.establish();
                       isRunning = true;
-                      addLog("[TUN] Системный VpnService запущен (SOCKS5 127.0.0.1:10808 | HTTP 127.0.0.1:10809)");
+                      addLog("[MVZ-TUN] Туннель активен (SOCKS5 127.0.0.1:10808 | HTTP 127.0.0.1:10809)");
                   } catch (Exception e) {
                       addLog("[ERROR] Ошибка запуска: " + e.getMessage());
                       isRunning = false;
@@ -216,7 +270,7 @@ jobs:
               }
 
               private void stopVpn() {
-                  addLog("[STOP] Остановка Xray-core и VpnService...");
+                  addLog("[STOP] Остановка MVZ Xray-core...");
                   stopVpnInternal();
                   stopSelf();
               }
@@ -229,8 +283,8 @@ jobs:
           }
           EOF
 
-          cat << 'EOF' > android/app/src/main/java/com/aethervpn/app/MainActivity.java
-          package com.aethervpn.app;
+          cat << 'EOF' > android/app/src/main/java/com/mvzvpn/app/MainActivity.java
+          package com.mvzvpn.app;
 
           import android.content.Intent;
           import android.net.TrafficStats;
@@ -268,7 +322,7 @@ jobs:
                       if (resultCode == RESULT_OK && pendingConfigJson != null) {
                           launchVpnService(pendingConfigJson);
                       } else {
-                          AetherVpnService.addLog("[WARN] Разрешение на VPN отклонено пользователем");
+                          AetherVpnService.addLog("[WARN] Разрешение на VPN отклонено");
                       }
                   }
               }
@@ -340,5 +394,5 @@ jobs:
       - name: Выгрузка готового APK
         uses: actions/upload-artifact@v4
         with:
-          name: AetherVPN-Xray-apk
+          name: MVZ-VPN-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
