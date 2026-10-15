@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK with Xray Core
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Подготовка проекта и Capacitor
+      - name: Инициализация Capacitor и Android-проекта
         run: |
           mkdir -p www
           if [ -f "index.html" ]; then
@@ -48,6 +48,289 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Скачивание официального ядра Xray-core (arm64-v8a)
+        run: |
+          mkdir -p android/app/src/main/jniLibs/arm64-v8a
+          curl -L -o xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-android-arm64-v8a.zip
+          unzip -o xray.zip xray -d xray_bin
+          cp xray_bin/xray android/app/src/main/jniLibs/arm64-v8a/libxray.so
+          chmod 755 android/app/src/main/jniLibs/arm64-v8a/libxray.so
+
+      - name: Внедрение Android VpnService и моста Xray
+        run: |
+          cat << 'EOF' > android/app/src/main/AndroidManifest.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+              <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+              <application
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="@string/app_name"
+                  android:roundIcon="@mipmap/ic_launcher_round"
+                  android:supportsRtl="true"
+                  android:extractNativeLibs="true"
+                  android:usesCleartextTraffic="true"
+                  android:theme="@style/AppTheme">
+
+                  <activity
+                      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+                      android:name=".MainActivity"
+                      android:label="@string/title_activity_main"
+                      android:theme="@style/AppTheme.NoActionBarLaunch"
+                      android:launchMode="singleTask"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+
+                  <service
+                      android:name=".AetherVpnService"
+                      android:permission="android.permission.BIND_VPN_SERVICE"
+                      android:exported="false">
+                      <intent-filter>
+                          <action android:name="android.net.VpnService" />
+                      </intent-filter>
+                  </service>
+
+              </application>
+          </manifest>
+          EOF
+
+          cat << 'EOF' > android/app/src/main/java/com/aethervpn/app/AetherVpnService.java
+          package com.aethervpn.app;
+
+          import android.content.Intent;
+          import android.net.ProxyInfo;
+          import android.net.VpnService;
+          import android.os.Build;
+          import android.os.ParcelFileDescriptor;
+
+          import java.io.BufferedReader;
+          import java.io.File;
+          import java.io.FileOutputStream;
+          import java.io.InputStreamReader;
+          import java.nio.charset.StandardCharsets;
+          import java.util.ArrayList;
+          import java.util.Collections;
+          import java.util.List;
+
+          public class AetherVpnService extends VpnService {
+              private ParcelFileDescriptor vpnInterface = null;
+              private Process xrayProcess = null;
+              public static volatile boolean isRunning = false;
+              public static final List<String> logs = Collections.synchronizedList(new ArrayList<>());
+
+              public static void addLog(String msg) {
+                  synchronized (logs) {
+                      if (logs.size() > 80) {
+                          logs.remove(0);
+                      }
+                      logs.add(msg);
+                  }
+              }
+
+              @Override
+              public int onStartCommand(Intent intent, int flags, int startId) {
+                  if (intent != null && "STOP".equals(intent.getAction())) {
+                      stopVpn();
+                      return START_NOT_STICKY;
+                  }
+                  String configJson = intent != null ? intent.getStringExtra("configJson") : null;
+                  if (configJson != null) {
+                      startVpn(configJson);
+                  }
+                  return START_STICKY;
+              }
+
+              private void startVpn(String configJson) {
+                  stopVpnInternal();
+                  logs.clear();
+                  try {
+                      File configFile = new File(getFilesDir(), "xray_config.json");
+                      try (FileOutputStream fos = new FileOutputStream(configFile, false)) {
+                          fos.write(configJson.getBytes(StandardCharsets.UTF_8));
+                      }
+
+                      String xrayPath = getApplicationInfo().nativeLibraryDir + "/libxray.so";
+                      File xrayBin = new File(xrayPath);
+                      xrayBin.setExecutable(true);
+
+                      addLog("[CORE] Запуск бинарника: " + xrayPath);
+                      ProcessBuilder pb = new ProcessBuilder(xrayPath, "run", "-c", configFile.getAbsolutePath());
+                      pb.directory(getFilesDir());
+                      pb.redirectErrorStream(true);
+                      xrayProcess = pb.start();
+
+                      new Thread(() -> {
+                          try (BufferedReader reader = new BufferedReader(
+                                  new InputStreamReader(xrayProcess.getInputStream(), StandardCharsets.UTF_8))) {
+                              String line;
+                              while ((line = reader.readLine()) != null) {
+                                  addLog(line);
+                              }
+                          } catch (Exception e) {
+                              addLog("[CORE-END] " + e.getMessage());
+                          }
+                      }).start();
+
+                      Builder builder = new Builder();
+                      builder.setSession("AetherVPN (Xray-core)");
+                      builder.setMtu(1500);
+                      builder.addAddress("10.10.0.1", 32);
+                      builder.addDnsServer("1.1.1.1");
+                      builder.addDnsServer("8.8.8.8");
+
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                          builder.setHttpProxy(ProxyInfo.buildDirectProxy("127.0.0.1", 10809));
+                      }
+
+                      vpnInterface = builder.establish();
+                      isRunning = true;
+                      addLog("[TUN] Системный VpnService запущен (SOCKS5 127.0.0.1:10808 | HTTP 127.0.0.1:10809)");
+                  } catch (Exception e) {
+                      addLog("[ERROR] Ошибка запуска: " + e.getMessage());
+                      isRunning = false;
+                  }
+              }
+
+              private void stopVpnInternal() {
+                  isRunning = false;
+                  if (xrayProcess != null) {
+                      try {
+                          xrayProcess.destroyForcibly();
+                      } catch (Exception ignored) {}
+                      xrayProcess = null;
+                  }
+                  if (vpnInterface != null) {
+                      try {
+                          vpnInterface.close();
+                      } catch (Exception ignored) {}
+                      vpnInterface = null;
+                  }
+              }
+
+              private void stopVpn() {
+                  addLog("[STOP] Остановка Xray-core и VpnService...");
+                  stopVpnInternal();
+                  stopSelf();
+              }
+
+              @Override
+              public void onDestroy() {
+                  stopVpnInternal();
+                  super.onDestroy();
+              }
+          }
+          EOF
+
+          cat << 'EOF' > android/app/src/main/java/com/aethervpn/app/MainActivity.java
+          package com.aethervpn.app;
+
+          import android.content.Intent;
+          import android.net.TrafficStats;
+          import android.net.VpnService;
+          import android.os.Bundle;
+          import android.webkit.JavascriptInterface;
+
+          import com.getcapacitor.BridgeActivity;
+
+          import java.net.InetSocketAddress;
+          import java.net.Socket;
+
+          public class MainActivity extends BridgeActivity {
+              private static final int VPN_REQUEST_CODE = 1901;
+              private String pendingConfigJson = null;
+
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  if (getBridge() != null && getBridge().getWebView() != null) {
+                      getBridge().getWebView().addJavascriptInterface(new XrayBridge(), "AndroidXray");
+                  }
+              }
+
+              private void launchVpnService(String configJson) {
+                  Intent serviceIntent = new Intent(this, AetherVpnService.class);
+                  serviceIntent.putExtra("configJson", configJson);
+                  startService(serviceIntent);
+              }
+
+              @Override
+              protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+                  super.onActivityResult(requestCode, resultCode, data);
+                  if (requestCode == VPN_REQUEST_CODE) {
+                      if (resultCode == RESULT_OK && pendingConfigJson != null) {
+                          launchVpnService(pendingConfigJson);
+                      } else {
+                          AetherVpnService.addLog("[WARN] Разрешение на VPN отклонено пользователем");
+                      }
+                  }
+              }
+
+              public class XrayBridge {
+                  @JavascriptInterface
+                  public String startXray(String configJson) {
+                      pendingConfigJson = configJson;
+                      Intent prepareIntent = VpnService.prepare(MainActivity.this);
+                      if (prepareIntent != null) {
+                          startActivityForResult(prepareIntent, VPN_REQUEST_CODE);
+                          return "PERMISSION_REQUESTED";
+                      } else {
+                          launchVpnService(configJson);
+                          return "STARTED";
+                      }
+                  }
+
+                  @JavascriptInterface
+                  public void stopXray() {
+                      Intent serviceIntent = new Intent(MainActivity.this, AetherVpnService.class);
+                      serviceIntent.setAction("STOP");
+                      startService(serviceIntent);
+                  }
+
+                  @JavascriptInterface
+                  public boolean isRunning() {
+                      return AetherVpnService.isRunning;
+                  }
+
+                  @JavascriptInterface
+                  public String getLogs() {
+                      synchronized (AetherVpnService.logs) {
+                          StringBuilder sb = new StringBuilder();
+                          for (String line : AetherVpnService.logs) {
+                              sb.append(line).append("\n");
+                          }
+                          return sb.toString();
+                      }
+                  }
+
+                  @JavascriptInterface
+                  public int pingHost(String host, int port) {
+                      long start = System.currentTimeMillis();
+                      try (Socket socket = new Socket()) {
+                          socket.connect(new InetSocketAddress(host, port), 2500);
+                          return (int) (System.currentTimeMillis() - start);
+                      } catch (Exception e) {
+                          return -1;
+                      }
+                  }
+
+                  @JavascriptInterface
+                  public String getTrafficBytes() {
+                      long rx = TrafficStats.getTotalRxBytes();
+                      long tx = TrafficStats.getTotalTxBytes();
+                      return rx + ":" + tx;
+                  }
+              }
+          }
+          EOF
+
       - name: Компиляция APK
         working-directory: ./android
         run: |
@@ -57,5 +340,5 @@ jobs:
       - name: Выгрузка готового APK
         uses: actions/upload-artifact@v4
         with:
-          name: AetherVPN-debug-apk
+          name: AetherVPN-Xray-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
