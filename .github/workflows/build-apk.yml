@@ -24,9 +24,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Установка Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Подготовка проекта и Capacitor
         run: |
           mkdir -p www
