@@ -48,47 +48,103 @@ jobs:
           npx cap add android
           npx cap sync android
 
-      - name: Установка иконки клоуна MVZ для Android APK
+      - name: Генерация точной 3D-иконки клоуна MVZ (PNG 512x512)
         run: |
+          sudo apt-get update && sudo apt-get install -y librsvg2-bin imagemagick
           rm -rf android/app/src/main/res/mipmap-anydpi-v26
           rm -f android/app/src/main/res/mipmap-*/ic_launcher*.png
           rm -f android/app/src/main/res/mipmap-*/ic_launcher*.webp
 
-          cat << 'EOF' > android/app/src/main/res/drawable/ic_mvz_logo.xml
-          <vector xmlns:android="http://schemas.android.com/apk/res/android"
-              android:width="108dp"
-              android:height="108dp"
-              android:viewportWidth="108"
-              android:viewportHeight="108">
-              <!-- Фиолетово-индиговый фон -->
-              <path android:fillColor="#5B21B6" android:pathData="M0,0h108v108h-108z"/>
-              <path android:fillColor="#7E22CE" android:pathData="M0,0 L108,0 L0,108 Z"/>
-              <!-- Рыжие волосы по бокам -->
-              <path android:fillColor="#DC2626" android:pathData="M24,42m-11,0a11,11 0,1 1,22 0a11,11 0,1 1,-22 0"/>
-              <path android:fillColor="#EF4444" android:pathData="M29,31m-9,0a9,9 0,1 1,18 0a9,9 0,1 1,-18 0"/>
-              <path android:fillColor="#B91C1C" android:pathData="M22,52m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"/>
-              <path android:fillColor="#DC2626" android:pathData="M84,42m-11,0a11,11 0,1 1,22 0a11,11 0,1 1,-22 0"/>
-              <path android:fillColor="#EF4444" android:pathData="M79,31m-9,0a9,9 0,1 1,18 0a9,9 0,1 1,-18 0"/>
-              <path android:fillColor="#B91C1C" android:pathData="M86,52m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"/>
-              <!-- Лицо -->
-              <path android:fillColor="#F5F3E6" android:pathData="M54,56m-30,0a30,30 0,1 1,60 0a30,30 0,1 1,-60 0"/>
-              <!-- Румянец -->
-              <path android:fillColor="#FB923C" android:fillAlpha="0.55" android:pathData="M34,58m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"/>
-              <path android:fillColor="#FB923C" android:fillAlpha="0.55" android:pathData="M74,58m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"/>
-              <!-- Брови -->
-              <path android:strokeColor="#111827" android:strokeWidth="2.4" android:strokeLineCap="round" android:pathData="M37,35 Q43,29 49,35"/>
-              <path android:strokeColor="#111827" android:strokeWidth="2.4" android:strokeLineCap="round" android:pathData="M59,35 Q65,29 71,35"/>
-              <!-- Глаза с синим контуром -->
-              <path android:fillColor="#FFFFFF" android:strokeColor="#1D4ED8" android:strokeWidth="2.8" android:pathData="M37,46a6,9.5 0,1 0,12 0a6,9.5 0,1 0,-12 0z"/>
-              <path android:fillColor="#FFFFFF" android:strokeColor="#1D4ED8" android:strokeWidth="2.8" android:pathData="M59,46a6,9.5 0,1 0,12 0a6,9.5 0,1 0,-12 0z"/>
-              <path android:fillColor="#090D16" android:pathData="M40.2,46a2.8,5.8 0,1 0,5.6 0a2.8,5.8 0,1 0,-5.6 0z"/>
-              <path android:fillColor="#090D16" android:pathData="M62.2,46a2.8,5.8 0,1 0,5.6 0a2.8,5.8 0,1 0,-5.6 0z"/>
-              <!-- Улыбка -->
-              <path android:fillColor="#FFFFFF" android:strokeColor="#DC2626" android:strokeWidth="4.2" android:strokeLineJoin="round" android:pathData="M36,63 Q54,73 72,63 Q67,79 54,79 Q41,79 36,63 Z"/>
-              <!-- Красный нос -->
-              <path android:fillColor="#EF4444" android:pathData="M54,54m-5.8,0a5.8,5.8 0,1 1,11.6 0a5.8,5.8 0,1 1,-11.6 0"/>
-          </vector>
+          cat << 'EOF' > clown_exact.svg
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+            <defs>
+              <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#8b1da8"/>
+                <stop offset="52%" stop-color="#58237a"/>
+                <stop offset="100%" stop-color="#221f4c"/>
+              </linearGradient>
+              <radialGradient id="faceGrad" cx="42%" cy="35%" r="58%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="55%" stop-color="#f3f0d8"/>
+                <stop offset="88%" stop-color="#dcd7b6"/>
+                <stop offset="100%" stop-color="#bfb993"/>
+              </radialGradient>
+              <radialGradient id="hairGrad" cx="38%" cy="32%" r="65%">
+                <stop offset="0%" stop-color="#ff6b4a"/>
+                <stop offset="55%" stop-color="#e02b19"/>
+                <stop offset="100%" stop-color="#941106"/>
+              </radialGradient>
+              <radialGradient id="noseGrad" cx="35%" cy="30%" r="65%">
+                <stop offset="0%" stop-color="#ff857a"/>
+                <stop offset="40%" stop-color="#ef2917"/>
+                <stop offset="100%" stop-color="#8f0b00"/>
+              </radialGradient>
+              <radialGradient id="cheeks" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ff7714" stop-opacity="0.88"/>
+                <stop offset="55%" stop-color="#ff7714" stop-opacity="0.42"/>
+                <stop offset="100%" stop-color="#ff7714" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="lipGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ef2319"/>
+                <stop offset="50%" stop-color="#c91008"/>
+                <stop offset="100%" stop-color="#8f0600"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Фон как на картинке -->
+            <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
+
+            <!-- Левые 3D-пучки волос -->
+            <circle cx="152" cy="148" r="44" fill="url(#hairGrad)"/>
+            <circle cx="112" cy="186" r="46" fill="url(#hairGrad)"/>
+            <circle cx="104" cy="242" r="42" fill="url(#hairGrad)"/>
+
+            <!-- Правые 3D-пучки волос -->
+            <circle cx="360" cy="148" r="44" fill="url(#hairGrad)"/>
+            <circle cx="400" cy="186" r="46" fill="url(#hairGrad)"/>
+            <circle cx="408" cy="242" r="42" fill="url(#hairGrad)"/>
+
+            <!-- 3D-голова клоуна -->
+            <circle cx="256" cy="276" r="168" fill="url(#faceGrad)"/>
+
+            <!-- Мягкий оранжевый румянец на щеках -->
+            <circle cx="144" cy="292" r="52" fill="url(#cheeks)"/>
+            <circle cx="368" cy="292" r="52" fill="url(#cheeks)"/>
+
+            <!-- Дужки бровей -->
+            <path d="M168 156 Q198 124 228 154" fill="none" stroke="#181210" stroke-width="10.5" stroke-linecap="round"/>
+            <path d="M284 154 Q314 124 344 156" fill="none" stroke="#181210" stroke-width="10.5" stroke-linecap="round"/>
+
+            <!-- Глаза с объемным синим контуром -->
+            <ellipse cx="198" cy="222" rx="34" ry="54" fill="#ffffff" stroke="#1e6296" stroke-width="14"/>
+            <ellipse cx="314" cy="222" rx="34" ry="54" fill="#ffffff" stroke="#1e6296" stroke-width="14"/>
+            <ellipse cx="198" cy="224" rx="16.5" ry="33" fill="#0d0d0d"/>
+            <ellipse cx="314" cy="224" rx="16.5" ry="33" fill="#0d0d0d"/>
+
+            <!-- Широкая красная улыбка с белыми зубами -->
+            <path d="M148 318 C184 358, 328 358, 364 318 C354 398, 298 422, 256 422 C214 422, 158 398, 148 318 Z"
+                  fill="#ffffff" stroke="url(#lipGrad)" stroke-width="26" stroke-linejoin="round" stroke-linecap="round"/>
+
+            <!-- Глянцевый 3D красный нос -->
+            <circle cx="256" cy="272" r="31" fill="url(#noseGrad)"/>
+            <ellipse cx="246" cy="261" rx="9" ry="6" fill="#ffffff" opacity="0.45" transform="rotate(-20 246 261)"/>
+          </svg>
           EOF
+
+          if [ -f "icon.png" ]; then
+            cp icon.png base_icon.png
+          elif [ -f "icon.jpg" ]; then
+            convert icon.jpg base_icon.png
+          else
+            rsvg-convert -w 512 -h 512 clown_exact.svg -o base_icon.png
+          fi
+
+          for dir in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            mkdir -p android/app/src/main/res/$dir
+            cp base_icon.png android/app/src/main/res/$dir/ic_launcher.png
+            cp base_icon.png android/app/src/main/res/$dir/ic_launcher_round.png
+            cp base_icon.png android/app/src/main/res/$dir/ic_launcher_foreground.png
+          done
 
           cat << 'EOF' > android/app/src/main/res/values/strings.xml
           <?xml version='1.0' encoding='utf-8'?>
@@ -108,7 +164,7 @@ jobs:
           cp xray_bin/xray android/app/src/main/jniLibs/arm64-v8a/libxray.so
           chmod 755 android/app/src/main/jniLibs/arm64-v8a/libxray.so
 
-      - name: Внедрение Android VpnService и моста Xray
+      - name: Внедрение Android VpnService, HTTPS-загрузчика подписок и Xray
         run: |
           mkdir -p android/app/src/main/java/com/mvzvpn/app
 
@@ -122,9 +178,9 @@ jobs:
 
               <application
                   android:allowBackup="true"
-                  android:icon="@drawable/ic_mvz_logo"
+                  android:icon="@mipmap/ic_launcher"
                   android:label="MVZ"
-                  android:roundIcon="@drawable/ic_mvz_logo"
+                  android:roundIcon="@mipmap/ic_launcher_round"
                   android:supportsRtl="true"
                   android:extractNativeLibs="true"
                   android:usesCleartextTraffic="true"
@@ -182,7 +238,7 @@ jobs:
 
               public static void addLog(String msg) {
                   synchronized (logs) {
-                      if (logs.size() > 80) {
+                      if (logs.size() > 100) {
                           logs.remove(0);
                       }
                       logs.add(msg);
@@ -215,7 +271,7 @@ jobs:
                       File xrayBin = new File(xrayPath);
                       xrayBin.setExecutable(true);
 
-                      addLog("[MVZ-CORE] Запуск Xray: " + xrayPath);
+                      addLog("[MVZ-CORE] Запуск Xray-core: " + xrayPath);
                       ProcessBuilder pb = new ProcessBuilder(xrayPath, "run", "-c", configFile.getAbsolutePath());
                       pb.directory(getFilesDir());
                       pb.redirectErrorStream(true);
@@ -234,7 +290,7 @@ jobs:
                       }).start();
 
                       Builder builder = new Builder();
-                      builder.setSession("MVZ VPN (Xray-core)");
+                      builder.setSession("MVZ VPN (VLESS / Trojan)");
                       builder.setMtu(1500);
                       builder.addAddress("10.10.0.1", 32);
                       builder.addDnsServer("1.1.1.1");
@@ -294,8 +350,15 @@ jobs:
 
           import com.getcapacitor.BridgeActivity;
 
+          import org.json.JSONObject;
+
+          import java.io.BufferedReader;
+          import java.io.InputStreamReader;
+          import java.net.HttpURLConnection;
           import java.net.InetSocketAddress;
           import java.net.Socket;
+          import java.net.URL;
+          import java.nio.charset.StandardCharsets;
 
           public class MainActivity extends BridgeActivity {
               private static final int VPN_REQUEST_CODE = 1901;
@@ -380,6 +443,50 @@ jobs:
                       long rx = TrafficStats.getTotalRxBytes();
                       long tx = TrafficStats.getTotalTxBytes();
                       return rx + ":" + tx;
+                  }
+
+                  @JavascriptInterface
+                  public String fetchSubscription(String urlStr) {
+                      try {
+                          URL url = new URL(urlStr);
+                          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                          conn.setRequestMethod("GET");
+                          conn.setConnectTimeout(8000);
+                          conn.setReadTimeout(8000);
+                          conn.setRequestProperty("User-Agent", "MVZ-VPN/2.0 (v2rayNG; Xray-core)");
+                          conn.setInstanceFollowRedirects(true);
+
+                          int code = conn.getResponseCode();
+                          String userInfo = conn.getHeaderField("Subscription-Userinfo");
+                          if (userInfo == null) {
+                              userInfo = conn.getHeaderField("subscription-userinfo");
+                          }
+
+                          BufferedReader reader = new BufferedReader(
+                                  new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+                          StringBuilder sb = new StringBuilder();
+                          String line;
+                          while ((line = reader.readLine()) != null) {
+                              sb.append(line).append("\n");
+                          }
+                          reader.close();
+
+                          JSONObject res = new JSONObject();
+                          res.put("ok", code >= 200 && code < 400);
+                          res.put("status", code);
+                          res.put("userinfo", userInfo != null ? userInfo : "");
+                          res.put("body", sb.toString().trim());
+                          return res.toString();
+                      } catch (Exception e) {
+                          try {
+                              JSONObject err = new JSONObject();
+                              err.put("ok", false);
+                              err.put("error", e.getMessage());
+                              return err.toString();
+                          } catch (Exception ignored) {
+                              return "{\"ok\":false}";
+                          }
+                      }
                   }
               }
           }
