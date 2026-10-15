@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>MVZ — VLESS / Trojan / HTTPS Client</title>
+  <title>MVZ — Happ Style VLESS & Trojan</title>
   <style>
     /* 1. Фиолетовая тема (MVZ Purple) */
     :root, [data-theme="purple"] {
       --bg-dark: #090514;
-      --bg-glow: rgba(168, 85, 247, 0.26);
-      --bg-card: rgba(23, 13, 42, 0.86);
-      --bg-card-2: rgba(34, 19, 61, 0.75);
+      --bg-glow: rgba(168, 85, 247, 0.25);
+      --bg-card: rgba(22, 12, 40, 0.9);
+      --bg-card-2: rgba(34, 19, 61, 0.85);
       --sheet-bg: #130a24;
       --border-glass: rgba(216, 180, 254, 0.15);
       --text-main: #f8fafc;
@@ -27,8 +27,8 @@
     [data-theme="black"] {
       --bg-dark: #040609;
       --bg-glow: rgba(0, 242, 254, 0.16);
-      --bg-card: rgba(13, 17, 25, 0.9);
-      --bg-card-2: rgba(21, 27, 40, 0.8);
+      --bg-card: rgba(13, 17, 25, 0.92);
+      --bg-card-2: rgba(21, 27, 40, 0.85);
       --sheet-bg: #0b0e15;
       --border-glass: rgba(255, 255, 255, 0.1);
       --text-main: #f1f5f9;
@@ -42,8 +42,8 @@
     [data-theme="white"] {
       --bg-dark: #eef2f8;
       --bg-glow: rgba(99, 102, 241, 0.18);
-      --bg-card: rgba(255, 255, 255, 0.92);
-      --bg-card-2: rgba(241, 245, 249, 0.92);
+      --bg-card: rgba(255, 255, 255, 0.95);
+      --bg-card-2: rgba(241, 245, 249, 0.95);
       --sheet-bg: #ffffff;
       --border-glass: rgba(15, 23, 42, 0.11);
       --text-main: #0f172a;
@@ -57,8 +57,8 @@
     [data-theme="crimson"] {
       --bg-dark: #0d0307;
       --bg-glow: rgba(244, 63, 94, 0.25);
-      --bg-card: rgba(31, 9, 17, 0.88);
-      --bg-card-2: rgba(48, 13, 26, 0.78);
+      --bg-card: rgba(31, 9, 17, 0.9);
+      --bg-card-2: rgba(48, 13, 26, 0.82);
       --sheet-bg: #19070e;
       --border-glass: rgba(251, 113, 133, 0.17);
       --text-main: #fff1f2;
@@ -72,8 +72,8 @@
     [data-theme="emerald"] {
       --bg-dark: #020b08;
       --bg-glow: rgba(16, 185, 129, 0.24);
-      --bg-card: rgba(7, 26, 19, 0.88);
-      --bg-card-2: rgba(11, 39, 29, 0.78);
+      --bg-card: rgba(7, 26, 19, 0.9);
+      --bg-card-2: rgba(11, 39, 29, 0.82);
       --sheet-bg: #061610;
       --border-glass: rgba(52, 211, 153, 0.17);
       --text-main: #ecfdf5;
@@ -91,14 +91,16 @@
       user-select: none;
     }
 
+    /* Строгий запрет горизонтального вылезания на любых экранах */
     html, body {
-      width: 100vw;
-      height: 100dvh;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      min-height: 100dvh;
       overflow: hidden;
       background-color: var(--bg-dark);
       color: var(--text-main);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      transition: background-color 0.35s ease, color 0.35s ease;
     }
 
     svg {
@@ -106,104 +108,126 @@
       flex-shrink: 0;
     }
 
-    /* ПОЛНОЕ ЗАПОЛНЕНИЕ ЭКРАНА ТЕЛЕФОНА 100vw x 100dvh */
     .app-shell {
-      position: relative;
-      width: 100vw;
-      height: 100dvh;
-      display: grid;
-      grid-template-rows: auto auto 1fr auto auto auto;
-      gap: 8px;
-      padding: calc(env(safe-area-inset-top, 12px) + 6px) 12px calc(env(safe-area-inset-bottom, 8px) + 6px);
-      background: radial-gradient(circle at 50% 34%, var(--bg-glow) 0%, transparent 70%);
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 7px;
+      padding: 8px 10px;
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 50% 28%, var(--bg-glow) 0%, transparent 70%);
       overflow: hidden;
     }
 
     .app-shell.state-connecting {
-      background: radial-gradient(circle at 50% 34%, rgba(245, 158, 11, 0.25) 0%, transparent 70%);
+      background-image: radial-gradient(circle at 50% 28%, rgba(245, 158, 11, 0.25) 0%, transparent 70%);
     }
 
     .app-shell.state-connected {
-      background: radial-gradient(circle at 50% 34%, rgba(16, 185, 129, 0.28) 0%, var(--bg-glow) 52%, transparent 75%);
+      background-image: radial-gradient(circle at 50% 28%, rgba(16, 185, 129, 0.28) 0%, var(--bg-glow) 52%, transparent 75%);
     }
 
     /* 1. ШАПКА */
     .top-bar {
+      width: 100%;
+      min-width: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 6px;
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 8px 12px;
-      backdrop-filter: blur(12px);
+      border-radius: 14px;
+      padding: 7px 10px;
+      flex-shrink: 0;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      min-width: 0;
     }
 
     .brand-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
       overflow: hidden;
       border: 1.5px solid var(--accent-primary);
-      box-shadow: 0 0 14px var(--bg-glow);
-      animation: logoFloat 3.8s ease-in-out infinite;
-    }
-
-    @keyframes logoFloat {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-2px) scale(1.03); }
+      flex-shrink: 0;
     }
 
     .brand-title-row {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .brand-title {
-      font-size: 19px;
+      font-size: 17px;
       font-weight: 900;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.6px;
     }
 
     .proto-pill {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 6px;
+      padding: 2px 5px;
+      border-radius: 5px;
       background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
       color: #fff;
       text-transform: uppercase;
     }
 
     .brand-sub {
-      font-size: 10.5px;
+      font-size: 10px;
       color: var(--text-muted);
       font-weight: 600;
-      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-right-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .scale-btn {
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 9px;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-glass);
+      color: var(--text-main);
+      font-size: 10.5px;
+      font-weight: 800;
+      cursor: pointer;
     }
 
     .status-mini {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
+      gap: 5px;
+      padding: 5px 9px;
       border-radius: 999px;
       background: var(--bg-card-2);
       border: 1px solid var(--border-glass);
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 800;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: var(--accent-primary);
       box-shadow: 0 0 8px var(--accent-primary);
@@ -226,41 +250,45 @@
       animation: none;
     }
 
-    /* 2. ВИДЖЕТ ПОДПИСКИ И СРОКА ОКОНЧАНИЯ */
-    .sub-banner {
+    /* 2. КАРТОЧКА ПОДПИСКИ В СТИЛЕ ПРИЛОЖЕНИЯ HAPP */
+    .happ-sub-card {
+      width: 100%;
+      min-width: 0;
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 10px 12px;
+      border-radius: 14px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      backdrop-filter: blur(12px);
+      gap: 5px;
+      flex-shrink: 0;
     }
 
     .sub-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
+      min-width: 0;
     }
 
     .sub-title-group {
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       min-width: 0;
+      flex: 1;
     }
 
     .sub-badge {
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 6px;
+      font-size: 9.5px;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 5px;
       background: rgba(16, 185, 129, 0.16);
       color: var(--accent-green);
       border: 1px solid rgba(16, 185, 129, 0.35);
-      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .sub-badge.expired {
@@ -270,24 +298,25 @@
     }
 
     .sub-expire-text {
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 800;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-width: 0;
     }
 
     .sub-actions {
       display: flex;
-      gap: 5px;
+      gap: 4px;
       flex-shrink: 0;
     }
 
     .sub-mini-btn {
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 7px;
+      border-radius: 7px;
       border: 1px solid var(--border-glass);
       background: var(--bg-card-2);
       color: var(--text-main);
@@ -296,105 +325,105 @@
 
     .sub-progress-track {
       width: 100%;
-      height: 6px;
+      height: 5px;
       border-radius: 999px;
-      background: rgba(128, 128, 128, 0.18);
+      background: rgba(128, 128, 128, 0.2);
       overflow: hidden;
     }
 
     .sub-progress-fill {
       height: 100%;
-      width: 78%;
+      width: 80%;
       border-radius: 999px;
       background: linear-gradient(90deg, var(--accent-primary), var(--accent-green));
-      transition: width 0.4s ease;
     }
 
     .sub-meta-row {
       display: flex;
       justify-content: space-between;
-      font-size: 10.5px;
+      font-size: 10px;
       color: var(--text-muted);
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    /* 3. ЦЕНТРАЛЬНОЕ ЯДРО С ОРБИТАЛЬНОЙ АНИМАЦИЕЙ ДО НАЖАТИЯ */
+    /* 3. КОМПАКТНОЕ ЯДРО С АНИМАЦИЕЙ ДО НАЖАТИЯ + ТЕЛЕМЕТРИЯ */
     .core-stage {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      width: 100%;
+      min-width: 0;
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
-      border-radius: 20px;
-      padding: 8px 12px;
-      overflow: hidden;
-      min-height: 185px;
+      border-radius: 16px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
     .power-zone {
       position: relative;
-      width: 164px;
-      height: 164px;
+      width: 122px;
+      height: 122px;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     .idle-pulse-ring {
       position: absolute;
-      width: 118px;
-      height: 118px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       border: 1.5px solid var(--accent-primary);
       opacity: 0;
       pointer-events: none;
-      animation: idleRadar 3.2s infinite cubic-bezier(0.2, 0.8, 0.4, 1);
+      animation: idleRadar 3s infinite cubic-bezier(0.2, 0.8, 0.4, 1);
     }
 
     .idle-pulse-ring.delay {
-      animation-delay: 1.6s;
+      animation-delay: 1.5s;
     }
 
     @keyframes idleRadar {
       0% { transform: scale(0.92); opacity: 0.6; }
-      100% { transform: scale(1.46); opacity: 0; }
+      100% { transform: scale(1.38); opacity: 0; }
     }
 
     .idle-orbit-outer {
       position: absolute;
-      width: 156px;
-      height: 156px;
+      width: 118px;
+      height: 118px;
       border-radius: 50%;
       border: 1.5px dashed var(--border-glass);
       border-top-color: var(--accent-primary);
       border-bottom-color: var(--accent-secondary);
       pointer-events: none;
-      animation: spinCW 8.5s linear infinite;
+      animation: spinCW 8s linear infinite;
     }
 
     .idle-orbit-outer::after {
       content: "";
       position: absolute;
-      top: -4px;
+      top: -3.5px;
       left: 50%;
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--accent-primary);
-      box-shadow: 0 0 10px var(--accent-primary);
+      box-shadow: 0 0 8px var(--accent-primary);
     }
 
     .idle-orbit-inner {
       position: absolute;
-      width: 136px;
-      height: 136px;
+      width: 102px;
+      height: 102px;
       border-radius: 50%;
       border: 1.5px dotted var(--border-glass);
       border-left-color: var(--accent-primary);
       pointer-events: none;
-      animation: spinCCW 6s linear infinite;
+      animation: spinCCW 5.5s linear infinite;
     }
 
     @keyframes spinCW { to { transform: rotate(360deg); } }
@@ -405,25 +434,23 @@
       border-color: transparent;
       border-top-color: var(--accent-amber);
       border-right-color: var(--accent-amber);
-      animation: spinCW 0.9s linear infinite;
+      animation: spinCW 0.85s linear infinite;
     }
 
-    .state-connected .idle-pulse-ring {
-      border-color: var(--accent-green);
-    }
+    .state-connected .idle-pulse-ring { border-color: var(--accent-green); }
     .state-connected .idle-orbit-outer {
       border-top-color: var(--accent-green);
       border-bottom-color: var(--accent-green);
     }
     .state-connected .idle-orbit-outer::after {
       background: var(--accent-green);
-      box-shadow: 0 0 12px var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
     }
 
     .power-btn {
       position: relative;
-      width: 114px;
-      height: 114px;
+      width: 86px;
+      height: 86px;
       border-radius: 50%;
       border: 2px solid var(--accent-primary);
       background: var(--btn-core-bg);
@@ -432,7 +459,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 3px;
       cursor: pointer;
       z-index: 2;
       animation: idleBtnBreathe 2.6s ease-in-out infinite;
@@ -441,211 +468,229 @@
     @keyframes idleBtnBreathe {
       0%, 100% {
         transform: scale(1);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 14px var(--bg-glow);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 0 12px var(--bg-glow);
       }
       50% {
         transform: scale(1.045);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), 0 0 28px var(--accent-primary);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65), 0 0 22px var(--accent-primary);
       }
-    }
-
-    .power-btn:active {
-      transform: scale(0.92) !important;
     }
 
     .state-connected .power-btn {
       border-color: var(--accent-green);
       color: var(--accent-green);
-      box-shadow: 0 0 34px rgba(16, 185, 129, 0.4);
     }
 
     .power-label {
-      font-size: 10.5px;
+      font-size: 9.5px;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 0.9px;
+      letter-spacing: 0.7px;
     }
 
-    .stage-footer {
-      width: 100%;
+    .core-stats-col {
+      flex: 1;
+      min-width: 0;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .timer-row {
+      display: flex;
+      align-items: baseline;
       justify-content: space-between;
-      margin-top: 4px;
-      padding-top: 6px;
-      border-top: 1px solid var(--border-glass);
+      gap: 4px;
     }
 
     .timer-display {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 900;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
+    }
+
+    .mini-speeds {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .mini-speed-card {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-glass);
+      border-radius: 10px;
+      padding: 5px 7px;
+      min-width: 0;
+    }
+
+    .ms-label {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .ms-val {
+      font-size: 13px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
     .step-hint {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-muted);
       font-weight: 600;
-      text-align: right;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 65%;
     }
 
-    /* 4. БЫСТРАЯ ЛЕНТА ПРОФИЛЕЙ (VLESS + TROJAN) НА ГЛАВНОМ ЭКРАНЕ */
-    .quick-profiles-wrap {
+    /* 4. ВЕРТИКАЛЬНЫЙ СПИСОК МАРШРУТОВ ПОДПИСКИ КАК В HAPP (ЗАПОЛНЯЕТ ЭКРАН) */
+    .happ-routes-section {
+      width: 100%;
+      min-width: 0;
+      flex: 1;
+      min-height: 0;
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
       border-radius: 16px;
-      padding: 9px 11px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 6px;
+      overflow: hidden;
     }
 
-    .qp-header {
+    .routes-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-size: 11.5px;
-      font-weight: 800;
+      font-weight: 900;
+      flex-shrink: 0;
     }
 
-    .qp-scroll {
+    .routes-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
       display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 2px;
-      scrollbar-width: none;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 2px;
     }
-    .qp-scroll::-webkit-scrollbar { display: none; }
 
-    .qp-chip {
-      flex: 0 0 auto;
-      width: 158px;
+    .route-item {
+      width: 100%;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
       padding: 8px 10px;
       border-radius: 12px;
       background: var(--bg-card-2);
       border: 1.5px solid var(--border-glass);
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      transition: all 0.2s ease;
+      flex-shrink: 0;
     }
 
-    .qp-chip.active {
+    .route-item.active {
       border-color: var(--accent-primary);
       box-shadow: 0 0 12px var(--bg-glow);
     }
 
-    .qp-chip-top {
+    .route-left {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 5px;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
     }
 
-    .qp-proto-tag {
-      font-size: 9.5px;
+    .route-flag {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .route-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .route-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .route-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 2px;
+      font-size: 10px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .r-badge {
+      font-size: 9px;
       font-weight: 900;
-      padding: 1.5px 5px;
-      border-radius: 5px;
+      padding: 1px 5px;
+      border-radius: 4px;
       background: rgba(192, 132, 252, 0.2);
       color: var(--accent-primary);
+      text-transform: uppercase;
     }
 
-    .qp-proto-tag.trojan {
+    .r-badge.trojan {
       background: rgba(245, 158, 11, 0.2);
       color: var(--accent-amber);
     }
 
-    .qp-proto-tag.https {
-      background: rgba(16, 185, 129, 0.2);
-      color: var(--accent-green);
-    }
-
-    .qp-ping {
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--accent-green);
-    }
-
-    .qp-name {
-      font-size: 12px;
-      font-weight: 800;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .qp-host {
-      font-size: 10px;
-      color: var(--text-muted);
-      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* 5. ЖИВАЯ ТЕЛЕМЕТРИЯ СКОРОСТИ */
-    .telemetry-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .speed-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      border-radius: 15px;
-      padding: 9px 11px;
-    }
-
-    .speed-top {
+    .route-right {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--text-muted);
+      gap: 6px;
+      flex-shrink: 0;
     }
 
-    .speed-val {
-      font-size: 16px;
-      font-weight: 900;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .speed-unit {
+    .route-ping {
       font-size: 10.5px;
-      color: var(--text-muted);
-      margin-left: 2px;
+      font-weight: 800;
+      color: var(--accent-green);
     }
 
-    .speed-canvas {
-      width: 100%;
-      height: 24px;
-      display: block;
-      margin-top: 3px;
-    }
-
-    /* 6. НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ ВО ВЕСЬ ЭКРАН */
+    /* 5. НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ */
     .bottom-nav {
+      width: 100%;
+      min-width: 0;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+      gap: 5px;
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 6px;
+      border-radius: 14px;
+      padding: 5px;
+      flex-shrink: 0;
     }
 
     .nav-btn {
-      height: 42px;
-      border-radius: 11px;
+      height: 38px;
+      border-radius: 10px;
       border: 1px solid transparent;
       background: transparent;
       color: var(--text-muted);
@@ -653,10 +698,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
-      font-size: 10px;
+      gap: 1px;
+      font-size: 9.5px;
       font-weight: 800;
       cursor: pointer;
+      min-width: 0;
     }
 
     .nav-btn.primary-action {
@@ -665,20 +711,18 @@
       color: var(--accent-primary);
     }
 
-    .nav-btn:active {
-      transform: scale(0.94);
-    }
-
     /* МОДАЛЬНЫЕ ОКНА */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(3, 5, 10, 0.8);
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 5, 10, 0.82);
       backdrop-filter: blur(6px);
       z-index: 50;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease;
+      transition: opacity 0.22s ease;
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -690,18 +734,19 @@
     }
 
     .sheet {
-      width: 100vw;
+      width: 100%;
+      max-width: 100%;
       max-height: 88dvh;
       background: var(--sheet-bg);
       color: var(--text-main);
       border-top: 1px solid var(--border-glass);
-      border-radius: 22px 22px 0 0;
-      padding: 16px 14px calc(env(safe-area-inset-bottom, 14px) + 12px);
+      border-radius: 20px 20px 0 0;
+      padding: 14px 12px 18px;
       transform: translateY(100%);
-      transition: transform 0.28s ease;
+      transition: transform 0.26s ease;
       display: flex;
       flex-direction: column;
-      gap: 11px;
+      gap: 10px;
       overflow-y: auto;
     }
 
@@ -716,16 +761,16 @@
     }
 
     .sheet-title {
-      font-size: 15.5px;
+      font-size: 15px;
       font-weight: 900;
     }
 
     .close-btn {
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
       border: 1px solid var(--border-glass);
-      background: rgba(128, 128, 128, 0.12);
+      background: rgba(128, 128, 128, 0.14);
       color: var(--text-main);
       cursor: pointer;
     }
@@ -736,16 +781,16 @@
       gap: 6px;
       background: var(--bg-card);
       padding: 4px;
-      border-radius: 11px;
+      border-radius: 10px;
     }
 
     .tab-btn {
-      height: 34px;
-      border-radius: 8px;
+      height: 32px;
+      border-radius: 7px;
       border: none;
       background: transparent;
       color: var(--text-muted);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 800;
       cursor: pointer;
     }
@@ -757,14 +802,14 @@
 
     .input-box, .code-view {
       width: 100%;
-      min-height: 105px;
-      max-height: 40dvh;
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.35);
+      min-height: 95px;
+      max-height: 38dvh;
+      border-radius: 11px;
+      background: rgba(0, 0, 0, 0.38);
       border: 1px solid var(--border-glass);
       color: var(--text-main);
-      padding: 10px;
-      font-size: 11.5px;
+      padding: 9px;
+      font-size: 11px;
       font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       overflow-y: auto;
       white-space: pre-wrap;
@@ -775,123 +820,66 @@
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 7px;
     }
 
     .field-input {
       width: 100%;
-      height: 38px;
-      border-radius: 10px;
+      height: 36px;
+      border-radius: 9px;
       background: rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border-glass);
       color: var(--text-main);
-      padding: 0 10px;
-      font-size: 12px;
+      padding: 0 9px;
+      font-size: 11.5px;
       user-select: text;
     }
 
     .btn-row {
       display: flex;
-      gap: 8px;
+      gap: 7px;
     }
 
     .primary-btn {
       flex: 1;
-      height: 42px;
-      border-radius: 11px;
+      height: 40px;
+      border-radius: 10px;
       border: none;
       background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
       color: #ffffff;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 12.5px;
       cursor: pointer;
     }
 
     .secondary-btn {
-      height: 42px;
-      padding: 0 13px;
-      border-radius: 11px;
+      height: 40px;
+      padding: 0 12px;
+      border-radius: 10px;
       border: 1px solid var(--border-glass);
       background: var(--bg-card);
       color: var(--text-main);
       font-weight: 700;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .profiles-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      overflow-y: auto;
-      max-height: 46dvh;
-    }
-
-    .profile-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 13px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      cursor: pointer;
-    }
-
-    .profile-item.active {
-      border-color: var(--accent-primary);
-    }
-
-    .profile-info {
-      min-width: 0;
-      flex: 1;
-    }
-
-    .profile-name {
-      font-size: 13px;
-      font-weight: 800;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .profile-sub {
-      font-size: 10.5px;
-      color: var(--text-muted);
-      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .mini-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      border: 1px solid var(--border-glass);
-      background: rgba(128, 128, 128, 0.12);
-      color: var(--text-main);
+      font-size: 11.5px;
       cursor: pointer;
     }
 
     .themes-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 7px;
     }
 
     .theme-card {
       display: flex;
       align-items: center;
-      gap: 9px;
-      padding: 10px 12px;
-      border-radius: 12px;
+      gap: 8px;
+      padding: 9px 11px;
+      border-radius: 11px;
       background: var(--bg-card);
       border: 1.5px solid var(--border-glass);
       color: var(--text-main);
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -901,27 +889,29 @@
     }
 
     .theme-swatch {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       border: 2px solid rgba(255,255,255,0.4);
     }
 
     .toast {
       position: fixed;
-      top: 16px;
+      top: 14px;
       left: 50%;
       transform: translateX(-50%) translateY(-80px);
       background: var(--sheet-bg);
       border: 1.5px solid var(--accent-primary);
       color: var(--text-main);
       padding: 8px 14px;
-      border-radius: 11px;
-      font-size: 12px;
+      border-radius: 10px;
+      font-size: 11.5px;
       font-weight: 800;
       z-index: 100;
       transition: transform 0.25s ease;
       pointer-events: none;
+      max-width: 92%;
+      text-align: center;
     }
 
     .toast.show {
@@ -934,11 +924,11 @@
   <div id="toast" class="toast">Готово</div>
 
   <div id="app" class="app-shell">
-    <!-- 1. ВЕРХНЯЯ ПАНЕЛЬ С ТОЧНОЙ 3D ИКОНКОЙ КЛОУНА -->
+    <!-- 1. ВЕРХНЯЯ ПАНЕЛЬ С КЛОУНОМ И КНОПКОЙ РАЗМЕРА ЭКРАНА -->
     <header class="top-bar">
       <div class="brand">
         <div class="brand-logo" title="MVZ">
-          <svg width="42" height="42" viewBox="0 0 512 512">
+          <svg width="38" height="38" viewBox="0 0 512 512">
             <defs>
               <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#8b1da8"/>
@@ -990,1136 +980,4 @@
             <ellipse cx="314" cy="224" rx="16.5" ry="33" fill="#0d0d0d"/>
             <path d="M148 318 C184 358, 328 358, 364 318 C354 398, 298 422, 256 422 C214 422, 158 398, 148 318 Z"
                   fill="#ffffff" stroke="url(#lipGrad)" stroke-width="26" stroke-linejoin="round" stroke-linecap="round"/>
-            <circle cx="256" cy="272" r="31" fill="url(#noseGrad)"/>
-            <ellipse cx="246" cy="261" rx="9" ry="6" fill="#ffffff" opacity="0.45" transform="rotate(-20 246 261)"/>
-          </svg>
-        </div>
-        <div>
-          <div class="brand-title-row">
-            <span class="brand-title">MVZ</span>
-            <span class="proto-pill" id="activeProtoBadge">VLESS</span>
-          </div>
-          <div class="brand-sub" id="coreBadge">Xray-core • VLESS & Trojan</div>
-        </div>
-      </div>
-
-      <div class="status-mini">
-        <span class="status-dot"></span>
-        <span id="statusText">Ожидание</span>
-      </div>
-    </header>
-
-    <!-- 2. ВИДЖЕТ СРОКА ПОДПИСКИ И ОБНОВЛЕНИЯ ПО HTTPS -->
-    <section class="sub-banner">
-      <div class="sub-top">
-        <div class="sub-title-group">
-          <span class="sub-badge" id="subStatusBadge">ПОДПИСКА АКТИВНА</span>
-          <span class="sub-expire-text" id="subExpireText">До 15.11.2026 (31 дн.)</span>
-        </div>
-        <div class="sub-actions">
-          <button class="sub-mini-btn" id="syncHttpsSubBtn" type="button">🔄 HTTPS</button>
-          <button class="sub-mini-btn" id="editSubDateBtn" type="button">📅 Срок</button>
-        </div>
-      </div>
-      <div class="sub-progress-track">
-        <div class="sub-progress-fill" id="subProgressFill"></div>
-      </div>
-      <div class="sub-meta-row">
-        <span id="subTrafficInfo">Трафик: Безлимит • Xray Tunnel</span>
-        <span id="subNodesCount">Профилей: 2</span>
-      </div>
-    </section>
-
-    <!-- 3. ЦЕНТРАЛЬНОЕ ЯДРО С ОРБИТАЛЬНОЙ АНИМАЦИЕЙ ДО НАЖАТИЯ -->
-    <section class="core-stage">
-      <div class="power-zone">
-        <div class="idle-pulse-ring"></div>
-        <div class="idle-pulse-ring delay"></div>
-        <div class="idle-orbit-outer"></div>
-        <div class="idle-orbit-inner"></div>
-
-        <button class="power-btn" id="powerBtn" type="button">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
-            <line x1="12" y1="2" x2="12" y2="12"></line>
-          </svg>
-          <span class="power-label" id="powerLabel">Старт</span>
-        </button>
-      </div>
-
-      <div class="stage-footer">
-        <div class="timer-display" id="timerDisplay">00:00:00</div>
-        <div class="step-hint" id="stepHint">Выбери VLESS / Trojan и нажми Старт</div>
-      </div>
-    </section>
-
-    <!-- 4. БЫСТРАЯ КАРУСЕЛЬ ПРОФИЛЕЙ (VLESS + TROJAN + HTTPS) -->
-    <section class="quick-profiles-wrap">
-      <div class="qp-header">
-        <span id="activeNodeTitle">Активный профиль</span>
-        <span style="color:var(--accent-primary);cursor:pointer;" id="pingAllBtn">⚡ Пинг</span>
-      </div>
-      <div class="qp-scroll" id="quickProfilesStrip"></div>
-    </section>
-
-    <!-- 5. ЖИВАЯ ТЕЛЕМЕТРИЯ СКОРОСТИ -->
-    <section class="telemetry-grid">
-      <div class="speed-box">
-        <div class="speed-top">
-          <span>СКАЧИВАНИЕ</span>
-          <span style="color:var(--accent-primary)">↓</span>
-        </div>
-        <div>
-          <span class="speed-val" id="dlSpeed">0.0</span>
-          <span class="speed-unit" id="dlUnit">КБ/с</span>
-        </div>
-        <canvas id="dlCanvas" class="speed-canvas" width="160" height="24"></canvas>
-      </div>
-
-      <div class="speed-box">
-        <div class="speed-top">
-          <span>ОТДАЧА</span>
-          <span style="color:var(--accent-green)">↑</span>
-        </div>
-        <div>
-          <span class="speed-val" id="ulSpeed">0.0</span>
-          <span class="speed-unit" id="ulUnit">КБ/с</span>
-        </div>
-        <canvas id="ulCanvas" class="speed-canvas" width="160" height="24"></canvas>
-      </div>
-    </section>
-
-    <!-- 6. НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
-    <nav class="bottom-nav">
-      <button class="nav-btn primary-action" id="openAddModalBtn" type="button">
-        <span>➕ Вставить</span>
-        <span>HTTPS / Ключ</span>
-      </button>
-      <button class="nav-btn" id="openProfilesBtn" type="button">
-        <span>🗂 Профили</span>
-        <span>VLESS / Trojan</span>
-      </button>
-      <button class="nav-btn" id="openLogsBtn" type="button">
-        <span>🖥 Консоль</span>
-        <span>Ядро Xray</span>
-      </button>
-      <button class="nav-btn" id="openThemesBtn" type="button">
-        <span>🎨 Темы</span>
-        <span>5 стилей</span>
-      </button>
-    </nav>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО: УНИВЕРСАЛЬНЫЙ ИМПОРТ (HTTPS, VLESS, TROJAN, VMESS, SS) -->
-  <div class="modal-backdrop" id="addModal">
-    <div class="sheet">
-      <div class="sheet-head">
-        <div class="sheet-title">Добавить ссылку или конструктор</div>
-        <button class="close-btn" id="closeAddBtn" type="button">✕</button>
-      </div>
-
-      <div class="tabs-row">
-        <button class="tab-btn active" id="tabPasteLink" type="button">Любая ссылка / HTTPS</button>
-        <button class="tab-btn" id="tabManualBuild" type="button">Создать Trojan / VLESS</button>
-      </div>
-
-      <!-- Вкладка 1: Вставка любой ссылки -->
-      <div id="pasteLinkPane" style="display:flex;flex-direction:column;gap:10px;">
-        <textarea id="universalInput" class="input-box" placeholder="Вставь что угодно:
-• https://... (ссылка подписки или узел)
-• vless://...
-• trojan://...
-• vmess://... или ss://...
-• Base64 список серверов"></textarea>
-        <div class="btn-row">
-          <button class="secondary-btn" id="pasteClipBtn" type="button">📋 Из буфера</button>
-          <button class="primary-btn" id="saveUniversalBtn" type="button">Импортировать всё</button>
-        </div>
-      </div>
-
-      <!-- Вкладка 2: Ручной конструктор Trojan / VLESS -->
-      <div id="manualBuildPane" style="display:none;flex-direction:column;gap:9px;">
-        <div class="form-grid">
-          <select id="mProto" class="field-input">
-            <option value="trojan">Протокол: TROJAN</option>
-            <option value="vless">Протокол: VLESS</option>
-          </select>
-          <select id="mNet" class="field-input">
-            <option value="grpc">Транспорт: gRPC</option>
-            <option value="ws">Транспорт: WebSocket</option>
-            <option value="tcp">Транспорт: TCP</option>
-          </select>
-        </div>
-        <input id="mName" class="field-input" placeholder="Название (напр. 🇵🇱 Польша Trojan)" value="🇵🇱 Польша — Trojan VIP" />
-        <div class="form-grid">
-          <input id="mHost" class="field-input" placeholder="Домен или IP" value="parts.skodamotors.online" />
-          <input id="mPort" class="field-input" placeholder="Порт (443)" value="443" type="number" />
-        </div>
-        <input id="mSecret" class="field-input" placeholder="Пароль Trojan или UUID VLESS" value="647640d8-c26c-42bf-aa78-48a2f8d9759d" />
-        <div class="form-grid">
-          <input id="mSni" class="field-input" placeholder="SNI (домен)" value="parts.skodamotors.online" />
-          <input id="mService" class="field-input" placeholder="gRPC serviceName / WS path" value="1ae7ea2a8adf" />
-        </div>
-        <button class="primary-btn" id="createManualProfileBtn" type="button">Создать и добавить профиль</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО: НАСТРОЙКА СРОКА ПОДПИСКИ -->
-  <div class="modal-backdrop" id="subModal">
-    <div class="sheet">
-      <div class="sheet-head">
-        <div class="sheet-title">Управление подпиской MVZ</div>
-        <button class="close-btn" id="closeSubModalBtn" type="button">✕</button>
-      </div>
-      <input id="subUrlInput" class="field-input" placeholder="https://ссылка-на-подписку..." />
-      <div class="form-grid">
-        <input id="subDateInput" class="field-input" type="date" />
-        <input id="subLimitInput" class="field-input" placeholder="Лимит (напр. 250 ГБ или Безлимит)" value="Безлимит" />
-      </div>
-      <div class="btn-row">
-        <button class="secondary-btn" id="plus30DaysBtn" type="button">+30 дней</button>
-        <button class="primary-btn" id="saveSubSettingsBtn" type="button">Сохранить срок</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО: СПИСОК ВСЕХ ПРОФИЛЕЙ -->
-  <div class="modal-backdrop" id="profilesModal">
-    <div class="sheet">
-      <div class="sheet-head">
-        <div class="sheet-title">Все профили (VLESS / Trojan / HTTPS)</div>
-        <button class="close-btn" id="closeProfilesBtn" type="button">✕</button>
-      </div>
-      <div class="profiles-list" id="profilesList"></div>
-    </div>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО: ТЕМЫ -->
-  <div class="modal-backdrop" id="themesModal">
-    <div class="sheet">
-      <div class="sheet-head">
-        <div class="sheet-title">Выбери тему MVZ</div>
-        <button class="close-btn" id="closeThemesBtn" type="button">✕</button>
-      </div>
-      <div class="themes-grid">
-        <div class="theme-card" data-set-theme="purple">
-          <span class="theme-swatch" style="background: linear-gradient(135deg, #9333ea, #4f46e5);"></span>
-          <span>Фиолетовая</span>
-        </div>
-        <div class="theme-card" data-set-theme="black">
-          <span class="theme-swatch" style="background: linear-gradient(135deg, #090d16, #00f2fe);"></span>
-          <span>Черная</span>
-        </div>
-        <div class="theme-card" data-set-theme="white">
-          <span class="theme-swatch" style="background: linear-gradient(135deg, #ffffff, #6366f1);"></span>
-          <span>Белая</span>
-        </div>
-        <div class="theme-card" data-set-theme="crimson">
-          <span class="theme-swatch" style="background: linear-gradient(135deg, #e11d48, #4c0519);"></span>
-          <span>Киберпанк</span>
-        </div>
-        <div class="theme-card" data-set-theme="emerald" style="grid-column: span 2;">
-          <span class="theme-swatch" style="background: linear-gradient(135deg, #10b981, #064e3b);"></span>
-          <span>Изумрудная Матрица</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО: КОНСОЛЬ XRAY-CORE -->
-  <div class="modal-backdrop" id="logsModal">
-    <div class="sheet">
-      <div class="sheet-head">
-        <div class="sheet-title">Консоль Xray-core и JSON конфиг</div>
-        <button class="close-btn" id="closeLogsBtn" type="button">✕</button>
-      </div>
-      <div class="btn-row">
-        <button class="secondary-btn" id="showLiveLogsBtn" type="button" style="flex:1">Логи Xray</button>
-        <button class="secondary-btn" id="showConfigJsonBtn" type="button" style="flex:1">JSON Конфиг</button>
-      </div>
-      <pre id="consoleBox" class="code-view">Ожидание запуска Xray-core...</pre>
-    </div>
-  </div>
-
-  <script>
-    // Дефолтные профили: 1) Ваш VLESS Польша + 2) Готовый Trojan Польша
-    const DEFAULT_VLESS_URI = "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=tls&alpn=h2&encryption=none&authority=parts.skodamotors.online&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Reality%202%20%F0%9F%9B%B0%EF%B8%8F";
-    const DEFAULT_TROJAN_URI = "trojan://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=tls&alpn=h2&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Trojan%20TLS%20%F0%9F%9B%A1%EF%B8%8F";
-
-    const hasNativeXray = typeof window.AndroidXray !== "undefined";
-    const toastEl = document.getElementById("toast");
-
-    function showToast(msg) {
-      toastEl.textContent = msg;
-      toastEl.classList.add("show");
-      setTimeout(() => toastEl.classList.remove("show"), 2400);
-    }
-
-    // Темы
-    const savedTheme = localStorage.getItem("mvz_theme") || "purple";
-    function applyTheme(t) {
-      document.body.setAttribute("data-theme", t);
-      localStorage.setItem("mvz_theme", t);
-      document.querySelectorAll("[data-set-theme]").forEach(el => {
-        el.classList.toggle("active", el.getAttribute("data-set-theme") === t);
-      });
-    }
-    applyTheme(savedTheme);
-    document.querySelectorAll("[data-set-theme]").forEach(card => {
-      card.addEventListener("click", () => {
-        applyTheme(card.getAttribute("data-set-theme"));
-        document.getElementById("themesModal").classList.remove("open");
-        showToast("Тема установлена");
-      });
-    });
-
-    // =========================================================================
-    // УНИВЕРСАЛЬНЫЙ ПАРСЕР ССЫЛОК (vless://, trojan://, vmess://, ss://, https://)
-    // =========================================================================
-    function parseSingleUri(rawLine) {
-      const uri = rawLine.trim();
-      if (!uri) return null;
-
-      // 1. VLESS и TROJAN
-      if (uri.startsWith("vless://") || uri.startsWith("trojan://")) {
-        const protocol = uri.startsWith("trojan://") ? "trojan" : "vless";
-        let rest = uri.split("://")[1];
-        let remark = protocol.toUpperCase() + " Профиль";
-        if (rest.includes("#")) {
-          const parts = rest.split("#");
-          rest = parts[0];
-          try {
-            remark = decodeURIComponent(parts.slice(1).join("#")).trim() || remark;
-          } catch (e) {
-            remark = parts[1];
-          }
-        }
-
-        let queryString = "";
-        if (rest.includes("?")) {
-          const qParts = rest.split("?");
-          rest = qParts[0];
-          queryString = qParts.slice(1).join("?");
-        }
-
-        const atParts = rest.split("@");
-        const secret = decodeURIComponent(atParts[0] || "");
-        const hostPort = atParts[1] || rest;
-        const hp = hostPort.split(":");
-        const host = hp[0] || "parts.skodamotors.online";
-        const port = parseInt((hp[1] || "443").replace(/\D/g, ""), 10) || 443;
-
-        const params = new URLSearchParams(queryString);
-        const flagMatch = remark.match(/(\p{Regional_Indicator}{2})/u);
-
-        return {
-          id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
-          raw: uri,
-          protocol,
-          name: remark,
-          icon: flagMatch ? flagMatch[1] : (protocol === "trojan" ? "🛡️" : "🛰️"),
-          uuid: secret,
-          password: secret,
-          host,
-          port,
-          encryption: params.get("encryption") || "none",
-          flow: params.get("flow") || "",
-          type: (params.get("type") || "tcp").toLowerCase(),
-          security: (params.get("security") || "tls").toLowerCase(),
-          sni: params.get("sni") || params.get("authority") || params.get("host") || host,
-          authority: params.get("authority") || params.get("sni") || host,
-          fp: params.get("fp") || "chrome",
-          alpn: params.get("alpn") || "h2",
-          mode: params.get("mode") || "gun",
-          serviceName: params.get("serviceName") || "",
-          pbk: params.get("pbk") || "",
-          sid: params.get("sid") || "",
-          spx: params.get("spx") || "/",
-          path: params.get("path") || "/",
-          ping: 36
-        };
-      }
-
-      // 2. VMESS (Base64 JSON)
-      if (uri.startsWith("vmess://")) {
-        try {
-          const b64 = uri.slice(8).trim();
-          const json = JSON.parse(decodeURIComponent(escape(atob(b64))));
-          return {
-            id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
-            raw: uri,
-            protocol: "vmess",
-            name: json.ps || "VMess Узел",
-            icon: "⚡",
-            uuid: json.id || "",
-            host: json.add || "",
-            port: parseInt(json.port || "443", 10),
-            type: (json.net || "tcp").toLowerCase(),
-            security: (json.tls || "none").toLowerCase(),
-            sni: json.sni || json.host || json.add || "",
-            fp: json.fp || "chrome",
-            path: json.path || "/",
-            serviceName: json.path || "",
-            mode: "gun",
-            ping: 42
-          };
-        } catch (e) {
-          return null;
-        }
-      }
-
-      // 3. Shadowsocks (ss://)
-      if (uri.startsWith("ss://")) {
-        let rest = uri.slice(5);
-        let remark = "Shadowsocks";
-        if (rest.includes("#")) {
-          const p = rest.split("#");
-          rest = p[0];
-          try { remark = decodeURIComponent(p[1]); } catch (e) { remark = p[1]; }
-        }
-        let host = "server";
-        let port = 443;
-        if (rest.includes("@")) {
-          const hp = rest.split("@")[1].split(":");
-          host = hp[0];
-          port = parseInt(hp[1] || "443", 10);
-        }
-        return {
-          id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
-          raw: uri,
-          protocol: "shadowsocks",
-          name: remark,
-          icon: "🔑",
-          uuid: rest.split("@")[0] || "",
-          host,
-          port,
-          type: "tcp",
-          security: "none",
-          sni: host,
-          fp: "chrome",
-          mode: "gun",
-          ping: 45
-        };
-      }
-
-      // 4. Прямая ссылка https:// или http:// как узел/профиль
-      if (uri.startsWith("https://") || uri.startsWith("http://")) {
-        try {
-          const u = new URL(uri);
-          let remark = u.hash ? decodeURIComponent(u.hash.slice(1)) : ("HTTPS • " + u.hostname);
-          return {
-            id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
-            raw: uri,
-            protocol: u.searchParams.get("protocol") || "vless",
-            name: remark,
-            icon: "🌐",
-            uuid: u.username || u.searchParams.get("uuid") || "647640d8-c26c-42bf-aa78-48a2f8d9759d",
-            password: u.password || u.username || "647640d8-c26c-42bf-aa78-48a2f8d9759d",
-            host: u.hostname,
-            port: parseInt(u.port || (u.protocol === "https:" ? "443" : "80"), 10),
-            type: (u.searchParams.get("type") || "ws").toLowerCase(),
-            security: u.protocol === "https:" ? "tls" : "none",
-            sni: u.searchParams.get("sni") || u.hostname,
-            authority: u.hostname,
-            fp: u.searchParams.get("fp") || "chrome",
-            alpn: "h2,http/1.1",
-            mode: "gun",
-            serviceName: u.searchParams.get("serviceName") || "",
-            path: u.pathname || "/",
-            ping: 39
-          };
-        } catch (e) {
-          return null;
-        }
-      }
-
-      return null;
-    }
-
-    // Генератор конфига Xray-core с поддержкой VLESS и TROJAN
-    function buildXrayConfig(node) {
-      const streamSettings = {
-        network: node.type || "tcp",
-        security: node.security || "tls"
-      };
-
-      if (streamSettings.security === "tls") {
-        streamSettings.tlsSettings = {
-          serverName: node.sni || node.host,
-          allowInsecure: false,
-          alpn: node.alpn ? node.alpn.split(",") : ["h2", "http/1.1"],
-          fingerprint: node.fp || "chrome"
-        };
-      } else if (streamSettings.security === "reality") {
-        streamSettings.realitySettings = {
-          serverName: node.sni || node.host,
-          fingerprint: node.fp || "chrome",
-          publicKey: node.pbk || "",
-          shortId: node.sid || "",
-          spiderX: node.spx || "/"
-        };
-      }
-
-      if (streamSettings.network === "grpc") {
-        streamSettings.grpcSettings = {
-          serviceName: node.serviceName || "",
-          multiMode: node.mode === "multi",
-          authority: node.authority || node.sni || node.host
-        };
-      } else if (streamSettings.network === "ws") {
-        streamSettings.wsSettings = {
-          path: node.path || "/",
-          headers: { Host: node.sni || node.host }
-        };
-      }
-
-      let proxyOutbound = {};
-
-      if (node.protocol === "trojan") {
-        proxyOutbound = {
-          tag: "proxy",
-          protocol: "trojan",
-          settings: {
-            servers: [
-              {
-                address: node.host,
-                port: Number(node.port),
-                password: node.password || node.uuid
-              }
-            ]
-          },
-          streamSettings
-        };
-      } else {
-        const userObj = { id: node.uuid, encryption: node.encryption || "none" };
-        if (node.flow) userObj.flow = node.flow;
-        proxyOutbound = {
-          tag: "proxy",
-          protocol: "vless",
-          settings: {
-            vnext: [
-              {
-                address: node.host,
-                port: Number(node.port),
-                users: [userObj]
-              }
-            ]
-          },
-          streamSettings
-        };
-      }
-
-      return {
-        log: { loglevel: "info" },
-        inbounds: [
-          {
-            tag: "socks-in",
-            port: 10808,
-            listen: "127.0.0.1",
-            protocol: "socks",
-            settings: { auth: "noauth", udp: true }
-          },
-          {
-            tag: "http-in",
-            port: 10809,
-            listen: "127.0.0.1",
-            protocol: "http",
-            settings: {}
-          }
-        ],
-        outbounds: [
-          proxyOutbound,
-          { tag: "direct", protocol: "freedom" }
-        ]
-      };
-    }
-
-    // =========================================================================
-    // ХРАНИЛИЩЕ ПРОФИЛЕЙ И СРОКА ПОДПИСКИ
-    // =========================================================================
-    let profiles = [];
-    let activeProfileId = null;
-    let subInfo = {
-      url: "",
-      expireTimestamp: Date.now() + 30 * 86400 * 1000, // +30 дней по умолчанию
-      limitText: "Безлимит",
-      usedGb: 0
-    };
-
-    function loadState() {
-      try {
-        const savedP = localStorage.getItem("mvz_profiles_v4");
-        if (savedP) profiles = JSON.parse(savedP);
-      } catch (e) { profiles = []; }
-
-      if (!profiles || !profiles.length) {
-        profiles = [
-          parseSingleUri(DEFAULT_VLESS_URI),
-          parseSingleUri(DEFAULT_TROJAN_URI)
-        ].filter(Boolean);
-        saveState();
-      }
-
-      activeProfileId = localStorage.getItem("mvz_active_v4") || profiles[0].id;
-      if (!profiles.some(p => p.id === activeProfileId)) {
-        activeProfileId = profiles[0].id;
-      }
-
-      try {
-        const savedSub = localStorage.getItem("mvz_sub_info_v4");
-        if (savedSub) subInfo = { ...subInfo, ...JSON.parse(savedSub) };
-      } catch (e) {}
-    }
-
-    function saveState() {
-      localStorage.setItem("mvz_profiles_v4", JSON.stringify(profiles));
-      localStorage.setItem("mvz_active_v4", activeProfileId);
-      localStorage.setItem("mvz_sub_info_v4", JSON.stringify(subInfo));
-    }
-
-    function getActiveProfile() {
-      return profiles.find(p => p.id === activeProfileId) || profiles[0];
-    }
-
-    // Отрисовка виджета срока подписки
-    function renderSubscriptionBanner() {
-      const now = Date.now();
-      const diffMs = subInfo.expireTimestamp - now;
-      const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-      const expDate = new Date(subInfo.expireTimestamp);
-      const dateStr = expDate.toLocaleDateString("ru-RU");
-
-      const badgeEl = document.getElementById("subStatusBadge");
-      const textEl = document.getElementById("subExpireText");
-      const fillEl = document.getElementById("subProgressFill");
-      const countEl = document.getElementById("subNodesCount");
-      const trafficEl = document.getElementById("subTrafficInfo");
-
-      countEl.textContent = `Профилей: ${profiles.length}`;
-      trafficEl.textContent = `Трафик: ${subInfo.limitText}`;
-
-      if (daysLeft <= 0) {
-        badgeEl.textContent = "СРОК ИСТЕК";
-        badgeEl.classList.add("expired");
-        textEl.textContent = `Истекла ${dateStr}`;
-        fillEl.style.width = "100%";
-      } else {
-        badgeEl.textContent = "ПОДПИСКА АКТИВНА";
-        badgeEl.classList.remove("expired");
-        textEl.textContent = `До ${dateStr} (${daysLeft} дн.)`;
-        const pct = Math.max(8, Math.min(100, Math.round((daysLeft / 30) * 100)));
-        fillEl.style.width = pct + "%";
-      }
-    }
-
-    // Отрисовка горизонтальной ленты профилей и активного узла
-    function renderDashboard() {
-      const active = getActiveProfile();
-      if (!active) return;
-
-      document.getElementById("activeProtoBadge").textContent = (active.protocol || "VLESS").toUpperCase();
-      document.getElementById("activeNodeTitle").textContent = `${active.icon} ${active.name}`;
-
-      const strip = document.getElementById("quickProfilesStrip");
-      strip.innerHTML = "";
-
-      profiles.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "qp-chip" + (item.id === activeProfileId ? " active" : "");
-        const pClass = item.protocol === "trojan" ? "trojan" : (item.raw.startsWith("http") ? "https" : "");
-        card.innerHTML = `
-          <div class="qp-chip-top">
-            <span class="qp-proto-tag ${pClass}">${(item.protocol || "vless").toUpperCase()}</span>
-            <span class="qp-ping">${item.ping ? item.ping + " мс" : "OK"}</span>
-          </div>
-          <div class="qp-name">${item.icon || "🛰️"} ${item.name}</div>
-          <div class="qp-host">${item.host}:${item.port} • ${(item.type || "tcp").toUpperCase()}</div>
-        `;
-        card.addEventListener("click", () => {
-          activeProfileId = item.id;
-          saveState();
-          renderDashboard();
-          showToast(`Выбран: ${item.name}`);
-        });
-        strip.appendChild(card);
-      });
-
-      renderSubscriptionBanner();
-    }
-
-    // Проверка пинга всех профилей
-    document.getElementById("pingAllBtn").addEventListener("click", () => {
-      showToast("Замер пинга...");
-      setTimeout(() => {
-        profiles.forEach(p => {
-          if (hasNativeXray) {
-            const ms = window.AndroidXray.pingHost(p.host, Number(p.port));
-            p.ping = ms > 0 ? ms : 99;
-          } else {
-            p.ping = Math.floor(Math.random() * 22) + 29;
-          }
-        });
-        saveState();
-        renderDashboard();
-      }, 80);
-    });
-
-    // Парсинг текста подписки или набора ссылок
-    function extractLinksFromText(rawText) {
-      let text = rawText.trim();
-      // Если это Base64 без пробелов и без ://
-      if (!text.includes("://") && /^[A-Za-z0-9+/=\s_-]+$/.test(text)) {
-        try {
-          const normalized = text.replace(/-/g, "+").replace(/_/g, "/");
-          text = decodeURIComponent(escape(atob(normalized.replace(/\s+/g, ""))));
-        } catch (e) {
-          try { text = atob(text.replace(/\s+/g, "")); } catch (err) {}
-        }
-      }
-
-      const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
-      const parsedNodes = [];
-      lines.forEach(line => {
-        const node = parseSingleUri(line);
-        if (node) parsedNodes.push(node);
-      });
-      return parsedNodes;
-    }
-
-    // Загрузка подписки по HTTPS-ссылке
-    async function importFromHttpsUrl(urlStr) {
-      showToast("Загрузка HTTPS подписки...");
-      subInfo.url = urlStr;
-
-      try {
-        let bodyText = "";
-        let userInfoHeader = "";
-
-        if (hasNativeXray && window.AndroidXray.fetchSubscription) {
-          const resJson = JSON.parse(window.AndroidXray.fetchSubscription(urlStr));
-          if (resJson.ok && resJson.body) {
-            bodyText = resJson.body;
-            userInfoHeader = resJson.userinfo || "";
-          }
-        } else {
-          const resp = await fetch(urlStr);
-          userInfoHeader = resp.headers.get("Subscription-Userinfo") || "";
-          bodyText = await resp.text();
-        }
-
-        // Разбор заголовка Subscription-Userinfo: upload=..; download=..; total=..; expire=1798761600
-        if (userInfoHeader) {
-          const expMatch = userInfoHeader.match(/expire=(\d+)/i);
-          if (expMatch && expMatch[1]) {
-            subInfo.expireTimestamp = parseInt(expMatch[1], 10) * 1000;
-          }
-          const totalMatch = userInfoHeader.match(/total=(\d+)/i);
-          if (totalMatch && totalMatch[1]) {
-            const totalGb = (parseInt(totalMatch[1], 10) / 1073741824).toFixed(0);
-            if (totalGb > 0) subInfo.limitText = totalGb + " ГБ";
-          }
-        }
-
-        const nodes = extractLinksFromText(bodyText);
-        if (nodes.length > 0) {
-          profiles = [...nodes, ...profiles];
-          activeProfileId = nodes[0].id;
-          saveState();
-          renderDashboard();
-          showToast(`Загружено профилей по HTTPS: ${nodes.length}`);
-          return;
-        }
-      } catch (e) {
-        // Если ссылка не отдает список, сохраняем саму https:// ссылку как рабочий профиль
-      }
-
-      const directNode = parseSingleUri(urlStr);
-      if (directNode) {
-        profiles.unshift(directNode);
-        activeProfileId = directNode.id;
-        saveState();
-        renderDashboard();
-        showToast("HTTPS ссылка добавлена в профили!");
-      } else {
-        showToast("Не удалось распознать ссылку");
-      }
-    }
-
-    // Обработка кнопки «Импортировать всё»
-    document.getElementById("saveUniversalBtn").addEventListener("click", async () => {
-      const raw = document.getElementById("universalInput").value.trim();
-      if (!raw) {
-        showToast("Поле пустое — вставь любую ссылку");
-        return;
-      }
-
-      document.getElementById("addModal").classList.remove("open");
-
-      // Если вставлена одиночная https:// или http:// ссылка — пробуем синхронизировать подписку ИЛИ добавить как узел
-      if ((raw.startsWith("https://") || raw.startsWith("http://")) && !raw.includes("\n")) {
-        await importFromHttpsUrl(raw);
-        return;
-      }
-
-      const nodes = extractLinksFromText(raw);
-      if (nodes.length > 0) {
-        profiles = [...nodes, ...profiles];
-        activeProfileId = nodes[0].id;
-        saveState();
-        renderDashboard();
-        showToast(`Добавлено профилей: ${nodes.length}`);
-      } else {
-        showToast("Ссылка не распознана");
-      }
-    });
-
-    // Конструктор Trojan / VLESS вручную
-    document.getElementById("createManualProfileBtn").addEventListener("click", () => {
-      const proto = document.getElementById("mProto").value;
-      const net = document.getElementById("mNet").value;
-      const name = encodeURIComponent(document.getElementById("mName").value.trim() || "MVZ Server");
-      const host = document.getElementById("mHost").value.trim() || "parts.skodamotors.online";
-      const port = document.getElementById("mPort").value.trim() || "443";
-      const secret = document.getElementById("mSecret").value.trim() || "647640d8-c26c-42bf-aa78-48a2f8d9759d";
-      const sni = document.getElementById("mSni").value.trim() || host;
-      const service = document.getElementById("mService").value.trim();
-
-      const uri = `${proto}://${secret}@${host}:${port}?security=tls&type=${net}&sni=${sni}&fp=chrome&serviceName=${service}&path=${service}#${name}`;
-      const node = parseSingleUri(uri);
-      if (node) {
-        profiles.unshift(node);
-        activeProfileId = node.id;
-        saveState();
-        renderDashboard();
-        document.getElementById("addModal").classList.remove("open");
-        showToast(`Создан ${proto.toUpperCase()} профиль!`);
-      }
-    });
-
-    // Переключение вкладок в модалке добавления
-    const tabPasteLink = document.getElementById("tabPasteLink");
-    const tabManualBuild = document.getElementById("tabManualBuild");
-    const pasteLinkPane = document.getElementById("pasteLinkPane");
-    const manualBuildPane = document.getElementById("manualBuildPane");
-
-    tabPasteLink.addEventListener("click", () => {
-      tabPasteLink.classList.add("active");
-      tabManualBuild.classList.remove("active");
-      pasteLinkPane.style.display = "flex";
-      manualBuildPane.style.display = "none";
-    });
-    tabManualBuild.addEventListener("click", () => {
-      tabManualBuild.classList.add("active");
-      tabPasteLink.classList.remove("active");
-      manualBuildPane.style.display = "flex";
-      pasteLinkPane.style.display = "none";
-    });
-
-    // Управление запуском Xray-core
-    const appEl = document.getElementById("app");
-    const powerBtn = document.getElementById("powerBtn");
-    const powerLabel = document.getElementById("powerLabel");
-    const statusText = document.getElementById("statusText");
-    const stepHint = document.getElementById("stepHint");
-    const timerDisplay = document.getElementById("timerDisplay");
-
-    let connState = "disconnected";
-    let timerSec = 0;
-    let timerInterval = null;
-
-    function formatTime(sec) {
-      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
-      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
-      const s = String(sec % 60).padStart(2, "0");
-      return `${h}:${m}:${s}`;
-    }
-
-    function setConnectedUI(node) {
-      connState = "connected";
-      appEl.className = "app-shell state-connected";
-      statusText.textContent = "Защищено";
-      powerLabel.textContent = "Стоп";
-      stepHint.textContent = `${node.protocol.toUpperCase()} → ${node.host}:${node.port}`;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timerSec++;
-        timerDisplay.textContent = formatTime(timerSec);
-      }, 1000);
-    }
-
-    function setDisconnectedUI() {
-      connState = "disconnected";
-      appEl.className = "app-shell";
-      statusText.textContent = "Ожидание";
-      powerLabel.textContent = "Старт";
-      stepHint.textContent = "Выбери VLESS / Trojan и нажми Старт";
-      clearInterval(timerInterval);
-      timerSec = 0;
-      timerDisplay.textContent = "00:00:00";
-    }
-
-    powerBtn.addEventListener("click", () => {
-      const node = getActiveProfile();
-      if (connState === "disconnected") {
-        connState = "connecting";
-        appEl.className = "app-shell state-connecting";
-        statusText.textContent = "Запуск...";
-        powerLabel.textContent = "Отмена";
-
-        const xrayConfigJson = JSON.stringify(buildXrayConfig(node), null, 2);
-
-        if (hasNativeXray) {
-          const res = window.AndroidXray.startXray(xrayConfigJson);
-          stepHint.textContent = res === "PERMISSION_REQUESTED"
-            ? "Подтверди разрешение VPN..."
-            : `Запуск ${node.protocol.toUpperCase()} туннеля...`;
-
-          const checkLoop = setInterval(() => {
-            if (window.AndroidXray.isRunning()) {
-              clearInterval(checkLoop);
-              setConnectedUI(node);
-            }
-          }, 400);
-          setTimeout(() => clearInterval(checkLoop), 12000);
-        } else {
-          stepHint.textContent = `Подключение (${node.protocol.toUpperCase()})...`;
-          setTimeout(() => setConnectedUI(node), 950);
-        }
-      } else {
-        if (hasNativeXray) window.AndroidXray.stopXray();
-        setDisconnectedUI();
-      }
-    });
-
-    // Графики скорости
-    const dlCanvas = document.getElementById("dlCanvas");
-    const ulCanvas = document.getElementById("ulCanvas");
-    const dlCtx = dlCanvas.getContext("2d");
-    const ulCtx = ulCanvas.getContext("2d");
-    const dlSpeedEl = document.getElementById("dlSpeed");
-    const ulSpeedEl = document.getElementById("ulSpeed");
-    const dlUnitEl = document.getElementById("dlUnit");
-    const ulUnitEl = document.getElementById("ulUnit");
-
-    const dlPoints = Array(24).fill(2);
-    const ulPoints = Array(24).fill(2);
-    let lastRx = 0;
-    let lastTx = 0;
-    let idleTick = 0;
-
-    function formatRate(bytesPerSec) {
-      if (bytesPerSec >= 1048576) return { val: (bytesPerSec / 1048576).toFixed(1), unit: "МБ/с" };
-      return { val: (bytesPerSec / 1024).toFixed(1), unit: "КБ/с" };
-    }
-
-    function drawWave(ctx, points, color) {
-      const w = ctx.canvas.width;
-      const h = ctx.canvas.height;
-      ctx.clearRect(0, 0, w, h);
-      ctx.beginPath();
-      const maxVal = Math.max(...points, 12);
-      const step = w / (points.length - 1);
-      points.forEach((v, i) => {
-        const x = i * step;
-        const y = h - (v / maxVal) * (h - 5) - 2;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-
-    setInterval(() => {
-      idleTick++;
-      if (hasNativeXray && window.AndroidXray.isRunning() && connState !== "connected") {
-        setConnectedUI(getActiveProfile());
-      }
-
-      if (connState === "connected") {
-        if (hasNativeXray) {
-          const raw = window.AndroidXray.getTrafficBytes().split(":");
-          const rx = parseInt(raw[0] || "0", 10);
-          const tx = parseInt(raw[1] || "0", 10);
-          const dRx = lastRx > 0 ? Math.max(0, rx - lastRx) : 0;
-          const dTx = lastTx > 0 ? Math.max(0, tx - lastTx) : 0;
-          lastRx = rx;
-          lastTx = tx;
-
-          const dlF = formatRate(dRx);
-          const ulF = formatRate(dTx);
-          dlSpeedEl.textContent = dlF.val;
-          dlUnitEl.textContent = dlF.unit;
-          ulSpeedEl.textContent = ulF.val;
-          ulUnitEl.textContent = ulF.unit;
-
-          dlPoints.push(dRx / 1024);
-          dlPoints.shift();
-          ulPoints.push(dTx / 1024);
-          ulPoints.shift();
-        } else {
-          const dl = (Math.random() * 520 + 160).toFixed(1);
-          const ul = (Math.random() * 110 + 30).toFixed(1);
-          dlSpeedEl.textContent = dl;
-          ulSpeedEl.textContent = ul;
-          dlPoints.push(parseFloat(dl));
-          dlPoints.shift();
-          ulPoints.push(parseFloat(ul));
-          ulPoints.shift();
-        }
-      } else {
-        dlSpeedEl.textContent = "0.0";
-        ulSpeedEl.textContent = "0.0";
-        dlPoints.push(3 + Math.sin(idleTick * 0.7) * 2);
-        dlPoints.shift();
-        ulPoints.push(3 + Math.cos(idleTick * 0.7) * 2);
-        ulPoints.shift();
-      }
-      drawWave(dlCtx, dlPoints, "#c084fc");
-      drawWave(ulCtx, ulPoints, "#10b981");
-    }, 900);
-
-    // Модальные окна и кнопки
-    const addModal = document.getElementById("addModal");
-    const subModal = document.getElementById("subModal");
-    const profilesModal = document.getElementById("profilesModal");
-    const themesModal = document.getElementById("themesModal");
-    const logsModal = document.getElementById("logsModal");
-    const profilesList = document.getElementById("profilesList");
-    const consoleBox = document.getElementById("consoleBox");
-
-    document.getElementById("openAddModalBtn").addEventListener("click", () => {
-      document.getElementById("universalInput").value = "";
-      addModal.classList.add("open");
-    });
-    document.getElementById("closeAddBtn").addEventListener("click", () => addModal.classList.remove("open"));
-
-    document.getElementById("pasteClipBtn").addEventListener("click", async () => {
-      try {
-        document.getElementById("universalInput").value = await navigator.clipboard.readText();
-      } catch (e) {
-        showToast("Вставь долгим нажатием в поле");
-      }
-    });
-
-    // Управление сроком подписки
-    document.getElementById("editSubDateBtn").addEventListener("click", () => {
-      document.getElementById("subUrlInput").value = subInfo.url || "";
-      document.getElementById("subDateInput").value = new Date(subInfo.expireTimestamp).toISOString().split("T")[0];
-      document.getElementById("subLimitInput").value = subInfo.limitText || "Безлимит";
-      subModal.classList.add("open");
-    });
-    document.getElementById("closeSubModalBtn").addEventListener("click", () => subModal.classList.remove("open"));
-
-    document.getElementById("plus30DaysBtn").addEventListener("click", () => {
-      subInfo.expireTimestamp = Date.now() + 30 * 86400 * 1000;
-      document.getElementById("subDateInput").value = new Date(subInfo.expireTimestamp).toISOString().split("T")[0];
-    });
-
-    document.getElementById("saveSubSettingsBtn").addEventListener("click", async () => {
-      const urlVal = document.getElementById("subUrlInput").value.trim();
-      const dateVal = document.getElementById("subDateInput").value;
-      const limitVal = document.getElementById("subLimitInput").value.trim();
-
-      if (dateVal) subInfo.expireTimestamp = new Date(dateVal).getTime();
-      if (limitVal) subInfo.limitText = limitVal;
-      subInfo.url = urlVal;
-      saveState();
-      renderSubscriptionBanner();
-      subModal.classList.remove("open");
-
-      if (urlVal.startsWith("http")) {
-        await importFromHttpsUrl(urlVal);
-      } else {
-        showToast("Срок подписки обновлен");
-      }
-    });
-
-    document.getElementById("syncHttpsSubBtn").addEventListener("click", async () => {
-      if (subInfo.url && subInfo.url.startsWith("http")) {
-        await importFromHttpsUrl(subInfo.url);
-      } else {
-        document.getElementById("universalInput").value = "";
-        addModal.classList.add("open");
-        showToast("Вставь https:// ссылку подписки");
-      }
-    });
-
-    // Список профилей в модалке
-    function renderFullProfilesModal() {
-      profilesList.innerHTML = "";
-      profiles.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "profile-item" + (item.id === activeProfileId ? " active" : "");
-        div.innerHTML = `
-          <div class="profile-info">
-            <div class="profile-name">${item.icon || "🛰️"} [${(item.protocol || "vless").toUpperCase()}] ${item.name}</div>
-            <div class="profile-sub">${item.host}:${item.port} • ${(item.type || "tcp").toUpperCase()} • SNI: ${item.sni}</div>
-          </div>
-          <div style="display:flex;gap:5px;">
-            <button class="mini-btn copy" type="button">📋</button>
-            ${profiles.length > 1 ? `<button class="mini-btn del" type="button">🗑</button>` : ""}
-          </div>
-        `;
-        div.querySelector(".profile-info").addEventListener("click", () => {
-          activeProfileId = item.id;
-          saveState();
-          renderDashboard();
-          profilesModal.classList.remove("open");
-          showToast("Активен: " + item.name);
-        });
-        div.querySelector(".copy").addEventListener("click", (e) => {
-          e.stopPropagation();
-          navigator.clipboard && navigator.clipboard.writeText(item.raw);
-          showToast("Скопировано");
-        });
-        const del = div.querySelector(".del");
-        if (del) {
-          del.addEventListener("click", (e) => {
-            e.stopPropagation();
-            profiles = profiles.filter(p => p.id !== item.id);
-            if (activeProfileId === item.id) activeProfileId = profiles[0].id;
-            saveState();
-            renderDashboard();
-            renderFullProfilesModal();
-          });
-        }
-        profilesList.appendChild(div);
-      });
-    }
-
-    document.getElementById("openProfilesBtn").addEventListener("click", () => {
-      renderFullProfilesModal();
-      profilesModal.classList.add("open");
-    });
-    document.getElementById("closeProfilesBtn").addEventListener("click", () => profilesModal.classList.remove("open"));
-
-    document.getElementById("openThemesBtn").addEventListener("click", () => themesModal.classList.add("open"));
-    document.getElementById("closeThemesBtn").addEventListener("click", () => themesModal.classList.remove("open"));
-
-    document.getElementById("openLogsBtn").addEventListener("click", () => {
-      logsModal.classList.add("open");
-      if (hasNativeXray) {
-        consoleBox.textContent = window.AndroidXray.getLogs() || "Нажми «Старт», чтобы увидеть живые логи Xray-core.";
-      } else {
-        consoleBox.textContent = JSON.stringify(buildXrayConfig(getActiveProfile()), null, 2);
-      }
-    });
-    document.getElementById("closeLogsBtn").addEventListener("click", () => logsModal.classList.remove("open"));
-
-    document.getElementById("showLiveLogsBtn").addEventListener("click", () => {
-      consoleBox.textContent = hasNativeXray
-        ? (window.AndroidXray.getLogs() || "Логов пока нет.")
-        : "Живые логи libxray.so отображаются на телефоне после запуска туннеля.";
-    });
-
-    document.getElementById("showConfigJsonBtn").addEventListener("click", () => {
-      consoleBox.textContent = JSON.stringify(buildXrayConfig(getActiveProfile()), null, 2);
-    });
-
-    loadState();
-    renderDashboard();
-  </script>
-</body>
-</html>
+            <circle cx="256" cy="272
