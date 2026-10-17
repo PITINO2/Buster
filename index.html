@@ -5,8 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>MVZ — VLESS & Trojan Client</title>
   <style>
-    /* 1. Фиолетовая тема (MVZ Purple) */
-    :root, [data-theme="purple"] {
+    /* 1. Черная тема (Happ Dark) */
+    :root, [data-theme="black"] {
+      --bg-dark: #0b0c10;
+      --bg-glow: rgba(99, 102, 241, 0.16);
+      --bg-card: #18191e;
+      --bg-card-header: #1f2128;
+      --bg-row-hover: rgba(255, 255, 255, 0.05);
+      --sheet-bg: #18191e;
+      --menu-bg: #252730;
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f5f9;
+      --text-muted: #8b95a5;
+      --accent-primary: #6366f1;
+      --accent-secondary: #00f2fe;
+      --btn-core-bg: radial-gradient(circle at 35% 30%, #1e293b, #090d16 75%);
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+    }
+
+    /* 2. Фиолетовая тема (MVZ Purple) */
+    [data-theme="purple"] {
       --bg-dark: #090514;
       --bg-glow: rgba(168, 85, 247, 0.24);
       --bg-card: #16141c;
@@ -20,26 +40,6 @@
       --accent-primary: #c084fc;
       --accent-secondary: #6366f1;
       --btn-core-bg: radial-gradient(circle at 35% 30%, #3b0764, #120624 75%);
-      --accent-green: #10b981;
-      --accent-amber: #f59e0b;
-      --accent-red: #ef4444;
-    }
-
-    /* 2. Черная тема (Happ Dark / Onyx) */
-    [data-theme="black"] {
-      --bg-dark: #0b0c10;
-      --bg-glow: rgba(99, 102, 241, 0.15);
-      --bg-card: #18191e;
-      --bg-card-header: #1f2128;
-      --bg-row-hover: rgba(255, 255, 255, 0.05);
-      --sheet-bg: #18191e;
-      --menu-bg: #252730;
-      --border-glass: rgba(255, 255, 255, 0.07);
-      --text-main: #f1f5f9;
-      --text-muted: #8b95a5;
-      --accent-primary: #6366f1;
-      --accent-secondary: #00f2fe;
-      --btn-core-bg: radial-gradient(circle at 35% 30%, #1e293b, #090d16 75%);
     }
 
     /* 3. Белая тема (Arctic Light) */
@@ -458,7 +458,7 @@
     }
 
     /* =========================================================================
-       3. СВОРАЧИВАЕМЫЕ ПРОФИЛИ ПОДПИСОК (ТОЧЬ-В-ТОЧЬ КАК НА СКРИНШОТЕ)
+       3. СВОРАЧИВАЕМЫЕ ПРОФИЛИ И МАРШРУТЫ
        ========================================================================= */
     .profiles-scroll-area {
       width: 100%;
@@ -470,6 +470,19 @@
       flex-direction: column;
       gap: 10px;
       padding-right: 1px;
+    }
+
+    .empty-profiles-box {
+      background: var(--bg-card);
+      border: 1.5px dashed var(--border-glass);
+      border-radius: 14px;
+      padding: 26px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
     }
 
     .sub-group-card {
@@ -569,13 +582,19 @@
       color: #f59e0b;
     }
 
-    /* Полоса «Истекает: 06.01.2027» + тонкая линия прогресса */
+    .sgh-icon-btn.ok-green {
+      color: #10b981;
+    }
+
     .sub-expire-bar {
       background: var(--bg-card-header);
       padding: 0 12px 7px;
       font-size: 11px;
       color: #cbd5e1;
       font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .sub-thin-line {
@@ -591,7 +610,6 @@
       background: linear-gradient(90deg, #6366f1, #a855f7);
     }
 
-    /* Тело профиля со списком серверов (открывается и закрывается) */
     .sub-servers-body {
       display: flex;
       flex-direction: column;
@@ -608,7 +626,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       padding: 10px 12px;
       border-bottom: 1px solid var(--border-glass);
       cursor: pointer;
@@ -633,7 +651,6 @@
       flex: 1;
     }
 
-    /* Круглая иконка флага как на скриншоте */
     .srv-flag-circle {
       width: 30px;
       height: 30px;
@@ -678,16 +695,44 @@
       flex-shrink: 0;
     }
 
-    .srv-ping-badge {
-      font-size: 11px;
-      font-weight: 700;
+    /* Кнопка индивидуального пинга конкретного маршрута */
+    .srv-ping-btn {
+      height: 26px;
+      padding: 0 8px;
+      border-radius: 7px;
+      border: 1px solid var(--border-glass);
+      background: rgba(16, 185, 129, 0.12);
       color: var(--accent-green);
+      font-size: 11px;
+      font-weight: 800;
       font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
     }
 
-    /* =========================================================================
-       4. ВСПЛЫВАЮЩЕЕ МЕНЮ НА ТРИ ТОЧКИ (⋯) ТОЧЬ-В-ТОЧЬ КАК НА СКРИНШОТЕ
-       ========================================================================= */
+    .srv-ping-btn.timeout {
+      background: rgba(239, 68, 68, 0.14);
+      color: var(--accent-red);
+    }
+
+    .srv-ping-btn:active {
+      transform: scale(0.92);
+    }
+
+    .srv-del-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 1px solid var(--border-glass);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    /* 4. ВСПЛЫВАЮЩЕЕ МЕНЮ НА ТРИ ТОЧКИ (⋯) */
     .context-menu-backdrop {
       position: fixed;
       inset: 0;
@@ -761,7 +806,7 @@
       color: #f87171;
     }
 
-    /* 5. НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ */
+    /* 5. НИЖНЯЯ НАВИГАЦИЯ */
     .bottom-nav {
       width: 100%;
       min-width: 0;
@@ -1022,7 +1067,7 @@
 
   <div id="toast" class="toast">Готово</div>
 
-  <!-- Подложка и само контекстное меню на три точки (⋯) как на скриншоте -->
+  <!-- Всплывающее меню на три точки (⋯) -->
   <div id="ctxBackdrop" class="context-menu-backdrop"></div>
   <div id="happContextMenu" class="happ-dropdown-menu">
     <button class="dd-item" data-menu-action="routing" type="button">
@@ -1205,11 +1250,11 @@
           </div>
         </div>
 
-        <div class="step-hint" id="stepHint">Выбери сервер в профиле ниже</div>
+        <div class="step-hint" id="stepHint">Выбери маршрут в профиле ниже</div>
       </div>
     </section>
 
-    <!-- 3. СПИСОК СВОРАЧИВАЕМЫХ ПРОФИЛЕЙ (КАК НА СКРИНШОТЕ) -->
+    <!-- 3. СПИСОК СВОРАЧИВАЕМЫХ ПРОФИЛЕЙ -->
     <main class="profiles-scroll-area" id="profilesAccordionArea"></main>
 
     <!-- 4. НИЖНЯЯ НАВИГАЦИЯ -->
@@ -1248,7 +1293,7 @@
 
       <div id="pasteLinkPane" style="display:flex;flex-direction:column;gap:8px;">
         <input id="newGroupTitleInput" class="field-input" placeholder="Название профиля (напр. MVZ VPS | @mvzapretbot)" value="MVZ VPS | @mvzapretbot" />
-        <textarea id="universalInput" class="input-box" placeholder="Вставь ссылку подписки https://... (откроются все серверы внутри профиля) или ключи vless://, trojan://"></textarea>
+        <textarea id="universalInput" class="input-box" placeholder="Вставь ссылку подписки https://... (распакуются все маршруты внутри неё) или ключи vless://, trojan://"></textarea>
         <div class="btn-row">
           <button class="secondary-btn" id="pasteClipBtn" type="button">📋 Из буфера</button>
           <button class="primary-btn" id="saveUniversalBtn" type="button">Импортировать в профиль</button>
@@ -1267,7 +1312,7 @@
             <option value="tcp">Транспорт: TCP</option>
           </select>
         </div>
-        <input id="mName" class="field-input" placeholder="Название сервера" value="Нидерланды — Reality 6 ⚡" />
+        <input id="mName" class="field-input" placeholder="Название маршрута" value="Нидерланды — Reality 6 ⚡" />
         <div class="form-grid">
           <input id="mHost" class="field-input" placeholder="Хост / IP" value="parts.skodamotors.online" />
           <input id="mPort" class="field-input" placeholder="Порт" value="443" type="number" />
@@ -1277,12 +1322,12 @@
           <input id="mSecType" class="field-input" placeholder="TLS или REALITY" value="REALITY" />
           <input id="mSni" class="field-input" placeholder="SNI" value="parts.skodamotors.online" />
         </div>
-        <button class="primary-btn" id="createManualProfileBtn" type="button">Добавить сервер в профиль</button>
+        <button class="primary-btn" id="createManualProfileBtn" type="button">Добавить маршрут в профиль</button>
       </div>
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 2: РЕДАКТИРОВАНИЕ ПРОФИЛЯ (Из меню «Редактировать») -->
+  <!-- МОДАЛЬНОЕ ОКНО 2: РЕДАКТИРОВАНИЕ ПРОФИЛЯ -->
   <div class="modal-backdrop" id="editGroupModal">
     <div class="sheet">
       <div class="sheet-head">
@@ -1292,14 +1337,18 @@
       <input id="editGroupName" class="field-input" placeholder="Название профиля (напр. MVZ VPS | @mvzapretbot)" />
       <input id="editGroupUrl" class="field-input" placeholder="URL подписки (https://...)" />
       <div class="form-grid">
-        <input id="editGroupExpire" class="field-input" placeholder="Истекает (напр. 06.01.2027)" />
+        <input id="editGroupExpire" class="field-input" placeholder="Истекает (ДД.ММ.ГГГГ, напр. 23.10.2026)" />
         <input id="editGroupAutoUpdate" class="field-input" placeholder="Автообновление (12ч.)" />
+      </div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="setTest8DaysBtn" type="button">Тест: 8 дн. (⚠️)</button>
+        <button class="secondary-btn" id="setTest30DaysBtn" type="button">Тест: 30 дн. (✅)</button>
       </div>
       <button class="primary-btn" id="saveEditGroupBtn" type="button">Сохранить изменения</button>
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 3: МАРШРУТИЗАЦИЯ (Из меню «Маршрутизация») -->
+  <!-- МОДАЛЬНОЕ ОКНО 3: МАРШРУТИЗАЦИЯ -->
   <div class="modal-backdrop" id="routingModal">
     <div class="sheet">
       <div class="sheet-head">
@@ -1322,7 +1371,7 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 4: НАСТРОЙКИ ПРОФИЛЯ (Из меню «Настройки») -->
+  <!-- МОДАЛЬНОЕ ОКНО 4: НАСТРОЙКИ ПРОФИЛЯ -->
   <div class="modal-backdrop" id="groupSettingsModal">
     <div class="sheet">
       <div class="sheet-head">
@@ -1339,10 +1388,6 @@
         </select>
       </div>
       <div class="option-row">
-        <span>Обновлять при открытии приложения</span>
-        <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--accent-primary);" />
-      </div>
-      <div class="option-row">
         <span>Разрешить небезопасные сертификаты (allowInsecure)</span>
         <input type="checkbox" id="allowInsecureCheck" style="width:18px;height:18px;accent-color:var(--accent-primary);" />
       </div>
@@ -1350,7 +1395,7 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 5: НАСТРОЙКА РАЗМЕРА ПОД УСТРОЙСТВО -->
+  <!-- МОДАЛЬНОЕ ОКНО 5: РАЗМЕР ИНТЕРФЕЙСА -->
   <div class="modal-backdrop" id="scaleModal">
     <div class="sheet">
       <div class="sheet-head">
@@ -1425,7 +1470,6 @@
       setTimeout(() => toastEl.classList.remove("show"), 2500);
     }
 
-    // Системные цвета статус-бара и нав-бара Android
     const THEME_BAR_COLORS = {
       black: "#0b0c10",
       purple: "#090514",
@@ -1485,7 +1529,7 @@
     });
     document.getElementById("resetScaleBtn").addEventListener("click", () => applyUiScale(100));
 
-    // Отрисовка круглого SVG-флага (Нидерланды, Польша и др. как на скриншоте)
+    // Отрисовка круглого SVG-флага
     function renderCountryFlagSvg(countryHint, fallbackEmoji) {
       const text = (countryHint || "").toLowerCase();
       if (text.includes("нидерланд") || text.includes("netherland") || text.includes("nl") || fallbackEmoji === "🇳🇱") {
@@ -1511,7 +1555,27 @@
       return `<span>${fallbackEmoji || "🌐"}</span>`;
     }
 
-    // Парсер ссылки маршрута (vless://, trojan://, vmess://, ss://)
+    // Расчет количества оставшихся дней по строке ДД.ММ.ГГГГ (например «06.01.2027»)
+    function calculateDaysRemaining(dateStr) {
+      if (!dateStr) return 30;
+      const parts = dateStr.trim().split(".");
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        const expTime = new Date(year, month, day, 23, 59, 59).getTime();
+        if (!isNaN(expTime)) {
+          return Math.ceil((expTime - Date.now()) / (1000 * 60 * 60 * 24));
+        }
+      }
+      const parsed = Date.parse(dateStr);
+      if (!isNaN(parsed)) {
+        return Math.ceil((parsed - Date.now()) / (1000 * 60 * 60 * 24));
+      }
+      return 30;
+    }
+
+    // Парсер ссылки маршрута
     function parseRouteUri(rawLine) {
       const uri = rawLine.trim();
       if (!uri) return null;
@@ -1572,7 +1636,7 @@
           sid: params.get("sid") || "",
           spx: params.get("spx") || "/",
           path: params.get("path") || "/",
-          ping: Math.floor(Math.random() * 18) + 28
+          ping: null
         };
       }
 
@@ -1595,7 +1659,7 @@
             fp: "chrome",
             path: json.path || "/",
             mode: "gun",
-            ping: 39
+            ping: null
           };
         } catch (e) { return null; }
       }
@@ -1603,7 +1667,6 @@
       return null;
     }
 
-    // Стартовые серверы для профиля «MVZ VPS | @mvzapretbot» (как на скриншоте + ваш польский сервер)
     const INITIAL_URIS = [
       "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=tls&type=ws&sni=parts.skodamotors.online&fp=chrome#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%201%20%F0%9F%8C%90",
       "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=tls&alpn=h2&encryption=none&authority=parts.skodamotors.online&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%202%20%F0%9F%9B%B0%EF%B8%8F",
@@ -1614,7 +1677,6 @@
       "trojan://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=tls&alpn=h2&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Trojan%20TLS%20%F0%9F%9B%A1%EF%B8%8F"
     ];
 
-    // Хранилище групп профилей (аккордеонов)
     let profileGroups = [];
     let activeServerId = null;
     let activeMenuGroupId = null;
@@ -1637,26 +1699,28 @@
     }
 
     function loadState() {
+      const initializedBefore = localStorage.getItem("mvz_initialized_v7");
       try {
-        const saved = localStorage.getItem("mvz_profile_groups_v6");
-        if (saved) profileGroups = JSON.parse(saved);
+        const saved = localStorage.getItem("mvz_profile_groups_v7");
+        if (saved !== null) profileGroups = JSON.parse(saved);
       } catch (e) { profileGroups = []; }
 
-      if (!profileGroups || !profileGroups.length) {
+      if (!initializedBefore) {
         profileGroups = [createDefaultGroup()];
+        localStorage.setItem("mvz_initialized_v7", "1");
       }
 
       const allServers = getAllServers();
-      activeServerId = localStorage.getItem("mvz_active_srv_v6") || (allServers[0] && allServers[0].id);
-      if (!allServers.some(s => s.id === activeServerId) && allServers[0]) {
+      activeServerId = localStorage.getItem("mvz_active_srv_v7") || (allServers[0] && allServers[0].id) || null;
+      if (allServers.length > 0 && !allServers.some(s => s.id === activeServerId)) {
         activeServerId = allServers[0].id;
       }
       saveState();
     }
 
     function saveState() {
-      localStorage.setItem("mvz_profile_groups_v6", JSON.stringify(profileGroups));
-      if (activeServerId) localStorage.setItem("mvz_active_srv_v6", activeServerId);
+      localStorage.setItem("mvz_profile_groups_v7", JSON.stringify(profileGroups));
+      if (activeServerId) localStorage.setItem("mvz_active_srv_v7", activeServerId);
     }
 
     function getAllServers() {
@@ -1669,7 +1733,7 @@
 
     function getActiveServer() {
       const all = getAllServers();
-      return all.find(s => s.id === activeServerId) || all[0];
+      return all.find(s => s.id === activeServerId) || all[0] || null;
     }
 
     function formatNowTimestamp() {
@@ -1679,22 +1743,133 @@
     }
 
     // =========================================================================
-    // ОТРИСОВКА СВОРАЧИВАЕМЫХ ПРОФИЛЕЙ И СЕРВЕРОВ (КАК НА СКРИНШОТЕ)
+    // РЕАЛЬНЫЙ ЗАМЕР ПИНГА ОТДЕЛЬНОГО МАРШРУТА И ВСЕЙ ГРУППЫ
+    // =========================================================================
+    async function measureRealPingMs(srv) {
+      if (hasNativeXray && window.AndroidXray.pingHost) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            const ms = window.AndroidXray.pingHost(srv.host, Number(srv.port));
+            resolve(ms);
+          }, 20);
+        });
+      }
+      // В веб-предпросмотре измеряем реальный сетевой RTT через fetch к хосту
+      const start = performance.now();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 2400);
+      try {
+        await fetch(`https://${srv.host}:${srv.port}/`, { mode: "no-cors", cache: "no-store", signal: controller.signal });
+        clearTimeout(timer);
+        return Math.max(1, Math.round(performance.now() - start));
+      } catch (e) {
+        clearTimeout(timer);
+        const elapsed = Math.round(performance.now() - start);
+        return elapsed < 2300 ? elapsed : -1;
+      }
+    }
+
+    async function pingSingleRoute(srvId) {
+      const all = getAllServers();
+      const srv = all.find(s => s.id === srvId);
+      if (!srv) return;
+
+      srv.ping = "...";
+      renderAccordionGroups();
+
+      const ms = await measureRealPingMs(srv);
+      srv.ping = ms > 0 ? ms : -1;
+      saveState();
+      renderAccordionGroups();
+      showToast(ms > 0 ? `Пинг «${srv.name}»: ${ms} мс` : `«${srv.name}»: Таймаут`);
+    }
+
+    async function pingServersInGroup(groupId) {
+      const group = profileGroups.find(g => g.id === groupId);
+      if (!group || !group.servers || group.servers.length === 0) {
+        showToast("В профиле нет маршрутов для пинга");
+        return;
+      }
+      showToast(`Реальный пинг всех маршрутов (${group.servers.length} шт.)...`);
+
+      group.servers.forEach(s => { s.ping = "..."; });
+      renderAccordionGroups();
+
+      for (const srv of group.servers) {
+        const ms = await measureRealPingMs(srv);
+        srv.ping = ms > 0 ? ms : -1;
+        renderAccordionGroups();
+      }
+      saveState();
+      showToast("Проверка пинга завершена");
+    }
+
+    // =========================================================================
+    // ОТРИСОВКА ПРОФИЛЕЙ С ЗЕЛЕНОЙ ГАЛОЧКОЙ (>= 11 ДНЕЙ) ИЛИ ЖЕЛТЫМ ЗНАКОМ (<= 10 ДНЕЙ)
     // =========================================================================
     function renderAccordionGroups() {
       const container = document.getElementById("profilesAccordionArea");
       container.innerHTML = "";
 
-      // Сортировка: закрепленные профили сверху
+      if (profileGroups.length === 0) {
+        container.innerHTML = `
+          <div class="empty-profiles-box">
+            <div style="font-size:14px;font-weight:800;">Все профили удалены</div>
+            <div style="font-size:11.5px;color:var(--text-muted);">Нажми кнопку ниже, чтобы вставить подписку https:// или ключ vless:// / trojan://</div>
+            <button class="primary-btn" id="emptyAddProfileBtn" type="button" style="padding:0 18px;margin-top:4px;">+ Добавить новый профиль</button>
+          </div>
+        `;
+        document.getElementById("emptyAddProfileBtn").addEventListener("click", () => {
+          document.getElementById("universalInput").value = "";
+          document.getElementById("addModal").classList.add("open");
+        });
+        updateActiveHeaderInfo();
+        return;
+      }
+
       const sortedGroups = [...profileGroups].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
       sortedGroups.forEach(group => {
         const card = document.createElement("div");
         card.className = "sub-group-card" + (group.collapsed ? " collapsed" : "");
 
+        // Считаем сколько дней осталось до даты истечения
+        const daysLeft = calculateDaysRemaining(group.expiresText);
+        const isWarning = daysLeft <= 10;
+
+        // Если <= 10 дней — желтый треугольник ⚠️, если >= 11 дней — зеленая галочка ✅
+        const statusIconHtml = isWarning
+          ? `<button class="sgh-icon-btn warn" data-act="status" data-gid="${group.id}" type="button" title="Осталось ${daysLeft} дн. (<= 10 дн.)">
+               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                 <line x1="12" y1="9" x2="12" y2="13"></line>
+                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
+               </svg>
+             </button>`
+          : `<button class="sgh-icon-btn ok-green" data-act="status" data-gid="${group.id}" type="button" title="Осталось ${daysLeft} дн. (>= 11 дн.)">
+               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
+               </svg>
+             </button>`;
+
         const serversHtml = (group.servers || []).map(srv => {
           const isActive = srv.id === activeServerId;
           const protoLine = `${(srv.protocol || "vless").toUpperCase()} / ${(srv.type || "tcp").toUpperCase()} / ${(srv.security || "tls").toUpperCase()}`;
+
+          let pingLabel = "⚡ Пинг";
+          let pingClass = "srv-ping-btn";
+          if (srv.ping === "...") {
+            pingLabel = "⏳ ...";
+          } else if (typeof srv.ping === "number") {
+            if (srv.ping > 0) {
+              pingLabel = `⚡ ${srv.ping} мс`;
+            } else {
+              pingLabel = "✕ Таймаут";
+              pingClass = "srv-ping-btn timeout";
+            }
+          }
+
           return `
             <div class="server-row ${isActive ? "active" : ""}" data-srv-id="${srv.id}">
               <div class="srv-left">
@@ -1705,7 +1880,8 @@
                 </div>
               </div>
               <div class="srv-right">
-                <span class="srv-ping-badge">${srv.ping ? srv.ping + " мс" : ""}</span>
+                <button class="${pingClass}" data-ping-srv="${srv.id}" type="button" title="Нажми, чтобы пропинговать этот маршрут">${pingLabel}</button>
+                <button class="srv-del-btn" data-del-srv="${srv.id}" data-del-gid="${group.id}" type="button" title="Удалить маршрут">✕</button>
               </div>
             </div>
           `;
@@ -1727,21 +1903,15 @@
             </div>
 
             <div class="sgh-actions">
-              <button class="sgh-icon-btn warn" data-act="warn" data-gid="${group.id}" type="button" title="Статус подписки">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                  <line x1="12" y1="9" x2="12" y2="13"></line>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-              </button>
-              <button class="sgh-icon-btn" data-act="refresh" data-gid="${group.id}" type="button" title="Обновить подписку">
+              ${statusIconHtml}
+              <button class="sgh-icon-btn" data-act="refresh" data-gid="${group.id}" type="button" title="Обновить подписку (без пинга)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="23 4 23 10 17 10"></polyline>
                   <polyline points="1 20 1 14 7 14"></polyline>
                   <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                 </svg>
               </button>
-              <button class="sgh-icon-btn" data-act="ping" data-gid="${group.id}" type="button" title="Тест пинга">
+              <button class="sgh-icon-btn" data-act="ping" data-gid="${group.id}" type="button" title="Реальный тест пинга всех маршрутов">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 14l4-4"></path>
                   <path d="M3.34 19a10 10 0 1 1 17.32 0"></path>
@@ -1757,15 +1927,20 @@
             </div>
           </div>
 
-          <div class="sub-expire-bar">Истекает: ${group.expiresText || "06.01.2027"}</div>
+          <div class="sub-expire-bar">
+            <span>Истекает: ${group.expiresText || "06.01.2027"}</span>
+            <span style="color:${isWarning ? "#f59e0b" : "#10b981"};">
+              ${daysLeft > 0 ? `Осталось: ${daysLeft} дн.` : "Срок истек"}
+            </span>
+          </div>
           <div class="sub-thin-line"><div class="sub-thin-line-fill"></div></div>
 
           <div class="sub-servers-body">
-            ${serversHtml}
+            ${serversHtml || `<div style="padding:12px;font-size:11.5px;color:var(--text-muted);text-align:center;">В этом профиле нет маршрутов</div>`}
           </div>
         `;
 
-        // Клик по шапке профиля — ЗАКРЫТЬ / ОТКРЫТЬ (свернуть / развернуть) профиль
+        // Свернуть / развернуть профиль
         card.querySelector(".sub-group-header").addEventListener("click", (e) => {
           if (e.target.closest(".sgh-actions")) return;
           group.collapsed = !group.collapsed;
@@ -1773,15 +1948,19 @@
           renderAccordionGroups();
         });
 
-        // Кнопки справа в шапке профиля (⚠️, 🔄, ⏱️, ⋯)
+        // Кнопки в шапке профиля
         card.querySelectorAll("[data-act]").forEach(btn => {
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const act = btn.getAttribute("data-act");
             activeMenuGroupId = group.id;
 
-            if (act === "warn") {
-              showToast(`${group.name} • Серверов: ${group.servers.length} • Истекает: ${group.expiresText}`);
+            if (act === "status") {
+              if (isWarning) {
+                showToast(`⚠️ Внимание: осталось всего ${daysLeft} дн. (до ${group.expiresText})`);
+              } else {
+                showToast(`✅ Подписка активна: осталось ${daysLeft} дн. (до ${group.expiresText})`);
+              }
             } else if (act === "refresh") {
               refreshSubscriptionGroup(group.id);
             } else if (act === "ping") {
@@ -1792,15 +1971,40 @@
           });
         });
 
-        // Клик по серверу внутри профиля
+        // Выбор маршрута по клику на строку
         card.querySelectorAll(".server-row").forEach(row => {
-          row.addEventListener("click", () => {
+          row.addEventListener("click", (e) => {
+            if (e.target.closest("[data-ping-srv]") || e.target.closest("[data-del-srv]")) return;
             activeServerId = row.getAttribute("data-srv-id");
             saveState();
             renderAccordionGroups();
             updateActiveHeaderInfo();
             const active = getActiveServer();
-            if (active) showToast(`Выбран: ${active.name}`);
+            if (active) showToast(`Выбран маршрут: ${active.name}`);
+          });
+        });
+
+        // Индивидуальный пинг конкретного маршрута по нажатию на кнопку пинга
+        card.querySelectorAll("[data-ping-srv]").forEach(pBtn => {
+          pBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            pingSingleRoute(pBtn.getAttribute("data-ping-srv"));
+          });
+        });
+
+        // Удаление отдельного маршрута
+        card.querySelectorAll("[data-del-srv]").forEach(dBtn => {
+          dBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const sid = dBtn.getAttribute("data-del-srv");
+            group.servers = (group.servers || []).filter(s => s.id !== sid);
+            const all = getAllServers();
+            if (activeServerId === sid) {
+              activeServerId = all[0] ? all[0].id : null;
+            }
+            saveState();
+            renderAccordionGroups();
+            showToast("Маршрут удален");
           });
         });
 
@@ -1812,15 +2016,19 @@
 
     function updateActiveHeaderInfo() {
       const active = getActiveServer();
-      if (!active) return;
+      if (!active) {
+        document.getElementById("activeProtoBadge").textContent = "НЕТ";
+        document.getElementById("stepHint").textContent = "Добавь профиль или маршрут";
+        return;
+      }
       document.getElementById("activeProtoBadge").textContent = (active.protocol || "vless").toUpperCase();
       if (connState === "disconnected") {
         document.getElementById("stepHint").textContent = `${active.name} (${active.protocol.toUpperCase()})`;
       }
     }
 
-    // Кнопка «Свернуть / Развернуть все профили»
     document.getElementById("collapseAllBtn").addEventListener("click", () => {
+      if (!profileGroups.length) return;
       const anyOpen = profileGroups.some(g => !g.collapsed);
       profileGroups.forEach(g => { g.collapsed = anyOpen; });
       saveState();
@@ -1829,7 +2037,7 @@
     });
 
     // =========================================================================
-    // РАБОТА КОНТЕКСТНОГО МЕНЮ (⋯) ИЗ 8 ПУНКТОВ КАК НА СКРИНШОТЕ
+    // КОНТЕКСТНОЕ МЕНЮ НА ТРИ ТОЧКИ (⋯) — УДАЛЕНИЕ БЕЗ ОГРАНИЧЕНИЙ
     // =========================================================================
     const ctxBackdrop = document.getElementById("ctxBackdrop");
     const happContextMenu = document.getElementById("happContextMenu");
@@ -1865,7 +2073,7 @@
     document.querySelectorAll("[data-menu-action]").forEach(item => {
       item.addEventListener("click", () => {
         const action = item.getAttribute("data-menu-action");
-        const group = profileGroups.find(g => g.id === activeMenuGroupId) || profileGroups[0];
+        const group = profileGroups.find(g => g.id === activeMenuGroupId);
         closeContextMenu();
         if (!group) return;
 
@@ -1883,11 +2091,11 @@
           group.pinned = !group.pinned;
           saveState();
           renderAccordionGroups();
-          showToast(group.pinned ? "Профиль закреплен сверху" : "Профиль откреплен");
+          showToast(group.pinned ? "Профиль закреплен" : "Профиль откреплен");
         } else if (action === "copy") {
           const textToCopy = group.url || (group.servers || []).map(s => s.raw).join("\n");
           if (navigator.clipboard) navigator.clipboard.writeText(textToCopy);
-          showToast("URL подписки скопирован в буфер");
+          showToast("URL подписки скопирован");
         } else if (action === "edit") {
           document.getElementById("editGroupName").value = group.name;
           document.getElementById("editGroupUrl").value = group.url || "";
@@ -1895,39 +2103,16 @@
           document.getElementById("editGroupAutoUpdate").value = group.autoUpdate || "12ч.";
           document.getElementById("editGroupModal").classList.add("open");
         } else if (action === "delete") {
-          if (profileGroups.length > 1) {
-            profileGroups = profileGroups.filter(g => g.id !== group.id);
-            const all = getAllServers();
-            if (all[0]) activeServerId = all[0].id;
-            saveState();
-            renderAccordionGroups();
-            showToast("Профиль удален");
-          } else {
-            showToast("Нельзя удалить единственный профиль");
-          }
+          // УДАЛЕНИЕ ПРОФИЛЯ БЕЗ ОГРАНИЧЕНИЙ (даже если он последний)
+          profileGroups = profileGroups.filter(g => g.id !== group.id);
+          const all = getAllServers();
+          activeServerId = all[0] ? all[0].id : null;
+          saveState();
+          renderAccordionGroups();
+          showToast("Профиль удален");
         }
       });
     });
-
-    // Функция «Тест пинга» для серверов профиля
-    function pingServersInGroup(groupId) {
-      const group = profileGroups.find(g => g.id === groupId);
-      if (!group) return;
-      showToast(`Тест пинга: ${group.name}...`);
-      setTimeout(() => {
-        (group.servers || []).forEach(srv => {
-          if (hasNativeXray) {
-            const ms = window.AndroidXray.pingHost(srv.host, Number(srv.port));
-            srv.ping = ms > 0 ? ms : 95;
-          } else {
-            srv.ping = Math.floor(Math.random() * 22) + 24;
-          }
-        });
-        saveState();
-        renderAccordionGroups();
-        showToast("Пинг серверов обновлен");
-      }, 90);
-    }
 
     // Распаковка Base64 / текста подписки
     function unpackSubscriptionPayload(rawBody) {
@@ -1952,7 +2137,7 @@
       return nodes;
     }
 
-    // Функция «Обновить» для группы подписки
+    // ОБНОВЛЕНИЕ ПОДПИСКИ (БЕЗ АВТОМАТИЧЕСКОГО ПИНГА!)
     async function refreshSubscriptionGroup(groupId) {
       const group = profileGroups.find(g => g.id === groupId);
       if (!group) return;
@@ -1961,7 +2146,7 @@
       group.collapsed = false;
 
       if (group.url && group.url.startsWith("http")) {
-        showToast(`Обновление ${group.name}...`);
+        showToast(`Обновление списка «${group.name}»...`);
         let rawBody = "";
         let userInfoHeader = "";
 
@@ -1985,7 +2170,8 @@
           const expMatch = userInfoHeader.match(/expire=(\d+)/i);
           if (expMatch && expMatch[1]) {
             const d = new Date(parseInt(expMatch[1], 10) * 1000);
-            group.expiresText = d.toLocaleDateString("ru-RU");
+            const pad = n => String(n).padStart(2, "0");
+            group.expiresText = `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
           }
         }
 
@@ -1995,15 +2181,17 @@
           activeServerId = unpacked[0].id;
           saveState();
           renderAccordionGroups();
-          showToast(`Обновлено серверов: ${unpacked.length}`);
+          showToast(`Подписка обновлена (${unpacked.length} маршрутов)`);
           return;
         }
       }
 
-      pingServersInGroup(groupId);
+      saveState();
+      renderAccordionGroups();
+      showToast(`Обновлено: ${group.updatedAt}`);
     }
 
-    // Генератор конфига Xray-core с учетом выбранного режима маршрутизации
+    // Генератор конфига Xray-core (Rule-Based Routing)
     function buildXrayConfig(node) {
       const streamSettings = {
         network: node.type || "tcp",
@@ -2117,20 +2305,33 @@
 
       const routes = unpackSubscriptionPayload(raw);
       if (routes.length > 0) {
-        const targetGroup = profileGroups[0];
-        targetGroup.servers = [...routes, ...targetGroup.servers];
-        targetGroup.updatedAt = formatNowTimestamp();
-        targetGroup.collapsed = false;
+        if (profileGroups.length === 0) {
+          profileGroups.push({
+            id: "group_" + Date.now(),
+            name: groupTitle,
+            updatedAt: formatNowTimestamp(),
+            autoUpdate: "12ч.",
+            expiresText: "06.01.2027",
+            url: "",
+            pinned: true,
+            collapsed: false,
+            servers: routes
+          });
+        } else {
+          profileGroups[0].servers = [...routes, ...profileGroups[0].servers];
+          profileGroups[0].updatedAt = formatNowTimestamp();
+          profileGroups[0].collapsed = false;
+        }
         activeServerId = routes[0].id;
         saveState();
         renderAccordionGroups();
-        showToast(`Добавлено серверов: ${routes.length}`);
+        showToast(`Добавлено маршрутов: ${routes.length}`);
       } else {
         showToast("Не найдено ключей vless:// или trojan://");
       }
     });
 
-    // Создание ручного сервера Trojan / VLESS
+    // Создание ручного маршрута Trojan / VLESS
     document.getElementById("createManualProfileBtn").addEventListener("click", () => {
       const proto = document.getElementById("mProto").value;
       const net = document.getElementById("mNet").value.toLowerCase();
@@ -2144,14 +2345,42 @@
       const uri = `${proto}://${secret}@${host}:${port}?security=${secType}&type=${net}&sni=${sni}&fp=chrome#${name}`;
       const node = parseRouteUri(uri);
       if (node) {
-        profileGroups[0].servers.unshift(node);
-        profileGroups[0].collapsed = false;
+        if (profileGroups.length === 0) {
+          profileGroups.push({
+            id: "group_" + Date.now(),
+            name: "MVZ VPS | @mvzapretbot",
+            updatedAt: formatNowTimestamp(),
+            autoUpdate: "12ч.",
+            expiresText: "06.01.2027",
+            url: "",
+            pinned: true,
+            collapsed: false,
+            servers: [node]
+          });
+        } else {
+          profileGroups[0].servers.unshift(node);
+          profileGroups[0].collapsed = false;
+        }
         activeServerId = node.id;
         saveState();
         renderAccordionGroups();
         document.getElementById("addModal").classList.remove("open");
-        showToast("Сервер добавлен в профиль!");
+        showToast("Маршрут добавлен в профиль!");
       }
+    });
+
+    // Быстрые кнопки для проверки желтого знака (8 дней) и зеленой галочки (30 дней)
+    function formatFutureDate(daysAhead) {
+      const d = new Date(Date.now() + daysAhead * 86400000);
+      const pad = n => String(n).padStart(2, "0");
+      return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+    }
+
+    document.getElementById("setTest8DaysBtn").addEventListener("click", () => {
+      document.getElementById("editGroupExpire").value = formatFutureDate(8);
+    });
+    document.getElementById("setTest30DaysBtn").addEventListener("click", () => {
+      document.getElementById("editGroupExpire").value = formatFutureDate(30);
     });
 
     // Сохранение редактирования профиля
@@ -2165,7 +2394,7 @@
         saveState();
         renderAccordionGroups();
         document.getElementById("editGroupModal").classList.remove("open");
-        showToast("Профиль обновлен");
+        showToast("Профиль сохранен");
       }
     });
 
@@ -2183,7 +2412,6 @@
       showToast("Правила маршрутизации сохранены");
     });
 
-    // Сохранение настроек профиля
     document.getElementById("saveGroupSettingsBtn").addEventListener("click", () => {
       const group = profileGroups.find(g => g.id === activeMenuGroupId) || profileGroups[0];
       if (group) {
@@ -2196,7 +2424,9 @@
       showToast("Настройки сохранены");
     });
 
-    // Кнопка запуска Xray-core
+    // =========================================================================
+    // ЗАПУСК XRAY-CORE С ПЕРЕДАЧЕЙ ИМЕНИ МАРШРУТА В СИСТЕМНОЕ УВЕДОМЛЕНИЕ ANDROID
+    // =========================================================================
     const appEl = document.getElementById("app");
     const powerBtn = document.getElementById("powerBtn");
     const powerLabel = document.getElementById("powerLabel");
@@ -2215,12 +2445,26 @@
       return `${h}:${m}:${s}`;
     }
 
+    function sendBrowserOrSystemNotification(routeName) {
+      if ("Notification" in window) {
+        if (Notification.permission === "granted") {
+          new Notification("MVZ VPN • Подключено", { body: "Маршрут: " + routeName });
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then(p => {
+            if (p === "granted") new Notification("MVZ VPN • Подключено", { body: "Маршрут: " + routeName });
+          });
+        }
+      }
+    }
+
     function setConnectedUI(node) {
       connState = "connected";
       appEl.className = "app-shell state-connected";
       statusText.textContent = "Активен";
       powerLabel.textContent = "Стоп";
-      stepHint.textContent = `${node.name} (${node.protocol.toUpperCase()})`;
+      stepHint.textContent = `Подключен: ${node.name}`;
+      showToast(`🔔 Уведомление: подключен к «${node.name}»`);
+      sendBrowserOrSystemNotification(node.name);
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         timerSec++;
@@ -2241,7 +2485,10 @@
 
     powerBtn.addEventListener("click", () => {
       const node = getActiveServer();
-      if (!node) return;
+      if (!node) {
+        showToast("Сначала добавь и выбери маршрут");
+        return;
+      }
 
       if (connState === "disconnected") {
         connState = "connecting";
@@ -2252,7 +2499,8 @@
         const xrayConfigJson = JSON.stringify(buildXrayConfig(node), null, 2);
 
         if (hasNativeXray) {
-          const res = window.AndroidXray.startXray(xrayConfigJson);
+          // Передаем и JSON-конфиг, и точное название выбранного маршрута для уведомления Android
+          const res = window.AndroidXray.startXray(xrayConfigJson, node.name);
           stepHint.textContent = res === "PERMISSION_REQUESTED"
             ? "Подтверди разрешение VPN..."
             : `Подключение к ${node.name}...`;
@@ -2266,7 +2514,7 @@
           setTimeout(() => clearInterval(checkLoop), 12000);
         } else {
           stepHint.textContent = `Подключение к ${node.name}...`;
-          setTimeout(() => setConnectedUI(node), 850);
+          setTimeout(() => setConnectedUI(node), 800);
         }
       } else {
         if (hasNativeXray) window.AndroidXray.stopXray();
@@ -2289,7 +2537,8 @@
 
     setInterval(() => {
       if (hasNativeXray && window.AndroidXray.isRunning() && connState !== "connected") {
-        setConnectedUI(getActiveServer());
+        const active = getActiveServer();
+        if (active) setConnectedUI(active);
       }
       if (connState === "connected") {
         if (hasNativeXray) {
@@ -2368,9 +2617,10 @@
 
     document.getElementById("openLogsBtn").addEventListener("click", () => {
       logsModal.classList.add("open");
+      const active = getActiveServer();
       consoleBox.textContent = hasNativeXray
         ? (window.AndroidXray.getLogs() || "Нажми «Старт» для просмотра логов Xray-core.")
-        : JSON.stringify(buildXrayConfig(getActiveServer()), null, 2);
+        : (active ? JSON.stringify(buildXrayConfig(active), null, 2) : "Нет активного маршрута");
     });
     document.getElementById("closeLogsBtn").addEventListener("click", () => logsModal.classList.remove("open"));
 
@@ -2380,7 +2630,8 @@
         : "Живые логи процесса libxray.so доступны на телефоне.";
     });
     document.getElementById("showConfigJsonBtn").addEventListener("click", () => {
-      consoleBox.textContent = JSON.stringify(buildXrayConfig(getActiveServer()), null, 2);
+      const active = getActiveServer();
+      consoleBox.textContent = active ? JSON.stringify(buildXrayConfig(active), null, 2) : "Нет выбранного маршрута";
     });
 
     loadState();
