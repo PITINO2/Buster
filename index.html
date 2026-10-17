@@ -5,18 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>MVZ — VLESS & Trojan Client</title>
   <style>
-    /* 1. Черная тема (Happ Dark) */
+    /* 1. Тёмная тема (Happ Dark) */
     :root, [data-theme="black"] {
-      --bg-dark: #0b0c10;
+      --bg-dark: #0f1014;
       --bg-glow: rgba(99, 102, 241, 0.16);
       --bg-card: #18191e;
       --bg-card-header: #1f2128;
       --bg-row-hover: rgba(255, 255, 255, 0.05);
       --sheet-bg: #18191e;
-      --menu-bg: #252730;
+      --menu-bg: #23252e;
       --border-glass: rgba(255, 255, 255, 0.08);
       --text-main: #f1f5f9;
       --text-muted: #8b95a5;
+      --section-title: #6366f1;
       --accent-primary: #6366f1;
       --accent-secondary: #00f2fe;
       --btn-core-bg: radial-gradient(circle at 35% 30%, #1e293b, #090d16 75%);
@@ -37,12 +38,13 @@
       --border-glass: rgba(255, 255, 255, 0.08);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
+      --section-title: #a855f7;
       --accent-primary: #c084fc;
       --accent-secondary: #6366f1;
       --btn-core-bg: radial-gradient(circle at 35% 30%, #3b0764, #120624 75%);
     }
 
-    /* 3. Белая тема (Arctic Light) */
+    /* 3. Светлая тема (Arctic Light) */
     [data-theme="white"] {
       --bg-dark: #eef2f8;
       --bg-glow: rgba(99, 102, 241, 0.16);
@@ -54,12 +56,13 @@
       --border-glass: rgba(15, 23, 42, 0.1);
       --text-main: #0f172a;
       --text-muted: #64748b;
+      --section-title: #4f46e5;
       --accent-primary: #6366f1;
       --accent-secondary: #9333ea;
       --btn-core-bg: radial-gradient(circle at 35% 30%, #ffffff, #dbeafe 75%);
     }
 
-    /* 4. Киберпанк / Багровая (Crimson Cyber) */
+    /* 4. Киберпанк / Багровая */
     [data-theme="crimson"] {
       --bg-dark: #0d0307;
       --bg-glow: rgba(244, 63, 94, 0.24);
@@ -71,12 +74,13 @@
       --border-glass: rgba(251, 113, 133, 0.15);
       --text-main: #fff1f2;
       --text-muted: #fda4af;
+      --section-title: #fb7185;
       --accent-primary: #fb7185;
       --accent-secondary: #e11d48;
       --btn-core-bg: radial-gradient(circle at 35% 30%, #500724, #160309 75%);
     }
 
-    /* 5. Изумрудная Матрица (Emerald Matrix) */
+    /* 5. Изумрудная Матрица */
     [data-theme="emerald"] {
       --bg-dark: #020b08;
       --bg-glow: rgba(16, 185, 129, 0.22);
@@ -88,6 +92,7 @@
       --border-glass: rgba(52, 211, 153, 0.15);
       --text-main: #ecfdf5;
       --text-muted: #6ee7b7;
+      --section-title: #34d399;
       --accent-primary: #34d399;
       --accent-secondary: #059669;
       --btn-core-bg: radial-gradient(circle at 35% 30%, #064e3b, #03130d 75%);
@@ -568,21 +573,10 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
     }
 
-    .sgh-icon-btn:active, .sgh-icon-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-    }
-
-    .sgh-icon-btn.warn {
-      color: #f59e0b;
-    }
-
-    .sgh-icon-btn.ok-green {
-      color: #10b981;
-    }
+    .sgh-icon-btn.warn { color: #f59e0b; }
+    .sgh-icon-btn.ok-green { color: #10b981; }
 
     .sub-expire-bar {
       background: var(--bg-card-header);
@@ -599,7 +593,6 @@
       width: 100%;
       height: 2px;
       background: rgba(99, 102, 241, 0.22);
-      position: relative;
     }
 
     .sub-thin-line-fill {
@@ -628,12 +621,9 @@
       padding: 10px 12px;
       border-bottom: 1px solid var(--border-glass);
       cursor: pointer;
-      transition: background 0.15s ease;
     }
 
-    .server-row:last-child {
-      border-bottom: none;
-    }
+    .server-row:last-child { border-bottom: none; }
 
     .server-row.active {
       background: var(--bg-row-hover);
@@ -663,10 +653,7 @@
       font-size: 16px;
     }
 
-    .srv-info {
-      min-width: 0;
-      flex: 1;
-    }
+    .srv-info { min-width: 0; flex: 1; }
 
     .srv-title {
       font-size: 13.5px;
@@ -682,7 +669,6 @@
       font-weight: 600;
       color: var(--text-muted);
       margin-top: 2px;
-      letter-spacing: 0.2px;
       text-transform: uppercase;
     }
 
@@ -702,7 +688,6 @@
       color: var(--accent-green);
       font-size: 11px;
       font-weight: 800;
-      font-variant-numeric: tabular-nums;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -712,10 +697,6 @@
     .srv-ping-btn.timeout {
       background: rgba(239, 68, 68, 0.14);
       color: var(--accent-red);
-    }
-
-    .srv-ping-btn:active {
-      transform: scale(0.92);
     }
 
     .srv-del-btn {
@@ -729,17 +710,233 @@
       cursor: pointer;
     }
 
-    /* 4. ВСПЛЫВАЮЩЕЕ МЕНЮ НА ТРИ ТОЧКИ (⋯) */
+    /* =========================================================================
+       ПОЛНОЭКРАННЫЕ СТРАНИЦЫ «НАСТРОЙКИ» И «МАРШРУТИЗАЦИЯ» КАК НА ФОТО
+       ========================================================================= */
+    .full-page {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-dark);
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+    }
+
+    .full-page.open {
+      transform: translateX(0);
+    }
+
+    .fp-appbar {
+      height: 54px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-glass);
+      flex-shrink: 0;
+    }
+
+    .fp-appbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .fp-back-btn {
+      width: 34px;
+      height: 34px;
+      border: none;
+      background: transparent;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .fp-title {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .fp-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 28px;
+    }
+
+    .settings-group-block {
+      background: var(--bg-card);
+      margin-bottom: 10px;
+      border-top: 1px solid var(--border-glass);
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .sg-header {
+      padding: 16px 16px 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--section-title);
+    }
+
+    .sg-row {
+      min-height: 52px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-glass);
+      cursor: pointer;
+    }
+
+    .sg-row:last-child {
+      border-bottom: none;
+    }
+
+    .sg-row:active {
+      background: var(--bg-row-hover);
+    }
+
+    .sg-label {
+      font-size: 15.5px;
+      font-weight: 400;
+      color: var(--text-main);
+    }
+
+    .sg-label.danger {
+      color: #ef4444;
+    }
+
+    .sg-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .sg-value {
+      color: var(--text-main);
+      font-size: 15px;
+    }
+
+    /* Тумблер (Switch) точь-в-точь как на фото */
+    .happ-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      border-radius: 999px;
+      background: #4b5563;
+      transition: background 0.2s ease;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .happ-switch::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+      transition: transform 0.2s ease;
+    }
+
+    .happ-switch.on {
+      background: var(--accent-primary);
+    }
+
+    .happ-switch.on::after {
+      transform: translateX(20px);
+    }
+
+    /* Всплывающий список User-Agent в Маршрутизации (как на фото 3) */
+    .ua-dropdown-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 110;
+      display: none;
+    }
+
+    .ua-dropdown-backdrop.open {
+      display: block;
+    }
+
+    .ua-dropdown-box {
+      position: fixed;
+      top: 112px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 210px;
+      background: #232329;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 6px 0;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
+      z-index: 115;
+      display: none;
+      flex-direction: column;
+    }
+
+    .ua-dropdown-box.open {
+      display: flex;
+    }
+
+    .ua-opt {
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #f1f5f9;
+      font-size: 15.5px;
+      background: transparent;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .ua-opt:active {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .ua-check {
+      color: #6366f1;
+      font-weight: 900;
+      font-size: 17px;
+      opacity: 0;
+    }
+
+    .ua-opt.selected .ua-check {
+      opacity: 1;
+    }
+
+    .routing-desc-text {
+      padding: 14px 16px;
+      font-size: 13.5px;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    /* Всплывающее меню на три точки (⋯) для профилей */
     .context-menu-backdrop {
       position: fixed;
       inset: 0;
       z-index: 80;
       display: none;
     }
-
-    .context-menu-backdrop.open {
-      display: block;
-    }
+    .context-menu-backdrop.open { display: block; }
 
     .happ-dropdown-menu {
       position: fixed;
@@ -757,15 +954,7 @@
       padding: 4px;
     }
 
-    .happ-dropdown-menu.open {
-      display: flex;
-      animation: menuPop 0.16s ease-out;
-    }
-
-    @keyframes menuPop {
-      from { opacity: 0; transform: scale(0.95) translateY(-5px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
+    .happ-dropdown-menu.open { display: flex; }
 
     .dd-item {
       width: 100%;
@@ -784,24 +973,8 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .dd-item:last-child {
-      border-bottom: none;
-    }
-
-    .dd-item:active, .dd-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .dd-item svg {
-      color: var(--text-muted);
-    }
-
-    .dd-item.danger {
-      color: #f87171;
-    }
-    .dd-item.danger svg {
-      color: #f87171;
-    }
+    .dd-item:last-child { border-bottom: none; }
+    .dd-item.danger { color: #f87171; }
 
     /* 5. НИЖНЯЯ НАВИГАЦИЯ */
     .bottom-nav {
@@ -848,7 +1021,7 @@
       height: 100%;
       background: rgba(3, 5, 10, 0.82);
       backdrop-filter: blur(6px);
-      z-index: 90;
+      z-index: 120;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.22s ease;
@@ -1024,18 +1197,6 @@
       border: 2px solid rgba(255,255,255,0.4);
     }
 
-    .option-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      border-radius: 11px;
-      font-size: 12.5px;
-      font-weight: 600;
-    }
-
     .toast {
       position: fixed;
       top: 14px;
@@ -1048,7 +1209,7 @@
       border-radius: 10px;
       font-size: 11.5px;
       font-weight: 800;
-      z-index: 120;
+      z-index: 200;
       transition: transform 0.25s ease;
       pointer-events: none;
       max-width: 92%;
@@ -1064,78 +1225,249 @@
 
   <div id="toast" class="toast">Готово</div>
 
-  <!-- Всплывающее меню на три точки (⋯) -->
+  <!-- Всплывающее меню на три точки (⋯) для карточки профиля -->
   <div id="ctxBackdrop" class="context-menu-backdrop"></div>
   <div id="happContextMenu" class="happ-dropdown-menu">
-    <button class="dd-item" data-menu-action="routing" type="button">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="6" cy="6" r="3"></circle>
-        <circle cx="6" cy="18" r="3"></circle>
-        <path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12"></path>
-      </svg>
-      <span>Маршрутизация</span>
+    <button class="dd-item" data-menu-action="routing" type="button"><span>Маршрутизация</span></button>
+    <button class="dd-item" data-menu-action="settings" type="button"><span>Настройки</span></button>
+    <button class="dd-item" data-menu-action="refresh" type="button"><span>Обновить</span></button>
+    <button class="dd-item" data-menu-action="ping" type="button"><span>Тест пинга</span></button>
+    <button class="dd-item" data-menu-action="pin" type="button"><span id="pinMenuText">Закрепить</span></button>
+    <button class="dd-item" data-menu-action="copy" type="button"><span>Копировать URL</span></button>
+    <button class="dd-item" data-menu-action="edit" type="button"><span>Редактировать</span></button>
+    <button class="dd-item danger" data-menu-action="delete" type="button"><span>Удалить</span></button>
+  </div>
+
+  <!-- =========================================================================
+       ПОЛНОЭКРАННЫЙ РАЗДЕЛ «НАСТРОЙКИ» (ТОЧЬ-В-ТОЧЬ КАК НА ФОТО 1 И 2)
+       ========================================================================= -->
+  <div id="fullSettingsPage" class="full-page">
+    <div class="fp-appbar">
+      <div class="fp-appbar-left">
+        <button class="fp-back-btn" id="closeFullSettingsBtn" type="button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <span class="fp-title">Настройки</span>
+      </div>
+    </div>
+
+    <div class="fp-scroll">
+      <!-- Блок 1: Настройки интерфейса -->
+      <div class="settings-group-block">
+        <div class="sg-header">Настройки интерфейса</div>
+        <div class="sg-row" id="rowLanguage">
+          <span class="sg-label">Язык</span>
+          <div class="sg-right">
+            <span class="sg-value" id="valLanguage">Русский</span>
+            <span>›</span>
+          </div>
+        </div>
+        <div class="sg-row" id="rowThemeSelect">
+          <span class="sg-label">Тема оформления</span>
+          <div class="sg-right">
+            <span class="sg-value" id="valThemeLabel">Тёмная</span>
+            <span style="font-size:13px;line-height:1;">⇕</span>
+          </div>
+        </div>
+        <div class="sg-row" id="rowUiScale">
+          <span class="sg-label">Настройки интерфейса</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+      </div>
+
+      <!-- Блок 2: Настройки Туннеля -->
+      <div class="settings-group-block">
+        <div class="sg-header">Настройки Туннеля</div>
+        <div class="sg-row" id="rowOpenRoutingPage">
+          <span class="sg-label">Маршрутизация</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+        <div class="sg-row" id="rowPerAppProxy">
+          <span class="sg-label">Прокси для выбранных приложений</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+        <div class="sg-row" id="rowToggleFragment">
+          <span class="sg-label">Использовать фрагментирование</span>
+          <div class="happ-switch on" id="swFragment"></div>
+        </div>
+        <div class="sg-row" id="rowToggleMux">
+          <span class="sg-label">Использовать Mux</span>
+          <div class="happ-switch" id="swMux"></div>
+        </div>
+        <div class="sg-row" id="rowPreferIpType">
+          <span class="sg-label">Предпочтительный тип IP</span>
+          <div class="sg-right">
+            <span class="sg-value" id="valIpType">Auto</span>
+            <span style="font-size:13px;line-height:1;">⇕</span>
+          </div>
+        </div>
+        <div class="sg-row" id="rowInboundsInfo">
+          <span class="sg-label">Inbounds</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+        <div class="sg-row" id="rowToggleXrayTun">
+          <span class="sg-label">Включить Xray TUN</span>
+          <div class="happ-switch on" id="swXrayTun"></div>
+        </div>
+      </div>
+
+      <!-- Блок 3: Расширенные настройки -->
+      <div class="settings-group-block">
+        <div class="sg-header">Расширенные настройки</div>
+        <div class="sg-row" id="rowVpnSettings">
+          <span class="sg-label">Настройки VPN</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+        <div class="sg-row" id="rowSubSettings">
+          <span class="sg-label">Подписки</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+        <div class="sg-row" id="rowPingSettings">
+          <span class="sg-label">Пинг</span>
+          <div class="sg-right">
+            <span class="sg-value" id="valPingMethod">TCP</span>
+            <span>›</span>
+          </div>
+        </div>
+        <div class="sg-row" id="rowToggleLan">
+          <span class="sg-label">Разрешить подключения из LAN</span>
+          <div class="happ-switch" id="swAllowLan"></div>
+        </div>
+        <div class="sg-row" id="rowToggleAutostart">
+          <span class="sg-label">Автозапуск приложения</span>
+          <div class="happ-switch" id="swAutostart"></div>
+        </div>
+      </div>
+
+      <!-- Блок 4: Другие настройки -->
+      <div class="settings-group-block">
+        <div class="sg-header">Другие настройки</div>
+        <div class="sg-row" id="rowStatsView">
+          <span class="sg-label">Статистика</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+        <div class="sg-row" id="rowLogsView">
+          <span class="sg-label">Логи</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+        <div class="sg-row" id="rowResetAll">
+          <span class="sg-label danger">Сброс</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+      </div>
+
+      <!-- Блок 5: Информация -->
+      <div class="settings-group-block">
+        <div class="sg-header">Информация</div>
+        <div class="sg-row" id="rowFaqInfo">
+          <span class="sg-label">FAQ</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+        <div class="sg-row" id="rowUrlSchemes">
+          <span class="sg-label">Схемы URL-адресов</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+        <div class="sg-row" id="rowAboutApp">
+          <span class="sg-label">Информация</span>
+          <div class="sg-right"><span>›</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       ПОЛНОЭКРАННЫЙ РАЗДЕЛ «МАРШРУТИЗАЦИЯ» (ТОЧЬ-В-ТОЧЬ КАК НА ФОТО 3)
+       ========================================================================= -->
+  <div id="fullRoutingPage" class="full-page">
+    <div class="fp-appbar">
+      <div class="fp-appbar-left">
+        <button class="fp-back-btn" id="closeFullRoutingBtn" type="button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <span class="fp-title">Маршрутизация</span>
+      </div>
+      <button class="fp-back-btn" id="routingTopMenuBtn" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="5" r="1"></circle>
+          <circle cx="12" cy="12" r="1"></circle>
+          <circle cx="12" cy="19" r="1"></circle>
+        </svg>
+      </button>
+    </div>
+
+    <div class="fp-scroll">
+      <div class="settings-group-block" style="margin-top:8px;">
+        <div class="sg-row" id="openUaDropdownRow">
+          <span class="sg-label">User-Agent</span>
+          <div class="sg-right">
+            <span class="sg-value" id="currentUaLabel">chrome-android</span>
+            <span style="font-size:13px;line-height:1;">⇕</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="routing-desc-text">
+        Правила маршрутизации позволяют гибкое управление трафиком при помощи настроек Proxy, Direct и Block. Подробную информацию о активном JSON-конфиге можно посмотреть в разделе Логи.
+      </div>
+
+      <div class="settings-group-block">
+        <div class="sg-header">Активные правила (Proxy / Direct / Block)</div>
+
+        <div class="sg-row" id="rowToggleYoutubeFix">
+          <div>
+            <div class="sg-label">YouTube и Google Video (Анти-Троттлинг)</div>
+            <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">googlevideo.com, youtube.com, ytimg.com → Proxy + Sniffing</div>
+          </div>
+          <div class="happ-switch on" id="swYoutubeBoost"></div>
+        </div>
+
+        <div class="sg-row" id="rowToggleRuBypass">
+          <div>
+            <div class="sg-label">Обход сайтов РФ (.ru / .рф / .su → Direct)</div>
+            <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Банки, Госуслуги и локальные IP работают напрямую</div>
+          </div>
+          <div class="happ-switch on" id="swRuBypass"></div>
+        </div>
+
+        <div class="sg-row" id="rowToggleAdblock">
+          <div>
+            <div class="sg-label">Блокировка рекламы (Ads → Block)</div>
+            <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Блокирует рекламные трекеры и баннеры</div>
+          </div>
+          <div class="happ-switch on" id="swAdblock"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Всплывающее меню выбора User-Agent (как на фото 3) -->
+  <div id="uaDropdownBackdrop" class="ua-dropdown-backdrop"></div>
+  <div id="uaDropdownBox" class="ua-dropdown-box">
+    <button class="ua-opt" data-ua="safari-mac" type="button">
+      <span>safari-mac</span><span class="ua-check">✓</span>
     </button>
-    <button class="dd-item" data-menu-action="settings" type="button">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-      </svg>
-      <span>Настройки</span>
+    <button class="ua-opt" data-ua="chrome-win" type="button">
+      <span>chrome-win</span><span class="ua-check">✓</span>
     </button>
-    <button class="dd-item" data-menu-action="refresh" type="button">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="23 4 23 10 17 10"></polyline>
-        <polyline points="1 20 1 14 7 14"></polyline>
-        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-      </svg>
-      <span>Обновить</span>
+    <button class="ua-opt" data-ua="safari-ios" type="button">
+      <span>safari-ios</span><span class="ua-check">✓</span>
     </button>
-    <button class="dd-item" data-menu-action="ping" type="button">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 14l4-4"></path>
-        <path d="M3.34 19a10 10 0 1 1 17.32 0"></path>
-      </svg>
-      <span>Тест пинга</span>
+    <button class="ua-opt" data-ua="firefox-win" type="button">
+      <span>firefox-win</span><span class="ua-check">✓</span>
     </button>
-    <button class="dd-item" data-menu-action="pin" type="button">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="17" x2="12" y2="22"></line>
-        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
-      </svg>
-      <span id="pinMenuText">Закрепить</span>
-    </button>
-    <button class="dd-item" data-menu-action="copy" type="button">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-      </svg>
-      <span>Копировать URL</span>
-    </button>
-    <button class="dd-item" data-menu-action="edit" type="button">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="4" y1="21" x2="4" y2="14"></line>
-        <line x1="4" y1="10" x2="4" y2="3"></line>
-        <line x1="12" y1="21" x2="12" y2="12"></line>
-        <line x1="12" y1="8" x2="12" y2="3"></line>
-        <line x1="20" y1="21" x2="20" y2="16"></line>
-        <line x1="20" y1="12" x2="20" y2="3"></line>
-        <line x1="1" y1="14" x2="7" y2="14"></line>
-        <line x1="9" y1="8" x2="15" y2="8"></line>
-        <line x1="17" y1="16" x2="23" y2="16"></line>
-      </svg>
-      <span>Редактировать</span>
-    </button>
-    <button class="dd-item danger" data-menu-action="delete" type="button">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="3 6 5 6 21 6"></polyline>
-        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-      </svg>
-      <span>Удалить</span>
+    <button class="ua-opt selected" data-ua="chrome-android" type="button">
+      <span>chrome-android</span><span class="ua-check">✓</span>
     </button>
   </div>
 
+  <!-- ОСНОВНОЙ ЭКРАН ПРИЛОЖЕНИЯ -->
   <div id="app" class="app-shell">
-    <!-- 1. ШАПКА MVZ С 3D ИКОНКОЙ КЛОУНА -->
     <header class="top-bar">
       <div class="brand">
         <div class="brand-logo" title="MVZ">
@@ -1200,12 +1532,12 @@
             <span class="brand-title">MVZ</span>
             <span class="proto-pill" id="activeProtoBadge">НЕТ</span>
           </div>
-          <div class="brand-sub" id="routingModeLabel">Умный обход RU + Антиреклама</div>
+          <div class="brand-sub" id="routingModeLabel">YouTube Boost + Обход RU</div>
         </div>
       </div>
 
       <div class="top-right-group">
-        <button class="scale-btn" id="openScaleModalBtn" type="button">📏 Размер</button>
+        <button class="scale-btn" id="openFullSettingsTopBtn" type="button">⚙️ Настройки</button>
         <div class="status-mini">
           <span class="status-dot"></span>
           <span id="statusText">Готов</span>
@@ -1213,7 +1545,7 @@
       </div>
     </header>
 
-    <!-- 2. БЛОК ЗАПУСКА С ОРБИТАЛЬНОЙ АНИМАЦИЕЙ И СКОРОСТЬЮ -->
+    <!-- Блок запуска -->
     <section class="core-stage">
       <div class="power-zone">
         <div class="idle-pulse-ring"></div>
@@ -1251,31 +1583,31 @@
       </div>
     </section>
 
-    <!-- 3. СПИСОК СВОРАЧИВАЕМЫХ ПРОФИЛЕЙ (ПУСТОЙ ПО УМОЛЧАНИЮ) -->
+    <!-- Список профилей -->
     <main class="profiles-scroll-area" id="profilesAccordionArea"></main>
 
-    <!-- 4. НИЖНЯЯ НАВИГАЦИЯ -->
+    <!-- Нижняя панель -->
     <nav class="bottom-nav">
       <button class="nav-btn primary-action" id="openAddModalBtn" type="button">
         <span>➕ Добавить</span>
         <span>HTTPS / Ключ</span>
       </button>
       <button class="nav-btn" id="openRoutingBottomBtn" type="button">
-        <span>🔀 Маршруты</span>
-        <span>DNS / RU</span>
+        <span>🔀 Маршрутизация</span>
+        <span id="navUaSub">chrome-android</span>
       </button>
       <button class="nav-btn" id="openLogsBtn" type="button">
         <span>🖥 Консоль</span>
-        <span>Ядро Xray</span>
+        <span>Логи / JSON</span>
       </button>
-      <button class="nav-btn" id="openThemesBtn" type="button">
-        <span>🎨 Темы</span>
-        <span>5 стилей</span>
+      <button class="nav-btn" id="openSettingsBottomBtn" type="button">
+        <span>⚙️ Настройки</span>
+        <span>Туннель / UI</span>
       </button>
     </nav>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 1: ДОБАВЛЕНИЕ HTTPS ПОДПИСКИ ИЛИ КЛЮЧЕЙ -->
+  <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ HTTPS ПОДПИСКИ ИЛИ КЛЮЧЕЙ -->
   <div class="modal-backdrop" id="addModal">
     <div class="sheet">
       <div class="sheet-head">
@@ -1290,7 +1622,7 @@
 
       <div id="pasteLinkPane" style="display:flex;flex-direction:column;gap:8px;">
         <input id="newGroupTitleInput" class="field-input" placeholder="Название профиля (оставь пустым для авто-имени)" value="" />
-        <textarea id="universalInput" class="input-box" placeholder="Вставь ссылку подписки https://... (распакуются все маршруты внутри неё) или ключи vless://, trojan://"></textarea>
+        <textarea id="universalInput" class="input-box" placeholder="Вставь ссылку подписки https://... или ключи vless://, trojan://"></textarea>
         <div class="btn-row">
           <button class="secondary-btn" id="pasteClipBtn" type="button">📋 Из буфера</button>
           <button class="primary-btn" id="saveUniversalBtn" type="button">Импортировать</button>
@@ -1324,7 +1656,7 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 2: РЕДАКТИРОВАНИЕ ПРОФИЛЯ -->
+  <!-- МОДАЛЬНОЕ ОКНО: РЕДАКТИРОВАНИЕ ПРОФИЛЯ -->
   <div class="modal-backdrop" id="editGroupModal">
     <div class="sheet">
       <div class="sheet-head">
@@ -1345,62 +1677,15 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 3: МАРШРУТИЗАЦИЯ И DNS -->
-  <div class="modal-backdrop" id="routingModal">
-    <div class="sheet">
-      <div class="sheet-head">
-        <div class="sheet-title">Маршрутизация и DNS (AsIs)</div>
-        <button class="close-btn" id="closeRoutingBtn" type="button">✕</button>
-      </div>
-      <div class="option-row">
-        <span>Профиль правил</span>
-        <select id="routingPresetSelect" class="field-input" style="width:190px;">
-          <option value="smart_ru_ads">Обход RU + Блок рекламы</option>
-          <option value="bypass_ru">Только обход RU (.ru/.рф/.su)</option>
-          <option value="all">Весь трафик через прокси</option>
-        </select>
-      </div>
-      <div class="option-row">
-        <span>Локальный RU DNS (77.88.8.8) + DoH в прокси</span>
-        <input type="checkbox" id="directRuDnsCheck" checked style="width:18px;height:18px;accent-color:var(--accent-primary);" />
-      </div>
-      <button class="primary-btn" id="saveRoutingBtn" type="button">Применить конфигурацию</button>
-    </div>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО 4: НАСТРОЙКИ ПРОФИЛЯ -->
-  <div class="modal-backdrop" id="groupSettingsModal">
-    <div class="sheet">
-      <div class="sheet-head">
-        <div class="sheet-title">Настройки профиля подписки</div>
-        <button class="close-btn" id="closeGroupSettingsBtn" type="button">✕</button>
-      </div>
-      <div class="option-row">
-        <span>Интервал автообновления</span>
-        <select id="autoUpdateIntervalSelect" class="field-input" style="width:130px;">
-          <option value="12ч.">Каждые 12ч.</option>
-          <option value="6ч.">Каждые 6ч.</option>
-          <option value="24ч.">Каждые 24ч.</option>
-          <option value="Выкл">Выключено</option>
-        </select>
-      </div>
-      <div class="option-row">
-        <span>Разрешить небезопасные сертификаты (allowInsecure)</span>
-        <input type="checkbox" id="allowInsecureCheck" style="width:18px;height:18px;accent-color:var(--accent-primary);" />
-      </div>
-      <button class="primary-btn" id="saveGroupSettingsBtn" type="button">Сохранить настройки</button>
-    </div>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО 5: РАЗМЕР ИНТЕРФЕЙСА -->
+  <!-- МОДАЛЬНОЕ ОКНО: РАЗМЕР ИНТЕРФЕЙСА -->
   <div class="modal-backdrop" id="scaleModal">
     <div class="sheet">
       <div class="sheet-head">
-        <div class="sheet-title">Размер интерфейса под устройство</div>
+        <div class="sheet-title">Настройки интерфейса (Масштаб)</div>
         <button class="close-btn" id="closeScaleModalBtn" type="button">✕</button>
       </div>
       <div style="font-size:12px;color:var(--text-muted);">
-        Масштаб элементов (<span id="scaleValLabel">100%</span>):
+        Масштаб элементов под экран (<span id="scaleValLabel">100%</span>):
       </div>
       <input id="uiScaleRange" type="range" min="80" max="115" step="5" value="100" style="width:100%;accent-color:var(--accent-primary);" />
       <div class="btn-row">
@@ -1410,31 +1695,31 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 6: ТЕМЫ -->
+  <!-- МОДАЛЬНОЕ ОКНО: ТЕМЫ -->
   <div class="modal-backdrop" id="themesModal">
     <div class="sheet">
       <div class="sheet-head">
-        <div class="sheet-title">Тема оформления MVZ</div>
+        <div class="sheet-title">Тема оформления</div>
         <button class="close-btn" id="closeThemesBtn" type="button">✕</button>
       </div>
       <div class="themes-grid">
-        <div class="theme-card" data-set-theme="black">
+        <div class="theme-card" data-set-theme="black" data-label="Тёмная">
           <span class="theme-swatch" style="background: linear-gradient(135deg, #18191e, #6366f1);"></span>
-          <span>Черная (Happ)</span>
+          <span>Тёмная</span>
         </div>
-        <div class="theme-card" data-set-theme="purple">
+        <div class="theme-card" data-set-theme="purple" data-label="Фиолетовая">
           <span class="theme-swatch" style="background: linear-gradient(135deg, #9333ea, #4f46e5);"></span>
           <span>Фиолетовая</span>
         </div>
-        <div class="theme-card" data-set-theme="white">
+        <div class="theme-card" data-set-theme="white" data-label="Светлая">
           <span class="theme-swatch" style="background: linear-gradient(135deg, #ffffff, #6366f1);"></span>
-          <span>Белая</span>
+          <span>Светлая</span>
         </div>
-        <div class="theme-card" data-set-theme="crimson">
+        <div class="theme-card" data-set-theme="crimson" data-label="Киберпанк">
           <span class="theme-swatch" style="background: linear-gradient(135deg, #e11d48, #4c0519);"></span>
           <span>Киберпанк</span>
         </div>
-        <div class="theme-card" data-set-theme="emerald" style="grid-column: span 2;">
+        <div class="theme-card" data-set-theme="emerald" data-label="Матрица" style="grid-column: span 2;">
           <span class="theme-swatch" style="background: linear-gradient(135deg, #10b981, #064e3b);"></span>
           <span>Изумрудная Матрица</span>
         </div>
@@ -1442,7 +1727,22 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 7: КОНСОЛЬ XRAY -->
+  <!-- МОДАЛЬНОЕ ОКНО: ПРОКСИ ДЛЯ ВЫБРАННЫХ ПРИЛОЖЕНИЙ -->
+  <div class="modal-backdrop" id="perAppModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Прокси для выбранных приложений</div>
+        <button class="close-btn" id="closePerAppBtn" type="button">✕</button>
+      </div>
+      <div class="sg-row"><span class="sg-label">YouTube (com.google.android.youtube)</span><div class="happ-switch on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="sg-row"><span class="sg-label">Telegram (org.telegram.messenger)</span><div class="happ-switch on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="sg-row"><span class="sg-label">Discord (com.discord)</span><div class="happ-switch on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="sg-row"><span class="sg-label">Chrome / Браузеры</span><div class="happ-switch on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="sg-row"><span class="sg-label">Instagram / TikTok</span><div class="happ-switch on" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: КОНСОЛЬ XRAY -->
   <div class="modal-backdrop" id="logsModal">
     <div class="sheet">
       <div class="sheet-head">
@@ -1464,25 +1764,83 @@
     function showToast(msg) {
       toastEl.textContent = msg;
       toastEl.classList.add("show");
-      setTimeout(() => toastEl.classList.remove("show"), 2500);
+      setTimeout(() => toastEl.classList.remove("show"), 2400);
+    }
+
+    // Состояние настроек Туннеля и Маршрутизации (сохраняется в памяти)
+    let tunnelConfig = {
+      useFragment: true,
+      useMux: false,
+      ipType: "Auto",
+      xrayTun: true,
+      allowLan: false,
+      autostart: false,
+      pingMethod: "TCP",
+      userAgent: "chrome-android",
+      youtubeBoost: true,
+      ruBypass: true,
+      adblock: true
+    };
+
+    try {
+      const savedT = localStorage.getItem("mvz_tunnel_cfg_v9");
+      if (savedT) tunnelConfig = { ...tunnelConfig, ...JSON.parse(savedT) };
+    } catch (e) {}
+
+    function saveTunnelConfig() {
+      localStorage.setItem("mvz_tunnel_cfg_v9", JSON.stringify(tunnelConfig));
+      syncSettingsUI();
+      // Если VPN сейчас подключен — сразу применяем изменения на лету!
+      if (connState === "connected") {
+        const active = getActiveServer();
+        if (active) restartActiveConnection(active, false);
+      }
+    }
+
+    function syncSettingsUI() {
+      document.getElementById("swFragment").classList.toggle("on", tunnelConfig.useFragment);
+      document.getElementById("swMux").classList.toggle("on", tunnelConfig.useMux);
+      document.getElementById("swXrayTun").classList.toggle("on", tunnelConfig.xrayTun);
+      document.getElementById("swAllowLan").classList.toggle("on", tunnelConfig.allowLan);
+      document.getElementById("swAutostart").classList.toggle("on", tunnelConfig.autostart);
+      document.getElementById("valIpType").textContent = tunnelConfig.ipType;
+      document.getElementById("valPingMethod").textContent = tunnelConfig.pingMethod;
+      document.getElementById("currentUaLabel").textContent = tunnelConfig.userAgent;
+      document.getElementById("navUaSub").textContent = tunnelConfig.userAgent;
+      document.getElementById("swYoutubeBoost").classList.toggle("on", tunnelConfig.youtubeBoost);
+      document.getElementById("swRuBypass").classList.toggle("on", tunnelConfig.ruBypass);
+      document.getElementById("swAdblock").classList.toggle("on", tunnelConfig.adblock);
+
+      document.querySelectorAll(".ua-opt").forEach(btn => {
+        btn.classList.toggle("selected", btn.getAttribute("data-ua") === tunnelConfig.userAgent);
+      });
     }
 
     const THEME_BAR_COLORS = {
-      black: "#0b0c10",
+      black: "#0f1014",
       purple: "#090514",
       white: "#eef2f8",
       crimson: "#0d0307",
       emerald: "#020b08"
     };
 
+    const THEME_NAMES = {
+      black: "Тёмная",
+      purple: "Фиолетовая",
+      white: "Светлая",
+      crimson: "Киберпанк",
+      emerald: "Матрица"
+    };
+
     function applyTheme(t) {
       document.body.setAttribute("data-theme", t);
       localStorage.setItem("mvz_theme", t);
+      document.getElementById("valThemeLabel").textContent = THEME_NAMES[t] || "Тёмная";
       document.querySelectorAll("[data-set-theme]").forEach(el => {
         el.classList.toggle("active", el.getAttribute("data-set-theme") === t);
       });
       if (hasNativeXray && window.AndroidXray.setSystemBarsColor) {
-        window.AndroidXray.setSystemBarsColor(THEME_BAR_COLORS[t] || "#0b0c10");
+        window.AndroidXray.setSystemBarsColor(THEME_BAR_COLORS[t] || "#0f1014");
       }
     }
     applyTheme(localStorage.getItem("mvz_theme") || "black");
@@ -1491,11 +1849,11 @@
       card.addEventListener("click", () => {
         applyTheme(card.getAttribute("data-set-theme"));
         document.getElementById("themesModal").classList.remove("open");
-        showToast("Тема установлена");
+        showToast("Тема изменена");
       });
     });
 
-    // Настройка масштаба под любое устройство
+    // Масштаб интерфейса
     const uiScaleRange = document.getElementById("uiScaleRange");
     const scaleValLabel = document.getElementById("scaleValLabel");
 
@@ -1526,7 +1884,7 @@
     });
     document.getElementById("resetScaleBtn").addEventListener("click", () => applyUiScale(100));
 
-    // Отрисовка круглого SVG-флага
+    // Отрисовка флагов стран
     function renderCountryFlagSvg(countryHint, fallbackEmoji) {
       const text = (countryHint || "").toLowerCase();
       if (text.includes("нидерланд") || text.includes("netherland") || text.includes("nl") || fallbackEmoji === "🇳🇱") {
@@ -1552,7 +1910,6 @@
       return `<span>${fallbackEmoji || "🌐"}</span>`;
     }
 
-    // Расчет оставшихся дней подписки
     function calculateDaysRemaining(dateStr) {
       if (!dateStr) return 30;
       const parts = dateStr.trim().split(".");
@@ -1572,7 +1929,6 @@
       return 30;
     }
 
-    // Парсер ссылки маршрута
     function parseRouteUri(rawLine) {
       const uri = rawLine.trim();
       if (!uri) return null;
@@ -1664,12 +2020,9 @@
       return null;
     }
 
-    // Изначально список профилей ПОЛНОСТЬЮ ПУСТОЙ (без предустановленных серверов)
     let profileGroups = [];
     let activeServerId = null;
     let activeMenuGroupId = null;
-    let routingMode = localStorage.getItem("mvz_routing_mode") || "smart_ru_ads";
-    let allowInsecureGlobal = false;
 
     function loadState() {
       try {
@@ -1715,9 +2068,7 @@
       return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
-    // =========================================================================
-    // РЕАЛЬНЫЙ ЗАМЕР ПИНГА ОТДЕЛЬНОГО МАРШРУТА И ВСЕЙ ГРУППЫ
-    // =========================================================================
+    // Реальный замер пинга
     async function measureRealPingMs(srv) {
       if (hasNativeXray && window.AndroidXray.pingHost) {
         return new Promise(resolve => {
@@ -1759,10 +2110,10 @@
     async function pingServersInGroup(groupId) {
       const group = profileGroups.find(g => g.id === groupId);
       if (!group || !group.servers || group.servers.length === 0) {
-        showToast("В профиле нет маршрутов для пинга");
+        showToast("В профиле нет маршрутов");
         return;
       }
-      showToast(`Реальный пинг всех маршрутов (${group.servers.length} шт.)...`);
+      showToast(`Реальный пинг (${group.servers.length} шт.)...`);
 
       group.servers.forEach(s => { s.ping = "..."; });
       renderAccordionGroups();
@@ -1777,8 +2128,27 @@
     }
 
     // =========================================================================
-    // ОТРИСОВКА ПРОФИЛЕЙ С НОВОЙ ГАЛОЧКОЙ (>= 11 ДНЕЙ) И ЖЕЛТЫМ ЗНАКОМ (<= 10 ДНЕЙ)
+    // ПЕРЕКЛЮЧЕНИЕ СТРАНЫ НА ЛЕТУ (АВТО-ПЕРЕЗАПУСК XRAY С НОВЫМ МАРШРУТОМ)
     // =========================================================================
+    function restartActiveConnection(newNode, announceToast = true) {
+      if (!newNode) return;
+      const xrayConfigJson = JSON.stringify(buildXrayConfig(newNode), null, 2);
+
+      if (hasNativeXray) {
+        window.AndroidXray.startXray(xrayConfigJson, newNode.name);
+      }
+
+      connState = "connected";
+      appEl.className = "app-shell state-connected";
+      statusText.textContent = "Активен";
+      powerLabel.textContent = "Стоп";
+      stepHint.textContent = `Подключен: ${newNode.name}`;
+      if (announceToast) {
+        showToast(`🔄 Страна переключена: «${newNode.name}»`);
+      }
+    }
+
+    // Отрисовка профилей и серверов
     function renderAccordionGroups() {
       const container = document.getElementById("profilesAccordionArea");
       container.innerHTML = "";
@@ -1812,16 +2182,15 @@
         const daysLeft = calculateDaysRemaining(group.expiresText);
         const isWarning = daysLeft <= 10;
 
-        // Новая четкая изумрудная галочка в заполненном круге (>= 11 дней) и желтый знак (<= 10 дней)
         const statusIconHtml = isWarning
-          ? `<button class="sgh-icon-btn warn" data-act="status" data-gid="${group.id}" type="button" title="Осталось ${daysLeft} дн. (<= 10 дн.)">
+          ? `<button class="sgh-icon-btn warn" data-act="status" data-gid="${group.id}" type="button">
                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="rgba(245,158,11,0.18)" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>
                  <line x1="12" y1="9" x2="12" y2="13" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/>
                  <circle cx="12" cy="17" r="1.2" fill="#f59e0b"/>
                </svg>
              </button>`
-          : `<button class="sgh-icon-btn ok-green" data-act="status" data-gid="${group.id}" type="button" title="Осталось ${daysLeft} дн. (>= 11 дн.)">
+          : `<button class="sgh-icon-btn ok-green" data-act="status" data-gid="${group.id}" type="button">
                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                  <circle cx="12" cy="12" r="10" fill="#10b981"/>
                  <path d="M8 12.3L10.8 15.1L16.2 9.5" stroke="#062117" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1855,8 +2224,8 @@
                 </div>
               </div>
               <div class="srv-right">
-                <button class="${pingClass}" data-ping-srv="${srv.id}" type="button" title="Пропинговать этот маршрут">${pingLabel}</button>
-                <button class="srv-del-btn" data-del-srv="${srv.id}" data-del-gid="${group.id}" type="button" title="Удалить маршрут">✕</button>
+                <button class="${pingClass}" data-ping-srv="${srv.id}" type="button">${pingLabel}</button>
+                <button class="srv-del-btn" data-del-srv="${srv.id}" type="button">✕</button>
               </div>
             </div>
           `;
@@ -1870,7 +2239,7 @@
               </svg>
               <div class="sgh-titles">
                 <div class="sgh-name">
-                  ${group.pinned ? `<span title="Закреплен" style="color:var(--accent-primary);">📌</span>` : ""}
+                  ${group.pinned ? `<span style="color:var(--accent-primary);">📌</span>` : ""}
                   <span>${group.name}</span>
                 </div>
                 <div class="sgh-sub">${group.updatedAt} | Автообновление - ${group.autoUpdate || "12ч."}</div>
@@ -1879,20 +2248,20 @@
 
             <div class="sgh-actions">
               ${statusIconHtml}
-              <button class="sgh-icon-btn" data-act="refresh" data-gid="${group.id}" type="button" title="Обновить подписку (без пинга)">
+              <button class="sgh-icon-btn" data-act="refresh" data-gid="${group.id}" type="button">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="23 4 23 10 17 10"></polyline>
                   <polyline points="1 20 1 14 7 14"></polyline>
                   <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                 </svg>
               </button>
-              <button class="sgh-icon-btn" data-act="ping" data-gid="${group.id}" type="button" title="Реальный тест пинга всех маршрутов">
+              <button class="sgh-icon-btn" data-act="ping" data-gid="${group.id}" type="button">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 14l4-4"></path>
                   <path d="M3.34 19a10 10 0 1 1 17.32 0"></path>
                 </svg>
               </button>
-              <button class="sgh-icon-btn" data-act="menu" data-gid="${group.id}" type="button" title="Меню профиля">
+              <button class="sgh-icon-btn" data-act="menu" data-gid="${group.id}" type="button">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="1"></circle>
                   <circle cx="19" cy="12" r="1"></circle>
@@ -1929,11 +2298,9 @@
             activeMenuGroupId = group.id;
 
             if (act === "status") {
-              if (isWarning) {
-                showToast(`⚠️ Осталось мало времени: ${daysLeft} дн. (до ${group.expiresText})`);
-              } else {
-                showToast(`✔ Подписка активна: осталось ${daysLeft} дн. (до ${group.expiresText})`);
-              }
+              showToast(isWarning
+                ? `⚠️ Осталось мало времени: ${daysLeft} дн. (до ${group.expiresText})`
+                : `✔ Подписка активна: осталось ${daysLeft} дн. (до ${group.expiresText})`);
             } else if (act === "refresh") {
               refreshSubscriptionGroup(group.id);
             } else if (act === "ping") {
@@ -1944,15 +2311,25 @@
           });
         });
 
+        // КЛИК НА ДРУГУЮ СТРАНУ: сразу переключает маршрут и перезапускает Xray на лету!
         card.querySelectorAll(".server-row").forEach(row => {
           row.addEventListener("click", (e) => {
             if (e.target.closest("[data-ping-srv]") || e.target.closest("[data-del-srv]")) return;
-            activeServerId = row.getAttribute("data-srv-id");
+            const newId = row.getAttribute("data-srv-id");
+            const wasSame = (activeServerId === newId);
+            activeServerId = newId;
             saveState();
             renderAccordionGroups();
             updateActiveHeaderInfo();
+
             const active = getActiveServer();
-            if (active) showToast(`Выбран маршрут: ${active.name}`);
+            if (!active) return;
+
+            if (connState === "connected" || connState === "connecting") {
+              restartActiveConnection(active, true);
+            } else if (!wasSame) {
+              showToast(`Выбран маршрут: ${active.name}`);
+            }
           });
         });
 
@@ -2003,12 +2380,9 @@
       profileGroups.forEach(g => { g.collapsed = anyOpen; });
       saveState();
       renderAccordionGroups();
-      showToast(anyOpen ? "Все профили свернуты" : "Все профили развернуты");
     });
 
-    // =========================================================================
-    // КОНТЕКСТНОЕ МЕНЮ НА ТРИ ТОЧКИ (⋯)
-    // =========================================================================
+    // Контекстное меню на три точки (⋯)
     const ctxBackdrop = document.getElementById("ctxBackdrop");
     const happContextMenu = document.getElementById("happContextMenu");
 
@@ -2017,15 +2391,9 @@
       document.getElementById("pinMenuText").textContent = group.pinned ? "Открепить" : "Закрепить";
 
       const rect = anchorBtn.getBoundingClientRect();
-      const menuW = 215;
-      const menuH = 310;
       let top = rect.bottom + 6;
-      let left = rect.right - menuW;
-
-      if (left < 10) left = 10;
-      if (top + menuH > window.innerHeight - 12) {
-        top = Math.max(12, window.innerHeight - menuH - 12);
-      }
+      let left = Math.max(10, rect.right - 215);
+      if (top + 310 > window.innerHeight - 12) top = Math.max(12, window.innerHeight - 322);
 
       happContextMenu.style.top = top + "px";
       happContextMenu.style.left = left + "px";
@@ -2048,11 +2416,9 @@
         if (!group) return;
 
         if (action === "routing") {
-          document.getElementById("routingPresetSelect").value = routingMode;
-          document.getElementById("routingModal").classList.add("open");
+          document.getElementById("fullRoutingPage").classList.add("open");
         } else if (action === "settings") {
-          document.getElementById("autoUpdateIntervalSelect").value = group.autoUpdate || "12ч.";
-          document.getElementById("groupSettingsModal").classList.add("open");
+          document.getElementById("fullSettingsPage").classList.add("open");
         } else if (action === "refresh") {
           refreshSubscriptionGroup(group.id);
         } else if (action === "ping") {
@@ -2061,11 +2427,10 @@
           group.pinned = !group.pinned;
           saveState();
           renderAccordionGroups();
-          showToast(group.pinned ? "Профиль закреплен" : "Профиль откреплен");
         } else if (action === "copy") {
           const textToCopy = group.url || (group.servers || []).map(s => s.raw).join("\n");
           if (navigator.clipboard) navigator.clipboard.writeText(textToCopy);
-          showToast("URL подписки скопирован");
+          showToast("URL скопирован");
         } else if (action === "edit") {
           document.getElementById("editGroupName").value = group.name;
           document.getElementById("editGroupUrl").value = group.url || "";
@@ -2083,7 +2448,6 @@
       });
     });
 
-    // Распаковка Base64 / текста подписки
     function unpackSubscriptionPayload(rawBody) {
       if (!rawBody) return [];
       let text = rawBody.trim();
@@ -2106,7 +2470,6 @@
       return nodes;
     }
 
-    // ОБНОВЛЕНИЕ ПОДПИСКИ: строго 1 запрос с единым HWID (чтобы бот не считал 2 устройства!)
     async function refreshSubscriptionGroup(groupId) {
       const group = profileGroups.find(g => g.id === groupId);
       if (!group) return;
@@ -2121,7 +2484,6 @@
         let profileTitleHeader = "";
 
         if (hasNativeXray && window.AndroidXray.fetchSubscription) {
-          // На телефоне делаем ТОЛЬКО нативный запрос с HWID (без второго WebView fetch!)
           try {
             const res = JSON.parse(window.AndroidXray.fetchSubscription(group.url));
             if (res.body) rawBody = res.body;
@@ -2129,7 +2491,6 @@
             profileTitleHeader = res.title || "";
           } catch (e) {}
         } else {
-          // Только если открыто на ПК в браузере
           try {
             const resp = await fetch(group.url);
             userInfoHeader = resp.headers.get("Subscription-Userinfo") || "";
@@ -2174,9 +2535,18 @@
     }
 
     // =========================================================================
-    // PRODUCTION ГЕНЕРАТОР КОНФИГА XRAY-CORE (БЛОК DNS + БЛОК ROUTING AsIs)
+    // ИСПРАВЛЕННЫЙ ГЕНЕРАТОР КОНФИГА XRAY (YOUTUBE РАБОТАЕТ + ФРАГМЕНТАЦИЯ + MUX)
     // =========================================================================
     function buildXrayConfig(node) {
+      const uaFpMap = {
+        "chrome-android": "chrome",
+        "chrome-win": "chrome",
+        "safari-mac": "safari",
+        "safari-ios": "ios",
+        "firefox-win": "firefox"
+      };
+      const resolvedFp = uaFpMap[tunnelConfig.userAgent] || node.fp || "chrome";
+
       const streamSettings = {
         network: node.type || "tcp",
         security: node.security || "tls"
@@ -2185,14 +2555,14 @@
       if (streamSettings.security === "tls") {
         streamSettings.tlsSettings = {
           serverName: node.sni || node.host,
-          allowInsecure: allowInsecureGlobal,
+          allowInsecure: false,
           alpn: node.alpn ? node.alpn.split(",") : ["h2", "http/1.1"],
-          fingerprint: node.fp || "chrome"
+          fingerprint: resolvedFp
         };
       } else if (streamSettings.security === "reality") {
         streamSettings.realitySettings = {
           serverName: node.sni || node.host,
-          fingerprint: node.fp || "chrome",
+          fingerprint: resolvedFp,
           publicKey: node.pbk || "",
           shortId: node.sid || "",
           spiderX: node.spx || "/"
@@ -2208,7 +2578,18 @@
       } else if (streamSettings.network === "ws") {
         streamSettings.wsSettings = {
           path: node.path || "/",
-          headers: { Host: node.sni || node.host }
+          headers: {
+            Host: node.sni || node.host,
+            "User-Agent": tunnelConfig.userAgent
+          }
+        };
+      }
+
+      // Если включено фрагментирование (для пробития DPI на YouTube)
+      if (tunnelConfig.useFragment) {
+        streamSettings.sockopt = {
+          dialerProxy: "fragment-out",
+          tcpNoDelay: true
         };
       }
 
@@ -2235,67 +2616,58 @@
         };
       }
 
-      // Блок DNS с защитой от утечек и DNS-петель
-      const dnsBlock = {
-        tag: "dns-module",
-        queryStrategy: "UseIPv4",
-        disableCache: false,
-        servers: [
-          {
-            address: "77.88.8.8",
-            port: 53,
-            domains: [
-              "geosite:ru",
-              "domain:ru",
-              "domain:su",
-              "domain:xn--p1ai",
-              "regexp:.*\\.(ru|su|рф|xn--p1ai)$"
-            ],
-            expectIPs: ["geoip:ru"],
-            skipFallback: true
-          },
-          {
-            address: "https://1.1.1.1/dns-query",
-            domains: ["geosite:geolocation-!cn"]
-          },
-          "https://8.8.8.8/dns-query"
-        ]
-      };
+      if (tunnelConfig.useMux) {
+        proxyOutbound.mux = { enabled: true, concurrency: 8 };
+      }
 
-      // Блок Routing (domainStrategy: AsIs)
+      const listenAddr = tunnelConfig.allowLan ? "0.0.0.0" : "127.0.0.1";
+      const ipStrategy = tunnelConfig.ipType === "IPv4"
+        ? "UseIPv4"
+        : (tunnelConfig.ipType === "IPv6" ? "UseIPv6" : "AsIs");
+
+      // Безопасные правила маршрутизации без внешних зависимостей, которые могут уронить старт ядра
       const rules = [];
 
-      if (routingMode === "smart_ru_ads") {
+      // 1. Реклама -> Block
+      if (tunnelConfig.adblock) {
         rules.push({
           type: "field",
           outboundTag: "block",
-          domain: ["geosite:category-ads-all"]
+          domain: [
+            "domain:doubleclick.net",
+            "domain:googlesyndication.com",
+            "domain:googleadservices.com",
+            "domain:adservice.google.com",
+            "domain:an.yandex.ru",
+            "domain:ads.tiktok.com"
+          ]
         });
       }
 
-      // Маршрутизация самого DNS-модуля для предотвращения DNS-петли
-      rules.push(
-        {
+      // 2. YouTube и Google Video -> принудительно в Proxy (чтобы никогда не тормозил!)
+      if (tunnelConfig.youtubeBoost) {
+        rules.push({
           type: "field",
-          inboundTag: ["dns-module"],
-          ip: ["77.88.8.8", "77.88.8.1"],
-          outboundTag: "direct"
-        },
-        {
-          type: "field",
-          inboundTag: ["dns-module"],
-          ip: ["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"],
-          outboundTag: "proxy"
-        }
-      );
+          outboundTag: "proxy",
+          domain: [
+            "domain:youtube.com",
+            "domain:googlevideo.com",
+            "domain:ytimg.com",
+            "domain:ggpht.com",
+            "domain:youtu.be",
+            "domain:youtubei.googleapis.com",
+            "domain:nhacmp3youtube.com"
+          ]
+        });
+      }
 
-      if (routingMode === "smart_ru_ads" || routingMode === "bypass_ru") {
+      // 3. Российские домены (.ru, .рф, .su) и локальная сеть -> Direct
+      if (tunnelConfig.ruBypass) {
         rules.push(
           {
             type: "field",
             outboundTag: "direct",
             domain: [
-              "geosite:ru",
               "domain:ru",
               "domain:su",
               "domain:xn--p1ai",
@@ -2305,71 +2677,230 @@
           {
             type: "field",
             outboundTag: "direct",
-            ip: ["geoip:private", "geoip:ru"]
+            ip: [
+              "10.0.0.0/8",
+              "172.16.0.0/12",
+              "192.168.0.0/16",
+              "127.0.0.0/8"
+            ]
           }
         );
-      } else {
-        rules.push({
-          type: "field",
-          outboundTag: "direct",
-          ip: ["geoip:private"]
-        });
       }
 
+      // 4. Весь остальной трафик -> Proxy
       rules.push({
         type: "field",
         network: "tcp,udp",
         outboundTag: "proxy"
       });
 
+      const outbounds = [
+        proxyOutbound,
+        {
+          tag: "direct",
+          protocol: "freedom",
+          settings: { domainStrategy: ipStrategy === "AsIs" ? "UseIP" : ipStrategy }
+        },
+        {
+          tag: "block",
+          protocol: "blackhole",
+          settings: { response: { type: "none" } }
+        }
+      ];
+
+      if (tunnelConfig.useFragment) {
+        outbounds.push({
+          tag: "fragment-out",
+          protocol: "freedom",
+          settings: {
+            fragment: {
+              packets: "tlshello",
+              length: "100-200",
+              interval: "10-20"
+            }
+          }
+        });
+      }
+
       return {
-        log: { loglevel: "warning" },
-        dns: dnsBlock,
+        log: { loglevel: "info" },
+        dns: {
+          servers: ["1.1.1.1", "8.8.8.8", "77.88.8.8"]
+        },
         inbounds: [
           {
             tag: "socks-in",
             port: 10808,
-            listen: "127.0.0.1",
+            listen: listenAddr,
             protocol: "socks",
             settings: { auth: "noauth", udp: true },
+            // routeOnly: false ОБЯЗАТЕЛЕН, чтобы Xray подменял заблокированный провайдером IP на реальный домен YouTube!
             sniffing: {
               enabled: true,
               destOverride: ["http", "tls", "quic"],
-              routeOnly: true
+              routeOnly: false
             }
           },
           {
             tag: "http-in",
             port: 10809,
-            listen: "127.0.0.1",
+            listen: listenAddr,
             protocol: "http",
             settings: {},
             sniffing: {
               enabled: true,
               destOverride: ["http", "tls", "quic"],
-              routeOnly: true
+              routeOnly: false
             }
           }
         ],
-        outbounds: [
-          proxyOutbound,
-          {
-            tag: "direct",
-            protocol: "freedom",
-            settings: { domainStrategy: "UseIPv4" }
-          },
-          {
-            tag: "block",
-            protocol: "blackhole",
-            settings: { response: { type: "none" } }
-          }
-        ],
+        outbounds,
         routing: {
           domainStrategy: "AsIs",
           rules
         }
       };
     }
+
+    // =========================================================================
+    // ОБРАБОТЧИКИ ЭКРАНОВ «НАСТРОЙКИ» И «МАРШРУТИЗАЦИЯ»
+    // =========================================================================
+    const fullSettingsPage = document.getElementById("fullSettingsPage");
+    const fullRoutingPage = document.getElementById("fullRoutingPage");
+    const uaDropdownBackdrop = document.getElementById("uaDropdownBackdrop");
+    const uaDropdownBox = document.getElementById("uaDropdownBox");
+
+    document.getElementById("openFullSettingsTopBtn").addEventListener("click", () => fullSettingsPage.classList.add("open"));
+    document.getElementById("openSettingsBottomBtn").addEventListener("click", () => fullSettingsPage.classList.add("open"));
+    document.getElementById("closeFullSettingsBtn").addEventListener("click", () => fullSettingsPage.classList.remove("open"));
+
+    document.getElementById("rowOpenRoutingPage").addEventListener("click", () => fullRoutingPage.classList.add("open"));
+    document.getElementById("openRoutingBottomBtn").addEventListener("click", () => fullRoutingPage.classList.add("open"));
+    document.getElementById("closeFullRoutingBtn").addEventListener("click", () => fullRoutingPage.classList.remove("open"));
+
+    // Всплывающий выбор User-Agent (как на фото 3)
+    document.getElementById("openUaDropdownRow").addEventListener("click", () => {
+      uaDropdownBackdrop.classList.add("open");
+      uaDropdownBox.classList.add("open");
+    });
+
+    function closeUaDropdown() {
+      uaDropdownBackdrop.classList.remove("open");
+      uaDropdownBox.classList.remove("open");
+    }
+    uaDropdownBackdrop.addEventListener("click", closeUaDropdown);
+
+    document.querySelectorAll(".ua-opt").forEach(btn => {
+      btn.addEventListener("click", () => {
+        tunnelConfig.userAgent = btn.getAttribute("data-ua");
+        saveTunnelConfig();
+        closeUaDropdown();
+        showToast("User-Agent: " + tunnelConfig.userAgent);
+      });
+    });
+
+    // Тумблеры в Настройках и Маршрутизации
+    document.getElementById("rowToggleFragment").addEventListener("click", () => {
+      tunnelConfig.useFragment = !tunnelConfig.useFragment;
+      saveTunnelConfig();
+      showToast(tunnelConfig.useFragment ? "Фрагментирование включено (YouTube Boost)" : "Фрагментирование выключено");
+    });
+
+    document.getElementById("rowToggleMux").addEventListener("click", () => {
+      tunnelConfig.useMux = !tunnelConfig.useMux;
+      saveTunnelConfig();
+      showToast(tunnelConfig.useMux ? "Mux включен" : "Mux выключен");
+    });
+
+    document.getElementById("rowPreferIpType").addEventListener("click", () => {
+      const types = ["Auto", "IPv4", "IPv6"];
+      const idx = (types.indexOf(tunnelConfig.ipType) + 1) % types.length;
+      tunnelConfig.ipType = types[idx];
+      saveTunnelConfig();
+      showToast("Предпочтительный тип IP: " + tunnelConfig.ipType);
+    });
+
+    document.getElementById("rowToggleXrayTun").addEventListener("click", () => {
+      tunnelConfig.xrayTun = !tunnelConfig.xrayTun;
+      saveTunnelConfig();
+    });
+
+    document.getElementById("rowToggleLan").addEventListener("click", () => {
+      tunnelConfig.allowLan = !tunnelConfig.allowLan;
+      saveTunnelConfig();
+      showToast(tunnelConfig.allowLan ? "Доступ из LAN разрешен (0.0.0.0)" : "Только локальный доступ (127.0.0.1)");
+    });
+
+    document.getElementById("rowToggleAutostart").addEventListener("click", () => {
+      tunnelConfig.autostart = !tunnelConfig.autostart;
+      saveTunnelConfig();
+    });
+
+    document.getElementById("rowToggleYoutubeFix").addEventListener("click", () => {
+      tunnelConfig.youtubeBoost = !tunnelConfig.youtubeBoost;
+      saveTunnelConfig();
+    });
+
+    document.getElementById("rowToggleRuBypass").addEventListener("click", () => {
+      tunnelConfig.ruBypass = !tunnelConfig.ruBypass;
+      saveTunnelConfig();
+    });
+
+    document.getElementById("rowToggleAdblock").addEventListener("click", () => {
+      tunnelConfig.adblock = !tunnelConfig.adblock;
+      saveTunnelConfig();
+    });
+
+    // Подменю из Настроек
+    document.getElementById("rowThemeSelect").addEventListener("click", () => {
+      document.getElementById("themesModal").classList.add("open");
+    });
+    document.getElementById("rowUiScale").addEventListener("click", () => {
+      document.getElementById("scaleModal").classList.add("open");
+    });
+    document.getElementById("rowPerAppProxy").addEventListener("click", () => {
+      document.getElementById("perAppModal").classList.add("open");
+    });
+    document.getElementById("closePerAppBtn").addEventListener("click", () => {
+      document.getElementById("perAppModal").classList.remove("open");
+    });
+    document.getElementById("rowInboundsInfo").addEventListener("click", () => {
+      showToast("Inbounds: SOCKS5 :10808 | HTTP :10809");
+    });
+    document.getElementById("rowVpnSettings").addEventListener("click", () => {
+      showToast("MTU: 1500 • DNS: 1.1.1.1 / 8.8.8.8 • Sniffing: Active");
+    });
+    document.getElementById("rowSubSettings").addEventListener("click", () => {
+      showToast("Автообновление: 12ч. • 1 устройство (HWID привязан)");
+    });
+    document.getElementById("rowPingSettings").addEventListener("click", () => {
+      tunnelConfig.pingMethod = tunnelConfig.pingMethod === "TCP" ? "HTTP 204" : "TCP";
+      saveTunnelConfig();
+      showToast("Метод проверки пинга: " + tunnelConfig.pingMethod);
+    });
+    document.getElementById("rowStatsView").addEventListener("click", () => {
+      showToast(`Время сессии: ${document.getElementById("timerDisplay").textContent}`);
+    });
+    document.getElementById("rowLogsView").addEventListener("click", () => {
+      document.getElementById("openLogsBtn").click();
+    });
+    document.getElementById("rowResetAll").addEventListener("click", () => {
+      profileGroups = [];
+      activeServerId = null;
+      saveState();
+      renderAccordionGroups();
+      fullSettingsPage.classList.remove("open");
+      showToast("Все профили и кэш сброшены");
+    });
+    document.getElementById("rowFaqInfo").addEventListener("click", () => {
+      showToast("Для ускорения YouTube держи включенным «Использовать фрагментирование»");
+    });
+    document.getElementById("rowUrlSchemes").addEventListener("click", () => {
+      showToast("Поддерживаются: vless://, trojan://, vmess://, ss://, https://");
+    });
+    document.getElementById("rowAboutApp").addEventListener("click", () => {
+      showToast("MVZ VPN v2.5 • Xray-core Native • HWID Single Device");
+    });
 
     // Импорт новой подписки или ключей
     document.getElementById("saveUniversalBtn").addEventListener("click", async () => {
@@ -2426,7 +2957,6 @@
       }
     });
 
-    // Создание ручного маршрута Trojan / VLESS
     document.getElementById("createManualProfileBtn").addEventListener("click", () => {
       const proto = document.getElementById("mProto").value;
       const net = document.getElementById("mNet").value.toLowerCase();
@@ -2496,32 +3026,7 @@
       }
     });
 
-    document.getElementById("saveRoutingBtn").addEventListener("click", () => {
-      routingMode = document.getElementById("routingPresetSelect").value;
-      localStorage.setItem("mvz_routing_mode", routingMode);
-      const labels = {
-        smart_ru_ads: "Умный обход RU + Антиреклама",
-        bypass_ru: "Маршрут: Обход RU (.ru/.рф)",
-        all: "Маршрут: Весь трафик"
-      };
-      document.getElementById("routingModeLabel").textContent = labels[routingMode] || "Умный обход RU + Антиреклама";
-      document.getElementById("routingModal").classList.remove("open");
-      showToast("Конфигурация DNS и Routing сохранена");
-    });
-
-    document.getElementById("saveGroupSettingsBtn").addEventListener("click", () => {
-      const group = profileGroups.find(g => g.id === activeMenuGroupId) || profileGroups[0];
-      if (group) {
-        group.autoUpdate = document.getElementById("autoUpdateIntervalSelect").value;
-      }
-      allowInsecureGlobal = document.getElementById("allowInsecureCheck").checked;
-      saveState();
-      renderAccordionGroups();
-      document.getElementById("groupSettingsModal").classList.remove("open");
-      showToast("Настройки сохранены");
-    });
-
-    // ЗАПУСК XRAY-CORE
+    // ЗАПУСК И ОСТАНОВКА XRAY-CORE
     const appEl = document.getElementById("app");
     const powerBtn = document.getElementById("powerBtn");
     const powerLabel = document.getElementById("powerLabel");
@@ -2595,7 +3100,7 @@
           setTimeout(() => clearInterval(checkLoop), 12000);
         } else {
           stepHint.textContent = `Подключение к ${node.name}...`;
-          setTimeout(() => setConnectedUI(node), 800);
+          setTimeout(() => setConnectedUI(node), 700);
         }
       } else {
         if (hasNativeXray) window.AndroidXray.stopXray();
@@ -2603,7 +3108,7 @@
       }
     });
 
-    // Телеметрия скорости
+    // Скорость трафика
     const dlSpeedEl = document.getElementById("dlSpeed");
     const ulSpeedEl = document.getElementById("ulSpeed");
     const dlUnitEl = document.getElementById("dlUnit");
@@ -2649,8 +3154,6 @@
     // Модальные окна
     const addModal = document.getElementById("addModal");
     const editGroupModal = document.getElementById("editGroupModal");
-    const routingModal = document.getElementById("routingModal");
-    const groupSettingsModal = document.getElementById("groupSettingsModal");
     const scaleModal = document.getElementById("scaleModal");
     const themesModal = document.getElementById("themesModal");
     const logsModal = document.getElementById("logsModal");
@@ -2662,12 +3165,7 @@
     });
     document.getElementById("closeAddBtn").addEventListener("click", () => addModal.classList.remove("open"));
     document.getElementById("closeEditGroupBtn").addEventListener("click", () => editGroupModal.classList.remove("open"));
-    document.getElementById("openRoutingBottomBtn").addEventListener("click", () => routingModal.classList.add("open"));
-    document.getElementById("closeRoutingBtn").addEventListener("click", () => routingModal.classList.remove("open"));
-    document.getElementById("closeGroupSettingsBtn").addEventListener("click", () => groupSettingsModal.classList.remove("open"));
-    document.getElementById("openScaleModalBtn").addEventListener("click", () => scaleModal.classList.add("open"));
     document.getElementById("closeScaleModalBtn").addEventListener("click", () => scaleModal.classList.remove("open"));
-    document.getElementById("openThemesBtn").addEventListener("click", () => themesModal.classList.add("open"));
     document.getElementById("closeThemesBtn").addEventListener("click", () => themesModal.classList.remove("open"));
 
     const tabPasteLink = document.getElementById("tabPasteLink");
@@ -2716,6 +3214,7 @@
     });
 
     loadState();
+    syncSettingsUI();
     renderAccordionGroups();
   </script>
 </body>
