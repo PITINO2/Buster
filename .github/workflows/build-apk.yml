@@ -42,7 +42,7 @@ jobs:
             "appId": "com.mvzvpn.app",
             "appName": "MVZ",
             "webDir": "www",
-            "backgroundColor": "#0b0c10"
+            "backgroundColor": "#0f1014"
           }
           EOF
 
@@ -143,12 +143,12 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-                  <item name="colorPrimary">#0b0c10</item>
-                  <item name="colorPrimaryDark">#0b0c10</item>
+                  <item name="colorPrimary">#0f1014</item>
+                  <item name="colorPrimaryDark">#0f1014</item>
                   <item name="colorAccent">#6366f1</item>
-                  <item name="android:windowBackground">#0b0c10</item>
-                  <item name="android:statusBarColor">#0b0c10</item>
-                  <item name="android:navigationBarColor">#0b0c10</item>
+                  <item name="android:windowBackground">#0f1014</item>
+                  <item name="android:statusBarColor">#0f1014</item>
+                  <item name="android:navigationBarColor">#0f1014</item>
                   <item name="android:windowLightStatusBar">false</item>
               </style>
               <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -156,7 +156,7 @@ jobs:
                   <item name="windowNoTitle">true</item>
               </style>
               <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
-                  <item name="android:background">#0b0c10</item>
+                  <item name="android:background">#0f1014</item>
               </style>
           </resources>
           EOF
@@ -172,7 +172,7 @@ jobs:
           if [ -f "xray_bin/geoip.dat" ]; then cp xray_bin/geoip.dat android/app/src/main/assets/geoip.dat; fi
           if [ -f "xray_bin/geosite.dat" ]; then cp xray_bin/geosite.dat android/app/src/main/assets/geosite.dat; fi
 
-      - name: Внедрение Android VpnService (без петли трафика + быстрый реконнект)
+      - name: Внедрение оптимизированного Android VpnService и загрузчика подписок
         run: |
           mkdir -p android/app/src/main/java/com/mvzvpn/app
 
@@ -187,6 +187,7 @@ jobs:
 
               <application
                   android:allowBackup="true"
+                  android:hardwareAccelerated="true"
                   android:icon="@mipmap/ic_launcher"
                   android:label="MVZ"
                   android:roundIcon="@mipmap/ic_launcher_round"
@@ -199,6 +200,7 @@ jobs:
                       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
                       android:name="com.mvzvpn.app.MainActivity"
                       android:label="MVZ"
+                      android:hardwareAccelerated="true"
                       android:theme="@style/AppTheme.NoActionBarLaunch"
                       android:launchMode="singleTask"
                       android:exported="true">
@@ -255,7 +257,7 @@ jobs:
 
               public static void addLog(String msg) {
                   synchronized (logs) {
-                      if (logs.size() > 120) {
+                      if (logs.size() > 100) {
                           logs.remove(0);
                       }
                       logs.add(msg);
@@ -288,7 +290,7 @@ jobs:
                   String configJson = intent != null ? intent.getStringExtra("configJson") : null;
                   String routeName = intent != null ? intent.getStringExtra("routeName") : "VLESS Маршрут";
                   if (configJson != null) {
-                      startVpn(configJson, routeName != null ? routeName : "VLESS Маршрут");
+                      new Thread(() -> startVpn(configJson, routeName != null ? routeName : "VLESS Маршрут")).start();
                   }
                   return START_STICKY;
               }
@@ -344,7 +346,7 @@ jobs:
                       File xrayBin = new File(xrayPath);
                       xrayBin.setExecutable(true);
 
-                      addLog("[MVZ-CORE] Переключение на маршрут: " + routeName);
+                      addLog("[MVZ-CORE] Запуск маршрута: " + routeName);
                       ProcessBuilder pb = new ProcessBuilder(xrayPath, "run", "-c", configFile.getAbsolutePath());
                       pb.directory(getFilesDir());
                       pb.environment().put("XRAY_LOCATION_ASSET", getFilesDir().getAbsolutePath());
@@ -367,11 +369,10 @@ jobs:
                           Builder builder = new Builder();
                           builder.setSession("MVZ: " + routeName);
                           builder.setMtu(1500);
-                          builder.addAddress("10.10.0.1", 32);
+                          builder.addAddress("10.10.0.1", 24);
                           builder.addDnsServer("1.1.1.1");
                           builder.addDnsServer("8.8.8.8");
 
-                          // Исключаем само приложение MVZ из TUN-захвата, чтобы не было петли трафика!
                           try {
                               builder.addDisallowedApplication(getPackageName());
                           } catch (Exception ignored) {}
@@ -443,8 +444,10 @@ jobs:
           import android.os.Build;
           import android.os.Bundle;
           import android.provider.Settings;
+          import android.view.View;
           import android.view.Window;
           import android.webkit.JavascriptInterface;
+          import android.webkit.WebView;
 
           import com.getcapacitor.BridgeActivity;
 
@@ -474,15 +477,17 @@ jobs:
               @Override
               public void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
-                  applyBarsColor("#0b0c10");
+                  applyBarsColor("#0f1014");
                   if (Build.VERSION.SDK_INT >= 33) {
                       if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                           requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
                       }
                   }
                   if (getBridge() != null && getBridge().getWebView() != null) {
-                      getBridge().getWebView().setBackgroundColor(Color.parseColor("#0b0c10"));
-                      getBridge().getWebView().addJavascriptInterface(new XrayBridge(), "AndroidXray");
+                      WebView wv = getBridge().getWebView();
+                      wv.setBackgroundColor(Color.parseColor("#0f1014"));
+                      wv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                      wv.addJavascriptInterface(new XrayBridge(), "AndroidXray");
                   }
               }
 
@@ -572,7 +577,7 @@ jobs:
                   public int pingHost(String host, int port) {
                       long start = System.currentTimeMillis();
                       try (Socket socket = new Socket()) {
-                          socket.connect(new InetSocketAddress(host, port), 2500);
+                          socket.connect(new InetSocketAddress(host, port), 1800);
                           return (int) (System.currentTimeMillis() - start);
                       } catch (Exception e) {
                           return -1;
@@ -599,20 +604,38 @@ jobs:
                           SSLContext sc = SSLContext.getInstance("TLS");
                           sc.init(null, trustAllCerts, new SecureRandom());
                           HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+                          HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
 
                           String hwid = getDeviceHwid();
-                          URL url = new URL(urlStr.trim());
-                          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                          conn.setRequestMethod("GET");
-                          conn.setConnectTimeout(10000);
-                          conn.setReadTimeout(10000);
-                          conn.setRequestProperty("User-Agent", "Happ/2.4.0 (Android)");
-                          conn.setRequestProperty("x-hwid", hwid);
-                          conn.setRequestProperty("x-device-os", "Android");
-                          conn.setRequestProperty("x-ver-os", Build.VERSION.RELEASE != null ? Build.VERSION.RELEASE : "14");
-                          conn.setRequestProperty("x-device-model", Build.MODEL != null ? Build.MODEL : "MVZ-Phone");
-                          conn.setRequestProperty("Accept", "*/*");
-                          conn.setInstanceFollowRedirects(true);
+                          String currentUrl = urlStr.trim();
+                          HttpURLConnection conn = null;
+
+                          // Поддержка редиректов HTTP <-> HTTPS
+                          for (int i = 0; i < 4; i++) {
+                              URL url = new URL(currentUrl);
+                              conn = (HttpURLConnection) url.openConnection();
+                              conn.setRequestMethod("GET");
+                              conn.setConnectTimeout(8000);
+                              conn.setReadTimeout(8000);
+                              // v2rayNG гарантирует, что панель отдаст открытый Base64 список всех стран (без шифрования happ://crypt)
+                              conn.setRequestProperty("User-Agent", "v2rayNG/1.8.29");
+                              conn.setRequestProperty("x-hwid", hwid);
+                              conn.setRequestProperty("x-device-os", "Android");
+                              conn.setRequestProperty("x-ver-os", Build.VERSION.RELEASE != null ? Build.VERSION.RELEASE : "14");
+                              conn.setRequestProperty("x-device-model", Build.MODEL != null ? Build.MODEL : "MVZ-Phone");
+                              conn.setRequestProperty("Accept", "*/*");
+                              conn.setInstanceFollowRedirects(true);
+
+                              int rCode = conn.getResponseCode();
+                              if (rCode == HttpURLConnection.HTTP_MOVED_PERM || rCode == HttpURLConnection.HTTP_MOVED_TEMP || rCode == 307 || rCode == 308) {
+                                  String loc = conn.getHeaderField("Location");
+                                  if (loc != null && !loc.isEmpty()) {
+                                      currentUrl = loc;
+                                      continue;
+                                  }
+                              }
+                              break;
+                          }
 
                           int code = conn.getResponseCode();
                           String userInfo = conn.getHeaderField("Subscription-Userinfo");
