@@ -457,9 +457,7 @@
       text-overflow: ellipsis;
     }
 
-    /* =========================================================================
-       3. СВОРАЧИВАЕМЫЕ ПРОФИЛИ И МАРШРУТЫ
-       ========================================================================= */
+    /* 3. СВОРАЧИВАЕМЫЕ ПРОФИЛИ И МАРШРУТЫ */
     .profiles-scroll-area {
       width: 100%;
       min-width: 0;
@@ -476,13 +474,13 @@
       background: var(--bg-card);
       border: 1.5px dashed var(--border-glass);
       border-radius: 14px;
-      padding: 26px 16px;
+      padding: 28px 16px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 8px;
     }
 
     .sub-group-card {
@@ -695,7 +693,6 @@
       flex-shrink: 0;
     }
 
-    /* Кнопка индивидуального пинга конкретного маршрута */
     .srv-ping-btn {
       height: 26px;
       padding: 0 8px;
@@ -1201,9 +1198,9 @@
         <div>
           <div class="brand-title-row">
             <span class="brand-title">MVZ</span>
-            <span class="proto-pill" id="activeProtoBadge">VLESS</span>
+            <span class="proto-pill" id="activeProtoBadge">НЕТ</span>
           </div>
-          <div class="brand-sub" id="routingModeLabel">Маршрут: Весь трафик</div>
+          <div class="brand-sub" id="routingModeLabel">Умный обход RU + Антиреклама</div>
         </div>
       </div>
 
@@ -1250,11 +1247,11 @@
           </div>
         </div>
 
-        <div class="step-hint" id="stepHint">Выбери маршрут в профиле ниже</div>
+        <div class="step-hint" id="stepHint">Добавь профиль по кнопке ниже</div>
       </div>
     </section>
 
-    <!-- 3. СПИСОК СВОРАЧИВАЕМЫХ ПРОФИЛЕЙ -->
+    <!-- 3. СПИСОК СВОРАЧИВАЕМЫХ ПРОФИЛЕЙ (ПУСТОЙ ПО УМОЛЧАНИЮ) -->
     <main class="profiles-scroll-area" id="profilesAccordionArea"></main>
 
     <!-- 4. НИЖНЯЯ НАВИГАЦИЯ -->
@@ -1265,7 +1262,7 @@
       </button>
       <button class="nav-btn" id="openRoutingBottomBtn" type="button">
         <span>🔀 Маршруты</span>
-        <span>Правила</span>
+        <span>DNS / RU</span>
       </button>
       <button class="nav-btn" id="openLogsBtn" type="button">
         <span>🖥 Консоль</span>
@@ -1292,11 +1289,11 @@
       </div>
 
       <div id="pasteLinkPane" style="display:flex;flex-direction:column;gap:8px;">
-        <input id="newGroupTitleInput" class="field-input" placeholder="Название профиля (напр. MVZ VPS | @mvzapretbot)" value="MVZ VPS | @mvzapretbot" />
+        <input id="newGroupTitleInput" class="field-input" placeholder="Название профиля (оставь пустым для авто-имени)" value="" />
         <textarea id="universalInput" class="input-box" placeholder="Вставь ссылку подписки https://... (распакуются все маршруты внутри неё) или ключи vless://, trojan://"></textarea>
         <div class="btn-row">
           <button class="secondary-btn" id="pasteClipBtn" type="button">📋 Из буфера</button>
-          <button class="primary-btn" id="saveUniversalBtn" type="button">Импортировать в профиль</button>
+          <button class="primary-btn" id="saveUniversalBtn" type="button">Импортировать</button>
         </div>
       </div>
 
@@ -1312,17 +1309,17 @@
             <option value="tcp">Транспорт: TCP</option>
           </select>
         </div>
-        <input id="mName" class="field-input" placeholder="Название маршрута" value="Нидерланды — Reality 6 ⚡" />
+        <input id="mName" class="field-input" placeholder="Название маршрута" value="Польша — Reality" />
         <div class="form-grid">
-          <input id="mHost" class="field-input" placeholder="Хост / IP" value="parts.skodamotors.online" />
+          <input id="mHost" class="field-input" placeholder="Хост / IP" value="" />
           <input id="mPort" class="field-input" placeholder="Порт" value="443" type="number" />
         </div>
-        <input id="mSecret" class="field-input" placeholder="UUID или Пароль Trojan" value="647640d8-c26c-42bf-aa78-48a2f8d9759d" />
+        <input id="mSecret" class="field-input" placeholder="UUID или Пароль Trojan" value="" />
         <div class="form-grid">
-          <input id="mSecType" class="field-input" placeholder="TLS или REALITY" value="REALITY" />
-          <input id="mSni" class="field-input" placeholder="SNI" value="parts.skodamotors.online" />
+          <input id="mSecType" class="field-input" placeholder="TLS или REALITY" value="TLS" />
+          <input id="mSni" class="field-input" placeholder="SNI" value="" />
         </div>
-        <button class="primary-btn" id="createManualProfileBtn" type="button">Добавить маршрут в профиль</button>
+        <button class="primary-btn" id="createManualProfileBtn" type="button">Добавить маршрут</button>
       </div>
     </div>
   </div>
@@ -1334,40 +1331,40 @@
         <div class="sheet-title">Редактировать профиль</div>
         <button class="close-btn" id="closeEditGroupBtn" type="button">✕</button>
       </div>
-      <input id="editGroupName" class="field-input" placeholder="Название профиля (напр. MVZ VPS | @mvzapretbot)" />
+      <input id="editGroupName" class="field-input" placeholder="Название профиля" />
       <input id="editGroupUrl" class="field-input" placeholder="URL подписки (https://...)" />
       <div class="form-grid">
-        <input id="editGroupExpire" class="field-input" placeholder="Истекает (ДД.ММ.ГГГГ, напр. 23.10.2026)" />
+        <input id="editGroupExpire" class="field-input" placeholder="Истекает (ДД.ММ.ГГГГ)" />
         <input id="editGroupAutoUpdate" class="field-input" placeholder="Автообновление (12ч.)" />
       </div>
       <div class="btn-row">
         <button class="secondary-btn" id="setTest8DaysBtn" type="button">Тест: 8 дн. (⚠️)</button>
-        <button class="secondary-btn" id="setTest30DaysBtn" type="button">Тест: 30 дн. (✅)</button>
+        <button class="secondary-btn" id="setTest30DaysBtn" type="button">Тест: 30 дн. (✔)</button>
       </div>
       <button class="primary-btn" id="saveEditGroupBtn" type="button">Сохранить изменения</button>
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО 3: МАРШРУТИЗАЦИЯ -->
+  <!-- МОДАЛЬНОЕ ОКНО 3: МАРШРУТИЗАЦИЯ И DNS -->
   <div class="modal-backdrop" id="routingModal">
     <div class="sheet">
       <div class="sheet-head">
-        <div class="sheet-title">Маршрутизация Xray-core</div>
+        <div class="sheet-title">Маршрутизация и DNS (AsIs)</div>
         <button class="close-btn" id="closeRoutingBtn" type="button">✕</button>
       </div>
       <div class="option-row">
-        <span>Режим маршрутизации</span>
-        <select id="routingPresetSelect" class="field-input" style="width:170px;">
-          <option value="all">Весь трафик через VPN</option>
-          <option value="bypass_ru">Обход РФ (.ru / geoip:ru)</option>
-          <option value="block_ads">VPN + Блокировка рекламы</option>
+        <span>Профиль правил</span>
+        <select id="routingPresetSelect" class="field-input" style="width:190px;">
+          <option value="smart_ru_ads">Обход RU + Блок рекламы</option>
+          <option value="bypass_ru">Только обход RU (.ru/.рф/.su)</option>
+          <option value="all">Весь трафик через прокси</option>
         </select>
       </div>
       <div class="option-row">
-        <span>Прямой DNS для российских сайтов</span>
+        <span>Локальный RU DNS (77.88.8.8) + DoH в прокси</span>
         <input type="checkbox" id="directRuDnsCheck" checked style="width:18px;height:18px;accent-color:var(--accent-primary);" />
       </div>
-      <button class="primary-btn" id="saveRoutingBtn" type="button">Применить маршрутизацию</button>
+      <button class="primary-btn" id="saveRoutingBtn" type="button">Применить конфигурацию</button>
     </div>
   </div>
 
@@ -1555,7 +1552,7 @@
       return `<span>${fallbackEmoji || "🌐"}</span>`;
     }
 
-    // Расчет количества оставшихся дней по строке ДД.ММ.ГГГГ (например «06.01.2027»)
+    // Расчет оставшихся дней подписки
     function calculateDaysRemaining(dateStr) {
       if (!dateStr) return 30;
       const parts = dateStr.trim().split(".");
@@ -1605,7 +1602,7 @@
         const secret = decodeURIComponent(atParts[0] || "");
         const hostPort = atParts[1] || rest;
         const hp = hostPort.split(":");
-        const host = hp[0] || "parts.skodamotors.online";
+        const host = hp[0] || "";
         const port = parseInt((hp[1] || "443").replace(/\D/g, ""), 10) || 443;
 
         const params = new URLSearchParams(queryString);
@@ -1617,7 +1614,7 @@
           raw: uri,
           protocol,
           name: cleanName || remark,
-          icon: flagMatch ? flagMatch[1] : "🇳🇱",
+          icon: flagMatch ? flagMatch[1] : "🌐",
           uuid: secret,
           password: secret,
           host,
@@ -1649,7 +1646,7 @@
             raw: uri,
             protocol: "vmess",
             name: json.ps || "VMess Server",
-            icon: "🇳🇱",
+            icon: "🌐",
             uuid: json.id || "",
             host: json.add || "",
             port: parseInt(json.port || "443", 10),
@@ -1667,51 +1664,27 @@
       return null;
     }
 
-    const INITIAL_URIS = [
-      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=tls&type=ws&sni=parts.skodamotors.online&fp=chrome#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%201%20%F0%9F%8C%90",
-      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=tls&alpn=h2&encryption=none&authority=parts.skodamotors.online&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%202%20%F0%9F%9B%B0%EF%B8%8F",
-      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=reality&type=tcp&sni=parts.skodamotors.online&fp=chrome#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%203%20%E2%9A%A1",
-      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=reality&type=tcp&sni=parts.skodamotors.online&fp=chrome#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%204%20%E2%9A%A1",
-      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=reality&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online&fp=chrome#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%205%20%F0%9F%9B%B0%EF%B8%8F",
-      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=tls&alpn=h2&encryption=none&authority=parts.skodamotors.online&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Reality%202%20%F0%9F%9B%B0%EF%B8%8F",
-      "trojan://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=tls&alpn=h2&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Trojan%20TLS%20%F0%9F%9B%A1%EF%B8%8F"
-    ];
-
+    // Изначально список профилей ПОЛНОСТЬЮ ПУСТОЙ (без предустановленных серверов)
     let profileGroups = [];
     let activeServerId = null;
     let activeMenuGroupId = null;
-    let routingMode = localStorage.getItem("mvz_routing_mode") || "all";
+    let routingMode = localStorage.getItem("mvz_routing_mode") || "smart_ru_ads";
     let allowInsecureGlobal = false;
 
-    function createDefaultGroup() {
-      const servers = INITIAL_URIS.map(u => parseRouteUri(u)).filter(Boolean);
-      return {
-        id: "group_mvz_main",
-        name: "MVZ VPS | @mvzapretbot",
-        updatedAt: "15.10.2026 20:07",
-        autoUpdate: "12ч.",
-        expiresText: "06.01.2027",
-        url: "https://parts.skodamotors.online/sub",
-        pinned: true,
-        collapsed: false,
-        servers
-      };
-    }
-
     function loadState() {
-      const initializedBefore = localStorage.getItem("mvz_initialized_v7");
       try {
-        const saved = localStorage.getItem("mvz_profile_groups_v7");
-        if (saved !== null) profileGroups = JSON.parse(saved);
-      } catch (e) { profileGroups = []; }
-
-      if (!initializedBefore) {
-        profileGroups = [createDefaultGroup()];
-        localStorage.setItem("mvz_initialized_v7", "1");
+        const saved = localStorage.getItem("mvz_profile_groups_v8_empty");
+        if (saved !== null) {
+          profileGroups = JSON.parse(saved);
+        } else {
+          profileGroups = [];
+        }
+      } catch (e) {
+        profileGroups = [];
       }
 
       const allServers = getAllServers();
-      activeServerId = localStorage.getItem("mvz_active_srv_v7") || (allServers[0] && allServers[0].id) || null;
+      activeServerId = localStorage.getItem("mvz_active_srv_v8") || (allServers[0] && allServers[0].id) || null;
       if (allServers.length > 0 && !allServers.some(s => s.id === activeServerId)) {
         activeServerId = allServers[0].id;
       }
@@ -1719,8 +1692,8 @@
     }
 
     function saveState() {
-      localStorage.setItem("mvz_profile_groups_v7", JSON.stringify(profileGroups));
-      if (activeServerId) localStorage.setItem("mvz_active_srv_v7", activeServerId);
+      localStorage.setItem("mvz_profile_groups_v8_empty", JSON.stringify(profileGroups));
+      if (activeServerId) localStorage.setItem("mvz_active_srv_v8", activeServerId);
     }
 
     function getAllServers() {
@@ -1754,7 +1727,6 @@
           }, 20);
         });
       }
-      // В веб-предпросмотре измеряем реальный сетевой RTT через fetch к хосту
       const start = performance.now();
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 2400);
@@ -1805,7 +1777,7 @@
     }
 
     // =========================================================================
-    // ОТРИСОВКА ПРОФИЛЕЙ С ЗЕЛЕНОЙ ГАЛОЧКОЙ (>= 11 ДНЕЙ) ИЛИ ЖЕЛТЫМ ЗНАКОМ (<= 10 ДНЕЙ)
+    // ОТРИСОВКА ПРОФИЛЕЙ С НОВОЙ ГАЛОЧКОЙ (>= 11 ДНЕЙ) И ЖЕЛТЫМ ЗНАКОМ (<= 10 ДНЕЙ)
     // =========================================================================
     function renderAccordionGroups() {
       const container = document.getElementById("profilesAccordionArea");
@@ -1814,9 +1786,13 @@
       if (profileGroups.length === 0) {
         container.innerHTML = `
           <div class="empty-profiles-box">
-            <div style="font-size:14px;font-weight:800;">Все профили удалены</div>
-            <div style="font-size:11.5px;color:var(--text-muted);">Нажми кнопку ниже, чтобы вставить подписку https:// или ключ vless:// / trojan://</div>
-            <button class="primary-btn" id="emptyAddProfileBtn" type="button" style="padding:0 18px;margin-top:4px;">+ Добавить новый профиль</button>
+            <div style="font-size:15px;font-weight:900;">Список профилей пуст</div>
+            <div style="font-size:11.5px;color:var(--text-muted);max-width:270px;line-height:1.4;">
+              Нажми кнопку ниже, чтобы вставить ссылку подписки <b>https://</b> или ключи <b>vless://</b> / <b>trojan://</b>
+            </div>
+            <button class="primary-btn" id="emptyAddProfileBtn" type="button" style="padding:0 20px;margin-top:4px;flex:none;">
+              + Добавить подписку или ключ
+            </button>
           </div>
         `;
         document.getElementById("emptyAddProfileBtn").addEventListener("click", () => {
@@ -1833,23 +1809,22 @@
         const card = document.createElement("div");
         card.className = "sub-group-card" + (group.collapsed ? " collapsed" : "");
 
-        // Считаем сколько дней осталось до даты истечения
         const daysLeft = calculateDaysRemaining(group.expiresText);
         const isWarning = daysLeft <= 10;
 
-        // Если <= 10 дней — желтый треугольник ⚠️, если >= 11 дней — зеленая галочка ✅
+        // Новая четкая изумрудная галочка в заполненном круге (>= 11 дней) и желтый знак (<= 10 дней)
         const statusIconHtml = isWarning
           ? `<button class="sgh-icon-btn warn" data-act="status" data-gid="${group.id}" type="button" title="Осталось ${daysLeft} дн. (<= 10 дн.)">
-               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                 <line x1="12" y1="9" x2="12" y2="13"></line>
-                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="rgba(245,158,11,0.18)" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>
+                 <line x1="12" y1="9" x2="12" y2="13" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/>
+                 <circle cx="12" cy="17" r="1.2" fill="#f59e0b"/>
                </svg>
              </button>`
           : `<button class="sgh-icon-btn ok-green" data-act="status" data-gid="${group.id}" type="button" title="Осталось ${daysLeft} дн. (>= 11 дн.)">
-               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                 <circle cx="12" cy="12" r="10" fill="#10b981"/>
+                 <path d="M8 12.3L10.8 15.1L16.2 9.5" stroke="#062117" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
                </svg>
              </button>`;
 
@@ -1880,7 +1855,7 @@
                 </div>
               </div>
               <div class="srv-right">
-                <button class="${pingClass}" data-ping-srv="${srv.id}" type="button" title="Нажми, чтобы пропинговать этот маршрут">${pingLabel}</button>
+                <button class="${pingClass}" data-ping-srv="${srv.id}" type="button" title="Пропинговать этот маршрут">${pingLabel}</button>
                 <button class="srv-del-btn" data-del-srv="${srv.id}" data-del-gid="${group.id}" type="button" title="Удалить маршрут">✕</button>
               </div>
             </div>
@@ -1940,7 +1915,6 @@
           </div>
         `;
 
-        // Свернуть / развернуть профиль
         card.querySelector(".sub-group-header").addEventListener("click", (e) => {
           if (e.target.closest(".sgh-actions")) return;
           group.collapsed = !group.collapsed;
@@ -1948,7 +1922,6 @@
           renderAccordionGroups();
         });
 
-        // Кнопки в шапке профиля
         card.querySelectorAll("[data-act]").forEach(btn => {
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -1957,9 +1930,9 @@
 
             if (act === "status") {
               if (isWarning) {
-                showToast(`⚠️ Внимание: осталось всего ${daysLeft} дн. (до ${group.expiresText})`);
+                showToast(`⚠️ Осталось мало времени: ${daysLeft} дн. (до ${group.expiresText})`);
               } else {
-                showToast(`✅ Подписка активна: осталось ${daysLeft} дн. (до ${group.expiresText})`);
+                showToast(`✔ Подписка активна: осталось ${daysLeft} дн. (до ${group.expiresText})`);
               }
             } else if (act === "refresh") {
               refreshSubscriptionGroup(group.id);
@@ -1971,7 +1944,6 @@
           });
         });
 
-        // Выбор маршрута по клику на строку
         card.querySelectorAll(".server-row").forEach(row => {
           row.addEventListener("click", (e) => {
             if (e.target.closest("[data-ping-srv]") || e.target.closest("[data-del-srv]")) return;
@@ -1984,7 +1956,6 @@
           });
         });
 
-        // Индивидуальный пинг конкретного маршрута по нажатию на кнопку пинга
         card.querySelectorAll("[data-ping-srv]").forEach(pBtn => {
           pBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -1992,7 +1963,6 @@
           });
         });
 
-        // Удаление отдельного маршрута
         card.querySelectorAll("[data-del-srv]").forEach(dBtn => {
           dBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -2018,7 +1988,7 @@
       const active = getActiveServer();
       if (!active) {
         document.getElementById("activeProtoBadge").textContent = "НЕТ";
-        document.getElementById("stepHint").textContent = "Добавь профиль или маршрут";
+        document.getElementById("stepHint").textContent = "Добавь профиль по кнопке ниже";
         return;
       }
       document.getElementById("activeProtoBadge").textContent = (active.protocol || "vless").toUpperCase();
@@ -2037,7 +2007,7 @@
     });
 
     // =========================================================================
-    // КОНТЕКСТНОЕ МЕНЮ НА ТРИ ТОЧКИ (⋯) — УДАЛЕНИЕ БЕЗ ОГРАНИЧЕНИЙ
+    // КОНТЕКСТНОЕ МЕНЮ НА ТРИ ТОЧКИ (⋯)
     // =========================================================================
     const ctxBackdrop = document.getElementById("ctxBackdrop");
     const happContextMenu = document.getElementById("happContextMenu");
@@ -2103,7 +2073,6 @@
           document.getElementById("editGroupAutoUpdate").value = group.autoUpdate || "12ч.";
           document.getElementById("editGroupModal").classList.add("open");
         } else if (action === "delete") {
-          // УДАЛЕНИЕ ПРОФИЛЯ БЕЗ ОГРАНИЧЕНИЙ (даже если он последний)
           profileGroups = profileGroups.filter(g => g.id !== group.id);
           const all = getAllServers();
           activeServerId = all[0] ? all[0].id : null;
@@ -2137,7 +2106,7 @@
       return nodes;
     }
 
-    // ОБНОВЛЕНИЕ ПОДПИСКИ (БЕЗ АВТОМАТИЧЕСКОГО ПИНГА!)
+    // ОБНОВЛЕНИЕ ПОДПИСКИ: строго 1 запрос с единым HWID (чтобы бот не считал 2 устройства!)
     async function refreshSubscriptionGroup(groupId) {
       const group = profileGroups.find(g => g.id === groupId);
       if (!group) return;
@@ -2146,24 +2115,37 @@
       group.collapsed = false;
 
       if (group.url && group.url.startsWith("http")) {
-        showToast(`Обновление списка «${group.name}»...`);
+        showToast(`Обновление «${group.name}»...`);
         let rawBody = "";
         let userInfoHeader = "";
+        let profileTitleHeader = "";
 
         if (hasNativeXray && window.AndroidXray.fetchSubscription) {
+          // На телефоне делаем ТОЛЬКО нативный запрос с HWID (без второго WebView fetch!)
           try {
             const res = JSON.parse(window.AndroidXray.fetchSubscription(group.url));
             if (res.body) rawBody = res.body;
             userInfoHeader = res.userinfo || "";
+            profileTitleHeader = res.title || "";
           } catch (e) {}
-        }
-
-        if (!rawBody) {
+        } else {
+          // Только если открыто на ПК в браузере
           try {
             const resp = await fetch(group.url);
             userInfoHeader = resp.headers.get("Subscription-Userinfo") || "";
+            profileTitleHeader = resp.headers.get("Profile-Title") || "";
             rawBody = await resp.text();
           } catch (e) {}
+        }
+
+        if (profileTitleHeader && (!group.name || group.name === "Подписка MVZ")) {
+          if (profileTitleHeader.startsWith("base64:")) {
+            try {
+              group.name = decodeURIComponent(escape(atob(profileTitleHeader.slice(7).trim())));
+            } catch (e) {}
+          } else {
+            group.name = profileTitleHeader;
+          }
         }
 
         if (userInfoHeader) {
@@ -2191,7 +2173,9 @@
       showToast(`Обновлено: ${group.updatedAt}`);
     }
 
-    // Генератор конфига Xray-core (Rule-Based Routing)
+    // =========================================================================
+    // PRODUCTION ГЕНЕРАТОР КОНФИГА XRAY-CORE (БЛОК DNS + БЛОК ROUTING AsIs)
+    // =========================================================================
     function buildXrayConfig(node) {
       const streamSettings = {
         network: node.type || "tcp",
@@ -2251,23 +2235,134 @@
         };
       }
 
+      // Блок DNS с защитой от утечек и DNS-петель
+      const dnsBlock = {
+        tag: "dns-module",
+        queryStrategy: "UseIPv4",
+        disableCache: false,
+        servers: [
+          {
+            address: "77.88.8.8",
+            port: 53,
+            domains: [
+              "geosite:ru",
+              "domain:ru",
+              "domain:su",
+              "domain:xn--p1ai",
+              "regexp:.*\\.(ru|su|рф|xn--p1ai)$"
+            ],
+            expectIPs: ["geoip:ru"],
+            skipFallback: true
+          },
+          {
+            address: "https://1.1.1.1/dns-query",
+            domains: ["geosite:geolocation-!cn"]
+          },
+          "https://8.8.8.8/dns-query"
+        ]
+      };
+
+      // Блок Routing (domainStrategy: AsIs)
       const rules = [];
-      if (routingMode === "bypass_ru") {
-        rules.push({ type: "field", domain: ["regexp:.*\\.ru$", "regexp:.*\\.su$", "regexp:.*\\.рф$"], outboundTag: "direct" });
-      } else if (routingMode === "block_ads") {
-        rules.push({ type: "field", domain: ["geosite:category-ads-all"], outboundTag: "block" });
+
+      if (routingMode === "smart_ru_ads") {
+        rules.push({
+          type: "field",
+          outboundTag: "block",
+          domain: ["geosite:category-ads-all"]
+        });
       }
 
+      // Маршрутизация самого DNS-модуля для предотвращения DNS-петли
+      rules.push(
+        {
+          type: "field",
+          inboundTag: ["dns-module"],
+          ip: ["77.88.8.8", "77.88.8.1"],
+          outboundTag: "direct"
+        },
+        {
+          type: "field",
+          inboundTag: ["dns-module"],
+          ip: ["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"],
+          outboundTag: "proxy"
+        }
+      );
+
+      if (routingMode === "smart_ru_ads" || routingMode === "bypass_ru") {
+        rules.push(
+          {
+            type: "field",
+            outboundTag: "direct",
+            domain: [
+              "geosite:ru",
+              "domain:ru",
+              "domain:su",
+              "domain:xn--p1ai",
+              "regexp:.*\\.(ru|su|рф|xn--p1ai)$"
+            ]
+          },
+          {
+            type: "field",
+            outboundTag: "direct",
+            ip: ["geoip:private", "geoip:ru"]
+          }
+        );
+      } else {
+        rules.push({
+          type: "field",
+          outboundTag: "direct",
+          ip: ["geoip:private"]
+        });
+      }
+
+      rules.push({
+        type: "field",
+        network: "tcp,udp",
+        outboundTag: "proxy"
+      });
+
       return {
-        log: { loglevel: "info" },
+        log: { loglevel: "warning" },
+        dns: dnsBlock,
         inbounds: [
-          { tag: "socks-in", port: 10808, listen: "127.0.0.1", protocol: "socks", settings: { auth: "noauth", udp: true } },
-          { tag: "http-in", port: 10809, listen: "127.0.0.1", protocol: "http", settings: {} }
+          {
+            tag: "socks-in",
+            port: 10808,
+            listen: "127.0.0.1",
+            protocol: "socks",
+            settings: { auth: "noauth", udp: true },
+            sniffing: {
+              enabled: true,
+              destOverride: ["http", "tls", "quic"],
+              routeOnly: true
+            }
+          },
+          {
+            tag: "http-in",
+            port: 10809,
+            listen: "127.0.0.1",
+            protocol: "http",
+            settings: {},
+            sniffing: {
+              enabled: true,
+              destOverride: ["http", "tls", "quic"],
+              routeOnly: true
+            }
+          }
         ],
         outbounds: [
           proxyOutbound,
-          { tag: "direct", protocol: "freedom" },
-          { tag: "block", protocol: "blackhole" }
+          {
+            tag: "direct",
+            protocol: "freedom",
+            settings: { domainStrategy: "UseIPv4" }
+          },
+          {
+            tag: "block",
+            protocol: "blackhole",
+            settings: { response: { type: "none" } }
+          }
         ],
         routing: {
           domainStrategy: "AsIs",
@@ -2279,7 +2374,7 @@
     // Импорт новой подписки или ключей
     document.getElementById("saveUniversalBtn").addEventListener("click", async () => {
       const raw = document.getElementById("universalInput").value.trim();
-      const groupTitle = document.getElementById("newGroupTitleInput").value.trim() || "MVZ VPS | @mvzapretbot";
+      const groupTitle = document.getElementById("newGroupTitleInput").value.trim() || "Подписка MVZ";
       if (!raw) {
         showToast("Вставь ссылку подписки или ключи");
         return;
@@ -2335,12 +2430,17 @@
     document.getElementById("createManualProfileBtn").addEventListener("click", () => {
       const proto = document.getElementById("mProto").value;
       const net = document.getElementById("mNet").value.toLowerCase();
-      const name = encodeURIComponent(document.getElementById("mName").value.trim() || "Нидерланды — Reality");
-      const host = document.getElementById("mHost").value.trim() || "parts.skodamotors.online";
+      const name = encodeURIComponent(document.getElementById("mName").value.trim() || "MVZ Server");
+      const host = document.getElementById("mHost").value.trim();
       const port = document.getElementById("mPort").value.trim() || "443";
-      const secret = document.getElementById("mSecret").value.trim() || "647640d8-c26c-42bf-aa78-48a2f8d9759d";
-      const secType = document.getElementById("mSecType").value.trim().toLowerCase() || "reality";
+      const secret = document.getElementById("mSecret").value.trim();
+      const secType = document.getElementById("mSecType").value.trim().toLowerCase() || "tls";
       const sni = document.getElementById("mSni").value.trim() || host;
+
+      if (!host || !secret) {
+        showToast("Укажи хост и UUID / пароль");
+        return;
+      }
 
       const uri = `${proto}://${secret}@${host}:${port}?security=${secType}&type=${net}&sni=${sni}&fp=chrome#${name}`;
       const node = parseRouteUri(uri);
@@ -2348,7 +2448,7 @@
         if (profileGroups.length === 0) {
           profileGroups.push({
             id: "group_" + Date.now(),
-            name: "MVZ VPS | @mvzapretbot",
+            name: "Мои маршруты",
             updatedAt: formatNowTimestamp(),
             autoUpdate: "12ч.",
             expiresText: "06.01.2027",
@@ -2365,11 +2465,10 @@
         saveState();
         renderAccordionGroups();
         document.getElementById("addModal").classList.remove("open");
-        showToast("Маршрут добавлен в профиль!");
+        showToast("Маршрут добавлен!");
       }
     });
 
-    // Быстрые кнопки для проверки желтого знака (8 дней) и зеленой галочки (30 дней)
     function formatFutureDate(daysAhead) {
       const d = new Date(Date.now() + daysAhead * 86400000);
       const pad = n => String(n).padStart(2, "0");
@@ -2383,7 +2482,6 @@
       document.getElementById("editGroupExpire").value = formatFutureDate(30);
     });
 
-    // Сохранение редактирования профиля
     document.getElementById("saveEditGroupBtn").addEventListener("click", () => {
       const group = profileGroups.find(g => g.id === activeMenuGroupId) || profileGroups[0];
       if (group) {
@@ -2398,18 +2496,17 @@
       }
     });
 
-    // Сохранение маршрутизации
     document.getElementById("saveRoutingBtn").addEventListener("click", () => {
       routingMode = document.getElementById("routingPresetSelect").value;
       localStorage.setItem("mvz_routing_mode", routingMode);
       const labels = {
-        all: "Маршрут: Весь трафик",
-        bypass_ru: "Маршрут: Обход РФ (.ru)",
-        block_ads: "Маршрут: Блок рекламы"
+        smart_ru_ads: "Умный обход RU + Антиреклама",
+        bypass_ru: "Маршрут: Обход RU (.ru/.рф)",
+        all: "Маршрут: Весь трафик"
       };
-      document.getElementById("routingModeLabel").textContent = labels[routingMode] || "Маршрут: Весь трафик";
+      document.getElementById("routingModeLabel").textContent = labels[routingMode] || "Умный обход RU + Антиреклама";
       document.getElementById("routingModal").classList.remove("open");
-      showToast("Правила маршрутизации сохранены");
+      showToast("Конфигурация DNS и Routing сохранена");
     });
 
     document.getElementById("saveGroupSettingsBtn").addEventListener("click", () => {
@@ -2424,9 +2521,7 @@
       showToast("Настройки сохранены");
     });
 
-    // =========================================================================
-    // ЗАПУСК XRAY-CORE С ПЕРЕДАЧЕЙ ИМЕНИ МАРШРУТА В СИСТЕМНОЕ УВЕДОМЛЕНИЕ ANDROID
-    // =========================================================================
+    // ЗАПУСК XRAY-CORE
     const appEl = document.getElementById("app");
     const powerBtn = document.getElementById("powerBtn");
     const powerLabel = document.getElementById("powerLabel");
@@ -2445,26 +2540,13 @@
       return `${h}:${m}:${s}`;
     }
 
-    function sendBrowserOrSystemNotification(routeName) {
-      if ("Notification" in window) {
-        if (Notification.permission === "granted") {
-          new Notification("MVZ VPN • Подключено", { body: "Маршрут: " + routeName });
-        } else if (Notification.permission !== "denied") {
-          Notification.requestPermission().then(p => {
-            if (p === "granted") new Notification("MVZ VPN • Подключено", { body: "Маршрут: " + routeName });
-          });
-        }
-      }
-    }
-
     function setConnectedUI(node) {
       connState = "connected";
       appEl.className = "app-shell state-connected";
       statusText.textContent = "Активен";
       powerLabel.textContent = "Стоп";
       stepHint.textContent = `Подключен: ${node.name}`;
-      showToast(`🔔 Уведомление: подключен к «${node.name}»`);
-      sendBrowserOrSystemNotification(node.name);
+      showToast(`🔔 Подключен маршрут: «${node.name}»`);
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         timerSec++;
@@ -2486,7 +2568,7 @@
     powerBtn.addEventListener("click", () => {
       const node = getActiveServer();
       if (!node) {
-        showToast("Сначала добавь и выбери маршрут");
+        showToast("Сначала добавь подписку или маршрут");
         return;
       }
 
@@ -2499,7 +2581,6 @@
         const xrayConfigJson = JSON.stringify(buildXrayConfig(node), null, 2);
 
         if (hasNativeXray) {
-          // Передаем и JSON-конфиг, и точное название выбранного маршрута для уведомления Android
           const res = window.AndroidXray.startXray(xrayConfigJson, node.name);
           stepHint.textContent = res === "PERMISSION_REQUESTED"
             ? "Подтверди разрешение VPN..."
@@ -2620,7 +2701,7 @@
       const active = getActiveServer();
       consoleBox.textContent = hasNativeXray
         ? (window.AndroidXray.getLogs() || "Нажми «Старт» для просмотра логов Xray-core.")
-        : (active ? JSON.stringify(buildXrayConfig(active), null, 2) : "Нет активного маршрута");
+        : (active ? JSON.stringify(buildXrayConfig(active), null, 2) : "Добавь маршрут, чтобы увидеть его JSON-конфиг");
     });
     document.getElementById("closeLogsBtn").addEventListener("click", () => logsModal.classList.remove("open"));
 
@@ -2631,7 +2712,7 @@
     });
     document.getElementById("showConfigJsonBtn").addEventListener("click", () => {
       const active = getActiveServer();
-      consoleBox.textContent = active ? JSON.stringify(buildXrayConfig(active), null, 2) : "Нет выбранного маршрута";
+      consoleBox.textContent = active ? JSON.stringify(buildXrayConfig(active), null, 2) : "Сначала добавь маршрут";
     });
 
     loadState();
