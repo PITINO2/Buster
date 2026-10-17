@@ -161,15 +161,18 @@ jobs:
           </resources>
           EOF
 
-      - name: Скачивание официального ядра Xray-core (arm64-v8a)
+      - name: Скачивание Xray-core + баз geoip.dat и geosite.dat
         run: |
           mkdir -p android/app/src/main/jniLibs/arm64-v8a
+          mkdir -p android/app/src/main/assets
           curl -L -o xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-android-arm64-v8a.zip
-          unzip -o xray.zip xray -d xray_bin
+          unzip -o xray.zip -d xray_bin
           cp xray_bin/xray android/app/src/main/jniLibs/arm64-v8a/libxray.so
           chmod 755 android/app/src/main/jniLibs/arm64-v8a/libxray.so
+          if [ -f "xray_bin/geoip.dat" ]; then cp xray_bin/geoip.dat android/app/src/main/assets/geoip.dat; fi
+          if [ -f "xray_bin/geosite.dat" ]; then cp xray_bin/geosite.dat android/app/src/main/assets/geosite.dat; fi
 
-      - name: Внедрение Android VpnService с уведомлением активного маршрута
+      - name: Внедрение Android VpnService с единым HWID (1 устройство)
         run: |
           mkdir -p android/app/src/main/java/com/mvzvpn/app
 
@@ -234,6 +237,7 @@ jobs:
           import java.io.BufferedReader;
           import java.io.File;
           import java.io.FileOutputStream;
+          import java.io.InputStream;
           import java.io.InputStreamReader;
           import java.nio.charset.StandardCharsets;
           import java.util.ArrayList;
@@ -246,7 +250,6 @@ jobs:
               private ParcelFileDescriptor vpnInterface = null;
               private Process xrayProcess = null;
               public static volatile boolean isRunning = false;
-              public static volatile String currentRouteName = "";
               public static final List<String> logs = Collections.synchronizedList(new ArrayList<>());
 
               public static void addLog(String msg) {
@@ -255,6 +258,25 @@ jobs:
                           logs.remove(0);
                       }
                       logs.add(msg);
+                  }
+              }
+
+              private void ensureGeoAssetsCopied() {
+                  String[] files = new String[]{"geoip.dat", "geosite.dat"};
+                  for (String name : files) {
+                      File outFile = new File(getFilesDir(), name);
+                      if (!outFile.exists() || outFile.length() < 1000) {
+                          try (InputStream is = getAssets().open(name);
+                               FileOutputStream fos = new FileOutputStream(outFile, false)) {
+                              byte[] buf = new byte[8192];
+                              int len;
+                              while ((len = is.read(buf)) > 0) {
+                                  fos.write(buf, 0, len);
+                              }
+                          } catch (Exception e) {
+                              addLog("[GEO-WARN] " + name + ": " + e.getMessage());
+                          }
+                      }
                   }
               }
 
@@ -281,7 +303,6 @@ jobs:
                                   "MVZ VPN Активный маршрут",
                                   NotificationManager.IMPORTANCE_LOW
                           );
-                          channel.setDescription("Показывает текущий подключенный маршрут MVZ VPN");
                           nm.createNotificationChannel(channel);
                       }
 
@@ -309,11 +330,11 @@ jobs:
                   }
               }
 
-              private void startVpn(String configJson, String routeName) {
+              private synchronized void startVpn(String configJson, String routeName) {
                   stopVpnInternal();
                   logs.clear();
                   try {
-                      currentRouteName = routeName;
+                      ensureGeoAssetsCopied();
                       File configFile = new File(getFilesDir(), "xray_config.json");
                       try (FileOutputStream fos = new FileOutputStream(configFile, false)) {
                           fos.write(configJson.getBytes(StandardCharsets.UTF_8));
@@ -326,6 +347,7 @@ jobs:
                       addLog("[MVZ-CORE] Запуск маршрута: " + routeName);
                       ProcessBuilder pb = new ProcessBuilder(xrayPath, "run", "-c", configFile.getAbsolutePath());
                       pb.directory(getFilesDir());
+                      pb.environment().put("XRAY_LOCATION_ASSET", getFilesDir().getAbsolutePath());
                       pb.redirectErrorStream(true);
                       xrayProcess = pb.start();
 
@@ -345,8 +367,8 @@ jobs:
                       builder.setSession("MVZ: " + routeName);
                       builder.setMtu(1500);
                       builder.addAddress("10.10.0.1", 32);
+                      builder.addDnsServer("77.88.8.8");
                       builder.addDnsServer("1.1.1.1");
-                      builder.addDnsServer("8.8.8.8");
 
                       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                           builder.setHttpProxy(ProxyInfo.buildDirectProxy("127.0.0.1", 10809));
@@ -355,19 +377,19 @@ jobs:
                       vpnInterface = builder.establish();
                       showRouteNotification(routeName);
                       isRunning = true;
-                      addLog("[MVZ-TUN] Подключено к маршруту: " + routeName);
+                      addLog("[MVZ-TUN] Активен маршрут: " + routeName);
                   } catch (Exception e) {
                       addLog("[ERROR] Ошибка запуска: " + e.getMessage());
                       isRunning = false;
                   }
               }
 
-              private void stopVpnInternal() {
+              private synchronized void stopVpnInternal() {
                   isRunning = false;
-                  currentRouteName = "";
                   if (xrayProcess != null) {
                       try {
                           xrayProcess.destroyForcibly();
+                          xrayProcess.waitFor();
                       } catch (Exception ignored) {}
                       xrayProcess = null;
                   }
@@ -407,6 +429,7 @@ jobs:
           import android.net.VpnService;
           import android.os.Build;
           import android.os.Bundle;
+          import android.provider.Settings;
           import android.view.Window;
           import android.webkit.JavascriptInterface;
 
@@ -448,6 +471,14 @@ jobs:
                       getBridge().getWebView().setBackgroundColor(Color.parseColor("#0b0c10"));
                       getBridge().getWebView().addJavascriptInterface(new XrayBridge(), "AndroidXray");
                   }
+              }
+
+              private String getDeviceHwid() {
+                  try {
+                      String aid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                      if (aid != null && !aid.isEmpty()) return aid;
+                  } catch (Exception ignored) {}
+                  return "mvz-android-single-device";
               }
 
               private void applyBarsColor(String hexColor) {
@@ -556,12 +587,18 @@ jobs:
                           sc.init(null, trustAllCerts, new SecureRandom());
                           HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
+                          String hwid = getDeviceHwid();
                           URL url = new URL(urlStr.trim());
                           HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                           conn.setRequestMethod("GET");
                           conn.setConnectTimeout(10000);
                           conn.setReadTimeout(10000);
-                          conn.setRequestProperty("User-Agent", "Happ/2.4.0 (Android; v2rayNG/1.8.29; Xray-core)");
+                          // Строго 1 чистый клиент и постоянный HWID, чтобы бот считал ровно 1 устройство
+                          conn.setRequestProperty("User-Agent", "Happ/2.4.0 (Android)");
+                          conn.setRequestProperty("x-hwid", hwid);
+                          conn.setRequestProperty("x-device-os", "Android");
+                          conn.setRequestProperty("x-ver-os", Build.VERSION.RELEASE != null ? Build.VERSION.RELEASE : "14");
+                          conn.setRequestProperty("x-device-model", Build.MODEL != null ? Build.MODEL : "MVZ-Phone");
                           conn.setRequestProperty("Accept", "*/*");
                           conn.setInstanceFollowRedirects(true);
 
