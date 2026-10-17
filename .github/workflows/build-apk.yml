@@ -42,14 +42,14 @@ jobs:
             "appId": "com.mvzvpn.app",
             "appName": "MVZ",
             "webDir": "www",
-            "backgroundColor": "#090514"
+            "backgroundColor": "#0b0c10"
           }
           EOF
 
           npx cap add android
           npx cap sync android
 
-      - name: Генерация 3D-иконки клоуна MVZ и удаление белых полос в стилях
+      - name: Генерация 3D-иконки клоуна MVZ и системных стилей
         run: |
           sudo apt-get update && sudo apt-get install -y librsvg2-bin imagemagick
           rm -rf android/app/src/main/res/mipmap-anydpi-v26
@@ -143,12 +143,12 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-                  <item name="colorPrimary">#090514</item>
-                  <item name="colorPrimaryDark">#090514</item>
-                  <item name="colorAccent">#c084fc</item>
-                  <item name="android:windowBackground">#090514</item>
-                  <item name="android:statusBarColor">#090514</item>
-                  <item name="android:navigationBarColor">#090514</item>
+                  <item name="colorPrimary">#0b0c10</item>
+                  <item name="colorPrimaryDark">#0b0c10</item>
+                  <item name="colorAccent">#6366f1</item>
+                  <item name="android:windowBackground">#0b0c10</item>
+                  <item name="android:statusBarColor">#0b0c10</item>
+                  <item name="android:navigationBarColor">#0b0c10</item>
                   <item name="android:windowLightStatusBar">false</item>
               </style>
               <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -156,7 +156,7 @@ jobs:
                   <item name="windowNoTitle">true</item>
               </style>
               <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
-                  <item name="android:background">#090514</item>
+                  <item name="android:background">#0b0c10</item>
               </style>
           </resources>
           EOF
@@ -169,7 +169,7 @@ jobs:
           cp xray_bin/xray android/app/src/main/jniLibs/arm64-v8a/libxray.so
           chmod 755 android/app/src/main/jniLibs/arm64-v8a/libxray.so
 
-      - name: Внедрение Android VpnService и Happ-загрузчика подписок
+      - name: Внедрение Android VpnService с уведомлением активного маршрута
         run: |
           mkdir -p android/app/src/main/java/com/mvzvpn/app
 
@@ -180,6 +180,7 @@ jobs:
               <uses-permission android:name="android.permission.INTERNET" />
               <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
               <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+              <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
               <application
                   android:allowBackup="true"
@@ -220,6 +221,10 @@ jobs:
           cat << 'EOF' > android/app/src/main/java/com/mvzvpn/app/AetherVpnService.java
           package com.mvzvpn.app;
 
+          import android.app.Notification;
+          import android.app.NotificationChannel;
+          import android.app.NotificationManager;
+          import android.app.PendingIntent;
           import android.content.Intent;
           import android.net.ProxyInfo;
           import android.net.VpnService;
@@ -236,9 +241,12 @@ jobs:
           import java.util.List;
 
           public class AetherVpnService extends VpnService {
+              private static final String CHANNEL_ID = "mvz_vpn_status_channel";
+              private static final int NOTIF_ID = 1001;
               private ParcelFileDescriptor vpnInterface = null;
               private Process xrayProcess = null;
               public static volatile boolean isRunning = false;
+              public static volatile String currentRouteName = "";
               public static final List<String> logs = Collections.synchronizedList(new ArrayList<>());
 
               public static void addLog(String msg) {
@@ -257,16 +265,55 @@ jobs:
                       return START_NOT_STICKY;
                   }
                   String configJson = intent != null ? intent.getStringExtra("configJson") : null;
+                  String routeName = intent != null ? intent.getStringExtra("routeName") : "VLESS Маршрут";
                   if (configJson != null) {
-                      startVpn(configJson);
+                      startVpn(configJson, routeName != null ? routeName : "VLESS Маршрут");
                   }
                   return START_STICKY;
               }
 
-              private void startVpn(String configJson) {
+              private void showRouteNotification(String routeName) {
+                  try {
+                      NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && nm != null) {
+                          NotificationChannel channel = new NotificationChannel(
+                                  CHANNEL_ID,
+                                  "MVZ VPN Активный маршрут",
+                                  NotificationManager.IMPORTANCE_LOW
+                          );
+                          channel.setDescription("Показывает текущий подключенный маршрут MVZ VPN");
+                          nm.createNotificationChannel(channel);
+                      }
+
+                      Intent openIntent = new Intent(this, MainActivity.class);
+                      int piFlags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                              ? PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+                              : PendingIntent.FLAG_UPDATE_CURRENT;
+                      PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, openIntent, piFlags);
+
+                      Notification.Builder nb = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                              ? new Notification.Builder(this, CHANNEL_ID)
+                              : new Notification.Builder(this);
+
+                      Notification notification = nb
+                              .setContentTitle("MVZ VPN • Подключено")
+                              .setContentText("Маршрут: " + routeName)
+                              .setSmallIcon(getApplicationInfo().icon)
+                              .setContentIntent(pendingIntent)
+                              .setOngoing(true)
+                              .build();
+
+                      startForeground(NOTIF_ID, notification);
+                  } catch (Exception e) {
+                      addLog("[NOTIF-WARN] " + e.getMessage());
+                  }
+              }
+
+              private void startVpn(String configJson, String routeName) {
                   stopVpnInternal();
                   logs.clear();
                   try {
+                      currentRouteName = routeName;
                       File configFile = new File(getFilesDir(), "xray_config.json");
                       try (FileOutputStream fos = new FileOutputStream(configFile, false)) {
                           fos.write(configJson.getBytes(StandardCharsets.UTF_8));
@@ -276,7 +323,7 @@ jobs:
                       File xrayBin = new File(xrayPath);
                       xrayBin.setExecutable(true);
 
-                      addLog("[MVZ-CORE] Запуск Xray-core: " + xrayPath);
+                      addLog("[MVZ-CORE] Запуск маршрута: " + routeName);
                       ProcessBuilder pb = new ProcessBuilder(xrayPath, "run", "-c", configFile.getAbsolutePath());
                       pb.directory(getFilesDir());
                       pb.redirectErrorStream(true);
@@ -295,7 +342,7 @@ jobs:
                       }).start();
 
                       Builder builder = new Builder();
-                      builder.setSession("MVZ VPN (VLESS / Trojan)");
+                      builder.setSession("MVZ: " + routeName);
                       builder.setMtu(1500);
                       builder.addAddress("10.10.0.1", 32);
                       builder.addDnsServer("1.1.1.1");
@@ -306,8 +353,9 @@ jobs:
                       }
 
                       vpnInterface = builder.establish();
+                      showRouteNotification(routeName);
                       isRunning = true;
-                      addLog("[MVZ-TUN] Туннель активен (SOCKS5 127.0.0.1:10808 | HTTP 127.0.0.1:10809)");
+                      addLog("[MVZ-TUN] Подключено к маршруту: " + routeName);
                   } catch (Exception e) {
                       addLog("[ERROR] Ошибка запуска: " + e.getMessage());
                       isRunning = false;
@@ -316,6 +364,7 @@ jobs:
 
               private void stopVpnInternal() {
                   isRunning = false;
+                  currentRouteName = "";
                   if (xrayProcess != null) {
                       try {
                           xrayProcess.destroyForcibly();
@@ -328,6 +377,9 @@ jobs:
                       } catch (Exception ignored) {}
                       vpnInterface = null;
                   }
+                  try {
+                      stopForeground(true);
+                  } catch (Exception ignored) {}
               }
 
               private void stopVpn() {
@@ -347,10 +399,13 @@ jobs:
           cat << 'EOF' > android/app/src/main/java/com/mvzvpn/app/MainActivity.java
           package com.mvzvpn.app;
 
+          import android.Manifest;
           import android.content.Intent;
+          import android.content.pm.PackageManager;
           import android.graphics.Color;
           import android.net.TrafficStats;
           import android.net.VpnService;
+          import android.os.Build;
           import android.os.Bundle;
           import android.view.Window;
           import android.webkit.JavascriptInterface;
@@ -378,13 +433,19 @@ jobs:
           public class MainActivity extends BridgeActivity {
               private static final int VPN_REQUEST_CODE = 1901;
               private String pendingConfigJson = null;
+              private String pendingRouteName = "VLESS Маршрут";
 
               @Override
               public void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
-                  applyBarsColor("#090514");
+                  applyBarsColor("#0b0c10");
+                  if (Build.VERSION.SDK_INT >= 33) {
+                      if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                          requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+                      }
+                  }
                   if (getBridge() != null && getBridge().getWebView() != null) {
-                      getBridge().getWebView().setBackgroundColor(Color.parseColor("#090514"));
+                      getBridge().getWebView().setBackgroundColor(Color.parseColor("#0b0c10"));
                       getBridge().getWebView().addJavascriptInterface(new XrayBridge(), "AndroidXray");
                   }
               }
@@ -401,9 +462,10 @@ jobs:
                   });
               }
 
-              private void launchVpnService(String configJson) {
+              private void launchVpnService(String configJson, String routeName) {
                   Intent serviceIntent = new Intent(this, AetherVpnService.class);
                   serviceIntent.putExtra("configJson", configJson);
+                  serviceIntent.putExtra("routeName", routeName);
                   startService(serviceIntent);
               }
 
@@ -412,7 +474,7 @@ jobs:
                   super.onActivityResult(requestCode, resultCode, data);
                   if (requestCode == VPN_REQUEST_CODE) {
                       if (resultCode == RESULT_OK && pendingConfigJson != null) {
-                          launchVpnService(pendingConfigJson);
+                          launchVpnService(pendingConfigJson, pendingRouteName);
                       } else {
                           AetherVpnService.addLog("[WARN] Разрешение на VPN отклонено");
                       }
@@ -426,14 +488,15 @@ jobs:
                   }
 
                   @JavascriptInterface
-                  public String startXray(String configJson) {
+                  public String startXray(String configJson, String routeName) {
                       pendingConfigJson = configJson;
+                      pendingRouteName = (routeName != null && !routeName.isEmpty()) ? routeName : "VLESS Маршрут";
                       Intent prepareIntent = VpnService.prepare(MainActivity.this);
                       if (prepareIntent != null) {
                           startActivityForResult(prepareIntent, VPN_REQUEST_CODE);
                           return "PERMISSION_REQUESTED";
                       } else {
-                          launchVpnService(configJson);
+                          launchVpnService(pendingConfigJson, pendingRouteName);
                           return "STARTED";
                       }
                   }
@@ -465,7 +528,7 @@ jobs:
                   public int pingHost(String host, int port) {
                       long start = System.currentTimeMillis();
                       try (Socket socket = new Socket()) {
-                          socket.connect(new InetSocketAddress(host, port), 2200);
+                          socket.connect(new InetSocketAddress(host, port), 2500);
                           return (int) (System.currentTimeMillis() - start);
                       } catch (Exception e) {
                           return -1;
