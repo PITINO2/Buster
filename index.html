@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>MVZ — Happ Style VLESS & Trojan</title>
+  <title>MVZ — VLESS & Trojan Client</title>
   <style>
     /* 1. Фиолетовая тема (MVZ Purple) */
     :root, [data-theme="purple"] {
       --bg-dark: #090514;
-      --bg-glow: rgba(168, 85, 247, 0.25);
-      --bg-card: rgba(22, 12, 40, 0.9);
-      --bg-card-2: rgba(34, 19, 61, 0.85);
-      --sheet-bg: #130a24;
-      --border-glass: rgba(216, 180, 254, 0.15);
+      --bg-glow: rgba(168, 85, 247, 0.24);
+      --bg-card: #16141c;
+      --bg-card-header: #1d1a27;
+      --bg-row-hover: rgba(192, 132, 252, 0.08);
+      --sheet-bg: #181520;
+      --menu-bg: #22202a;
+      --border-glass: rgba(255, 255, 255, 0.08);
       --text-main: #f8fafc;
-      --text-muted: #b197fc;
+      --text-muted: #94a3b8;
       --accent-primary: #c084fc;
       --accent-secondary: #6366f1;
       --btn-core-bg: radial-gradient(circle at 35% 30%, #3b0764, #120624 75%);
@@ -23,29 +25,33 @@
       --accent-red: #ef4444;
     }
 
-    /* 2. Черная тема (Onyx Black) */
+    /* 2. Черная тема (Happ Dark / Onyx) */
     [data-theme="black"] {
-      --bg-dark: #040609;
-      --bg-glow: rgba(0, 242, 254, 0.16);
-      --bg-card: rgba(13, 17, 25, 0.92);
-      --bg-card-2: rgba(21, 27, 40, 0.85);
-      --sheet-bg: #0b0e15;
-      --border-glass: rgba(255, 255, 255, 0.1);
+      --bg-dark: #0b0c10;
+      --bg-glow: rgba(99, 102, 241, 0.15);
+      --bg-card: #18191e;
+      --bg-card-header: #1f2128;
+      --bg-row-hover: rgba(255, 255, 255, 0.05);
+      --sheet-bg: #18191e;
+      --menu-bg: #252730;
+      --border-glass: rgba(255, 255, 255, 0.07);
       --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --accent-primary: #00f2fe;
-      --accent-secondary: #3b82f6;
-      --btn-core-bg: radial-gradient(circle at 35% 30%, #1e293b, #070a10 75%);
+      --text-muted: #8b95a5;
+      --accent-primary: #6366f1;
+      --accent-secondary: #00f2fe;
+      --btn-core-bg: radial-gradient(circle at 35% 30%, #1e293b, #090d16 75%);
     }
 
     /* 3. Белая тема (Arctic Light) */
     [data-theme="white"] {
       --bg-dark: #eef2f8;
-      --bg-glow: rgba(99, 102, 241, 0.18);
-      --bg-card: rgba(255, 255, 255, 0.95);
-      --bg-card-2: rgba(241, 245, 249, 0.95);
+      --bg-glow: rgba(99, 102, 241, 0.16);
+      --bg-card: #ffffff;
+      --bg-card-header: #f8fafc;
+      --bg-row-hover: rgba(99, 102, 241, 0.08);
       --sheet-bg: #ffffff;
-      --border-glass: rgba(15, 23, 42, 0.11);
+      --menu-bg: #ffffff;
+      --border-glass: rgba(15, 23, 42, 0.1);
       --text-main: #0f172a;
       --text-muted: #64748b;
       --accent-primary: #6366f1;
@@ -56,11 +62,13 @@
     /* 4. Киберпанк / Багровая (Crimson Cyber) */
     [data-theme="crimson"] {
       --bg-dark: #0d0307;
-      --bg-glow: rgba(244, 63, 94, 0.25);
-      --bg-card: rgba(31, 9, 17, 0.9);
-      --bg-card-2: rgba(48, 13, 26, 0.82);
+      --bg-glow: rgba(244, 63, 94, 0.24);
+      --bg-card: #1c0910;
+      --bg-card-header: #290d17;
+      --bg-row-hover: rgba(251, 113, 133, 0.1);
       --sheet-bg: #19070e;
-      --border-glass: rgba(251, 113, 133, 0.17);
+      --menu-bg: #2b0e18;
+      --border-glass: rgba(251, 113, 133, 0.15);
       --text-main: #fff1f2;
       --text-muted: #fda4af;
       --accent-primary: #fb7185;
@@ -71,11 +79,13 @@
     /* 5. Изумрудная Матрица (Emerald Matrix) */
     [data-theme="emerald"] {
       --bg-dark: #020b08;
-      --bg-glow: rgba(16, 185, 129, 0.24);
-      --bg-card: rgba(7, 26, 19, 0.9);
-      --bg-card-2: rgba(11, 39, 29, 0.82);
+      --bg-glow: rgba(16, 185, 129, 0.22);
+      --bg-card: #071913;
+      --bg-card-header: #0c261d;
+      --bg-row-hover: rgba(52, 211, 153, 0.1);
       --sheet-bg: #061610;
-      --border-glass: rgba(52, 211, 153, 0.17);
+      --menu-bg: #0f2e22;
+      --border-glass: rgba(52, 211, 153, 0.15);
       --text-main: #ecfdf5;
       --text-muted: #6ee7b7;
       --accent-primary: #34d399;
@@ -91,7 +101,6 @@
       user-select: none;
     }
 
-    /* Строгий запрет горизонтального вылезания на любых экранах */
     html, body {
       width: 100%;
       max-width: 100%;
@@ -117,22 +126,22 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 7px;
+      gap: 8px;
       padding: 8px 10px;
       background-color: var(--bg-dark);
-      background-image: radial-gradient(circle at 50% 28%, var(--bg-glow) 0%, transparent 70%);
+      background-image: radial-gradient(circle at 50% 22%, var(--bg-glow) 0%, transparent 68%);
       overflow: hidden;
     }
 
     .app-shell.state-connecting {
-      background-image: radial-gradient(circle at 50% 28%, rgba(245, 158, 11, 0.25) 0%, transparent 70%);
+      background-image: radial-gradient(circle at 50% 22%, rgba(245, 158, 11, 0.25) 0%, transparent 68%);
     }
 
     .app-shell.state-connected {
-      background-image: radial-gradient(circle at 50% 28%, rgba(16, 185, 129, 0.28) 0%, var(--bg-glow) 52%, transparent 75%);
+      background-image: radial-gradient(circle at 50% 22%, rgba(16, 185, 129, 0.26) 0%, var(--bg-glow) 52%, transparent 72%);
     }
 
-    /* 1. ШАПКА */
+    /* 1. ВЕРХНЯЯ ПАНЕЛЬ */
     .top-bar {
       width: 100%;
       min-width: 0;
@@ -155,9 +164,9 @@
     }
 
     .brand-logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 11px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       overflow: hidden;
       border: 1.5px solid var(--accent-primary);
       flex-shrink: 0;
@@ -170,13 +179,13 @@
     }
 
     .brand-title {
-      font-size: 17px;
+      font-size: 16.5px;
       font-weight: 900;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
     }
 
     .proto-pill {
-      font-size: 9.5px;
+      font-size: 9px;
       font-weight: 800;
       padding: 2px 5px;
       border-radius: 5px;
@@ -202,13 +211,13 @@
     }
 
     .scale-btn {
-      height: 30px;
+      height: 28px;
       padding: 0 8px;
-      border-radius: 9px;
-      background: var(--bg-card-2);
+      border-radius: 8px;
+      background: var(--bg-card-header);
       border: 1px solid var(--border-glass);
       color: var(--text-main);
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
       cursor: pointer;
     }
@@ -217,11 +226,11 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      padding: 5px 9px;
+      padding: 4px 8px;
       border-radius: 999px;
-      background: var(--bg-card-2);
+      background: var(--bg-card-header);
       border: 1px solid var(--border-glass);
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
     }
 
@@ -250,109 +259,13 @@
       animation: none;
     }
 
-    /* 2. КАРТОЧКА ПОДПИСКИ В СТИЛЕ ПРИЛОЖЕНИЯ HAPP */
-    .happ-sub-card {
-      width: 100%;
-      min-width: 0;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      border-radius: 14px;
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-
-    .sub-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      min-width: 0;
-    }
-
-    .sub-title-group {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-width: 0;
-      flex: 1;
-    }
-
-    .sub-badge {
-      font-size: 9.5px;
-      font-weight: 900;
-      padding: 2px 6px;
-      border-radius: 5px;
-      background: rgba(16, 185, 129, 0.16);
-      color: var(--accent-green);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      flex-shrink: 0;
-    }
-
-    .sub-badge.expired {
-      background: rgba(239, 68, 68, 0.16);
-      color: var(--accent-red);
-      border-color: rgba(239, 68, 68, 0.35);
-    }
-
-    .sub-expire-text {
-      font-size: 11.5px;
-      font-weight: 800;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-width: 0;
-    }
-
-    .sub-actions {
-      display: flex;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-
-    .sub-mini-btn {
-      font-size: 10px;
-      font-weight: 800;
-      padding: 4px 7px;
-      border-radius: 7px;
-      border: 1px solid var(--border-glass);
-      background: var(--bg-card-2);
-      color: var(--text-main);
-      cursor: pointer;
-    }
-
-    .sub-progress-track {
-      width: 100%;
-      height: 5px;
-      border-radius: 999px;
-      background: rgba(128, 128, 128, 0.2);
-      overflow: hidden;
-    }
-
-    .sub-progress-fill {
-      height: 100%;
-      width: 80%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--accent-primary), var(--accent-green));
-    }
-
-    .sub-meta-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 10px;
-      color: var(--text-muted);
-      font-weight: 700;
-    }
-
-    /* 3. КОМПАКТНОЕ ЯДРО С АНИМАЦИЕЙ ДО НАЖАТИЯ + ТЕЛЕМЕТРИЯ */
+    /* 2. ЯДРО ЗАПУСКА С АНИМАЦИЕЙ ДО НАЖАТИЯ + СКОРОСТЬ */
     .core-stage {
       width: 100%;
       min-width: 0;
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
-      border-radius: 16px;
+      border-radius: 15px;
       padding: 8px 10px;
       display: flex;
       align-items: center;
@@ -363,8 +276,8 @@
 
     .power-zone {
       position: relative;
-      width: 122px;
-      height: 122px;
+      width: 112px;
+      height: 112px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -373,8 +286,8 @@
 
     .idle-pulse-ring {
       position: absolute;
-      width: 90px;
-      height: 90px;
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
       border: 1.5px solid var(--accent-primary);
       opacity: 0;
@@ -382,9 +295,7 @@
       animation: idleRadar 3s infinite cubic-bezier(0.2, 0.8, 0.4, 1);
     }
 
-    .idle-pulse-ring.delay {
-      animation-delay: 1.5s;
-    }
+    .idle-pulse-ring.delay { animation-delay: 1.5s; }
 
     @keyframes idleRadar {
       0% { transform: scale(0.92); opacity: 0.6; }
@@ -393,8 +304,8 @@
 
     .idle-orbit-outer {
       position: absolute;
-      width: 118px;
-      height: 118px;
+      width: 108px;
+      height: 108px;
       border-radius: 50%;
       border: 1.5px dashed var(--border-glass);
       border-top-color: var(--accent-primary);
@@ -406,10 +317,10 @@
     .idle-orbit-outer::after {
       content: "";
       position: absolute;
-      top: -3.5px;
+      top: -3px;
       left: 50%;
-      width: 6px;
-      height: 6px;
+      width: 5.5px;
+      height: 5.5px;
       border-radius: 50%;
       background: var(--accent-primary);
       box-shadow: 0 0 8px var(--accent-primary);
@@ -417,8 +328,8 @@
 
     .idle-orbit-inner {
       position: absolute;
-      width: 102px;
-      height: 102px;
+      width: 94px;
+      height: 94px;
       border-radius: 50%;
       border: 1.5px dotted var(--border-glass);
       border-left-color: var(--accent-primary);
@@ -449,8 +360,8 @@
 
     .power-btn {
       position: relative;
-      width: 86px;
-      height: 86px;
+      width: 78px;
+      height: 78px;
       border-radius: 50%;
       border: 2px solid var(--accent-primary);
       background: var(--btn-core-bg);
@@ -459,7 +370,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 3px;
+      gap: 2px;
       cursor: pointer;
       z-index: 2;
       animation: idleBtnBreathe 2.6s ease-in-out infinite;
@@ -482,7 +393,7 @@
     }
 
     .power-label {
-      font-size: 9.5px;
+      font-size: 9px;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.7px;
@@ -493,7 +404,7 @@
       min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
     .timer-row {
@@ -504,7 +415,7 @@
     }
 
     .timer-display {
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 900;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.8px;
@@ -517,21 +428,21 @@
     }
 
     .mini-speed-card {
-      background: var(--bg-card-2);
+      background: var(--bg-card-header);
       border: 1px solid var(--border-glass);
-      border-radius: 10px;
-      padding: 5px 7px;
+      border-radius: 9px;
+      padding: 4px 7px;
       min-width: 0;
     }
 
     .ms-label {
-      font-size: 9px;
+      font-size: 8.5px;
       font-weight: 800;
       color: var(--text-muted);
     }
 
     .ms-val {
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 900;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
@@ -546,132 +457,308 @@
       text-overflow: ellipsis;
     }
 
-    /* 4. ВЕРТИКАЛЬНЫЙ СПИСОК МАРШРУТОВ ПОДПИСКИ КАК В HAPP (ЗАПОЛНЯЕТ ЭКРАН) */
-    .happ-routes-section {
+    /* =========================================================================
+       3. СВОРАЧИВАЕМЫЕ ПРОФИЛИ ПОДПИСОК (ТОЧЬ-В-ТОЧЬ КАК НА СКРИНШОТЕ)
+       ========================================================================= */
+    .profiles-scroll-area {
       width: 100%;
       min-width: 0;
-      flex: 1;
-      min-height: 0;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      overflow: hidden;
-    }
-
-    .routes-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11.5px;
-      font-weight: 900;
-      flex-shrink: 0;
-    }
-
-    .routes-list {
       flex: 1;
       min-height: 0;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      padding-right: 2px;
+      gap: 10px;
+      padding-right: 1px;
     }
 
-    .route-item {
+    .sub-group-card {
+      width: 100%;
+      min-width: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+    }
+
+    .sub-group-header {
+      background: var(--bg-card-header);
+      padding: 11px 12px 9px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .sgh-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .sgh-chevron {
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .sub-group-card.collapsed .sgh-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .sgh-titles {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .sgh-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .sgh-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sgh-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .sgh-icon-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sgh-icon-btn:active, .sgh-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    .sgh-icon-btn.warn {
+      color: #f59e0b;
+    }
+
+    /* Полоса «Истекает: 06.01.2027» + тонкая линия прогресса */
+    .sub-expire-bar {
+      background: var(--bg-card-header);
+      padding: 0 12px 7px;
+      font-size: 11px;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .sub-thin-line {
+      width: 100%;
+      height: 2px;
+      background: rgba(99, 102, 241, 0.22);
+      position: relative;
+    }
+
+    .sub-thin-line-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+    }
+
+    /* Тело профиля со списком серверов (открывается и закрывается) */
+    .sub-servers-body {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+    }
+
+    .sub-group-card.collapsed .sub-servers-body {
+      display: none;
+    }
+
+    .server-row {
       width: 100%;
       min-width: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 12px;
-      background: var(--bg-card-2);
-      border: 1.5px solid var(--border-glass);
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-glass);
       cursor: pointer;
-      flex-shrink: 0;
+      transition: background 0.15s ease;
     }
 
-    .route-item.active {
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 12px var(--bg-glow);
+    .server-row:last-child {
+      border-bottom: none;
     }
 
-    .route-left {
+    .server-row.active {
+      background: var(--bg-row-hover);
+      border-left: 3px solid var(--accent-primary);
+      padding-left: 9px;
+    }
+
+    .srv-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 11px;
       min-width: 0;
       flex: 1;
     }
 
-    .route-flag {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      background: rgba(255, 255, 255, 0.06);
+    /* Круглая иконка флага как на скриншоте */
+    .srv-flag-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       flex-shrink: 0;
+      font-size: 16px;
     }
 
-    .route-info {
+    .srv-info {
       min-width: 0;
       flex: 1;
     }
 
-    .route-title {
-      font-size: 12.5px;
-      font-weight: 800;
+    .srv-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-main);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .route-meta {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 2px;
-      font-size: 10px;
+    .srv-proto-sub {
+      font-size: 10.5px;
+      font-weight: 600;
       color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .r-badge {
-      font-size: 9px;
-      font-weight: 900;
-      padding: 1px 5px;
-      border-radius: 4px;
-      background: rgba(192, 132, 252, 0.2);
-      color: var(--accent-primary);
+      margin-top: 2px;
+      letter-spacing: 0.2px;
       text-transform: uppercase;
     }
 
-    .r-badge.trojan {
-      background: rgba(245, 158, 11, 0.2);
-      color: var(--accent-amber);
-    }
-
-    .route-right {
+    .srv-right {
       display: flex;
       align-items: center;
       gap: 6px;
       flex-shrink: 0;
     }
 
-    .route-ping {
-      font-size: 10.5px;
-      font-weight: 800;
+    .srv-ping-badge {
+      font-size: 11px;
+      font-weight: 700;
       color: var(--accent-green);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* =========================================================================
+       4. ВСПЛЫВАЮЩЕЕ МЕНЮ НА ТРИ ТОЧКИ (⋯) ТОЧЬ-В-ТОЧЬ КАК НА СКРИНШОТЕ
+       ========================================================================= */
+    .context-menu-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+    }
+
+    .context-menu-backdrop.open {
+      display: block;
+    }
+
+    .happ-dropdown-menu {
+      position: fixed;
+      top: 135px;
+      right: 16px;
+      width: 215px;
+      background: var(--menu-bg);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+      z-index: 85;
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      padding: 4px;
+    }
+
+    .happ-dropdown-menu.open {
+      display: flex;
+      animation: menuPop 0.16s ease-out;
+    }
+
+    @keyframes menuPop {
+      from { opacity: 0; transform: scale(0.95) translateY(-5px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .dd-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 9px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 500;
+      text-align: left;
+      border-radius: 7px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dd-item:last-child {
+      border-bottom: none;
+    }
+
+    .dd-item:active, .dd-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .dd-item svg {
+      color: var(--text-muted);
+    }
+
+    .dd-item.danger {
+      color: #f87171;
+    }
+    .dd-item.danger svg {
+      color: #f87171;
     }
 
     /* 5. НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ */
@@ -706,7 +793,7 @@
     }
 
     .nav-btn.primary-action {
-      background: var(--bg-card-2);
+      background: var(--bg-card-header);
       border-color: var(--border-glass);
       color: var(--accent-primary);
     }
@@ -719,7 +806,7 @@
       height: 100%;
       background: rgba(3, 5, 10, 0.82);
       backdrop-filter: blur(6px);
-      z-index: 50;
+      z-index: 90;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.22s ease;
@@ -895,6 +982,18 @@
       border: 2px solid rgba(255,255,255,0.4);
     }
 
+    .option-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 11px;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
     .toast {
       position: fixed;
       top: 14px;
@@ -907,7 +1006,7 @@
       border-radius: 10px;
       font-size: 11.5px;
       font-weight: 800;
-      z-index: 100;
+      z-index: 120;
       transition: transform 0.25s ease;
       pointer-events: none;
       max-width: 92%;
@@ -919,16 +1018,86 @@
     }
   </style>
 </head>
-<body data-theme="purple">
+<body data-theme="black">
 
   <div id="toast" class="toast">Готово</div>
 
+  <!-- Подложка и само контекстное меню на три точки (⋯) как на скриншоте -->
+  <div id="ctxBackdrop" class="context-menu-backdrop"></div>
+  <div id="happContextMenu" class="happ-dropdown-menu">
+    <button class="dd-item" data-menu-action="routing" type="button">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="6" cy="6" r="3"></circle>
+        <circle cx="6" cy="18" r="3"></circle>
+        <path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12"></path>
+      </svg>
+      <span>Маршрутизация</span>
+    </button>
+    <button class="dd-item" data-menu-action="settings" type="button">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span>Настройки</span>
+    </button>
+    <button class="dd-item" data-menu-action="refresh" type="button">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      <span>Обновить</span>
+    </button>
+    <button class="dd-item" data-menu-action="ping" type="button">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 14l4-4"></path>
+        <path d="M3.34 19a10 10 0 1 1 17.32 0"></path>
+      </svg>
+      <span>Тест пинга</span>
+    </button>
+    <button class="dd-item" data-menu-action="pin" type="button">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="17" x2="12" y2="22"></line>
+        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+      </svg>
+      <span id="pinMenuText">Закрепить</span>
+    </button>
+    <button class="dd-item" data-menu-action="copy" type="button">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      <span>Копировать URL</span>
+    </button>
+    <button class="dd-item" data-menu-action="edit" type="button">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="21" x2="4" y2="14"></line>
+        <line x1="4" y1="10" x2="4" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12" y2="3"></line>
+        <line x1="20" y1="21" x2="20" y2="16"></line>
+        <line x1="20" y1="12" x2="20" y2="3"></line>
+        <line x1="1" y1="14" x2="7" y2="14"></line>
+        <line x1="9" y1="8" x2="15" y2="8"></line>
+        <line x1="17" y1="16" x2="23" y2="16"></line>
+      </svg>
+      <span>Редактировать</span>
+    </button>
+    <button class="dd-item danger" data-menu-action="delete" type="button">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"></polyline>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+      </svg>
+      <span>Удалить</span>
+    </button>
+  </div>
+
   <div id="app" class="app-shell">
-    <!-- 1. ВЕРХНЯЯ ПАНЕЛЬ С КЛОУНОМ И КНОПКОЙ РАЗМЕРА ЭКРАНА -->
+    <!-- 1. ШАПКА MVZ С 3D ИКОНКОЙ КЛОУНА -->
     <header class="top-bar">
       <div class="brand">
         <div class="brand-logo" title="MVZ">
-          <svg width="38" height="38" viewBox="0 0 512 512">
+          <svg width="36" height="36" viewBox="0 0 512 512">
             <defs>
               <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#8b1da8"/>
@@ -989,7 +1158,7 @@
             <span class="brand-title">MVZ</span>
             <span class="proto-pill" id="activeProtoBadge">VLESS</span>
           </div>
-          <div class="brand-sub" id="subGroupTitle">Happ Subscription</div>
+          <div class="brand-sub" id="routingModeLabel">Маршрут: Весь трафик</div>
         </div>
       </div>
 
@@ -1002,28 +1171,7 @@
       </div>
     </header>
 
-    <!-- 2. ВИДЖЕТ ПОДПИСКИ КАК В HAPP -->
-    <section class="happ-sub-card">
-      <div class="sub-top">
-        <div class="sub-title-group">
-          <span class="sub-badge" id="subStatusBadge">АКТИВНА</span>
-          <span class="sub-expire-text" id="subExpireText">До 15.11.2026 (30 дн.)</span>
-        </div>
-        <div class="sub-actions">
-          <button class="sub-mini-btn" id="syncHttpsSubBtn" type="button">🔄 Обновить</button>
-          <button class="sub-mini-btn" id="editSubDateBtn" type="button">📅 Срок</button>
-        </div>
-      </div>
-      <div class="sub-progress-track">
-        <div class="sub-progress-fill" id="subProgressFill"></div>
-      </div>
-      <div class="sub-meta-row">
-        <span id="subTrafficInfo">Трафик: Безлимит</span>
-        <span id="subNodesCount">Маршрутов: 2</span>
-      </div>
-    </section>
-
-    <!-- 3. КНОПКА ЗАПУСКА С ОРБИТАЛЬНОЙ АНИМАЦИЕЙ + ЖИВАЯ СКОРОСТЬ -->
+    <!-- 2. БЛОК ЗАПУСКА С ОРБИТАЛЬНОЙ АНИМАЦИЕЙ И СКОРОСТЬЮ -->
     <section class="core-stage">
       <div class="power-zone">
         <div class="idle-pulse-ring"></div>
@@ -1032,7 +1180,7 @@
         <div class="idle-orbit-inner"></div>
 
         <button class="power-btn" id="powerBtn" type="button">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
             <line x1="12" y1="2" x2="12" y2="12"></line>
           </svg>
@@ -1043,42 +1191,36 @@
       <div class="core-stats-col">
         <div class="timer-row">
           <span class="timer-display" id="timerDisplay">00:00:00</span>
-          <span style="font-size:10px;font-weight:800;color:var(--accent-primary);" id="pingAllBtn">⚡ Пинг всех</span>
+          <span style="font-size:10px;font-weight:800;color:var(--accent-primary);cursor:pointer;" id="collapseAllBtn">↕ Свернуть/Развернуть</span>
         </div>
 
         <div class="mini-speeds">
           <div class="mini-speed-card">
             <div class="ms-label">↓ СКАЧИВАНИЕ</div>
-            <div class="ms-val"><span id="dlSpeed">0.0</span> <span id="dlUnit" style="font-size:9.5px;color:var(--text-muted);">КБ/с</span></div>
+            <div class="ms-val"><span id="dlSpeed">0.0</span> <span id="dlUnit" style="font-size:9px;color:var(--text-muted);">КБ/с</span></div>
           </div>
           <div class="mini-speed-card">
             <div class="ms-label">↑ ОТДАЧА</div>
-            <div class="ms-val"><span id="ulSpeed">0.0</span> <span id="ulUnit" style="font-size:9.5px;color:var(--text-muted);">КБ/с</span></div>
+            <div class="ms-val"><span id="ulSpeed">0.0</span> <span id="ulUnit" style="font-size:9px;color:var(--text-muted);">КБ/с</span></div>
           </div>
         </div>
 
-        <div class="step-hint" id="stepHint">Выбери маршрут ниже и нажми Старт</div>
+        <div class="step-hint" id="stepHint">Выбери сервер в профиле ниже</div>
       </div>
     </section>
 
-    <!-- 4. СПИСОК ВСЕХ МАРШРУТОВ ПОДПИСКИ НА ГЛАВНОМ ЭКРАНЕ (КАК В HAPP) -->
-    <section class="happ-routes-section">
-      <div class="routes-header">
-        <span>Маршруты подписки (VLESS / Trojan)</span>
-        <span style="color:var(--accent-primary);cursor:pointer;" id="quickAddRouteBtn">+ Вставить ссылку</span>
-      </div>
-      <div class="routes-list" id="happRoutesList"></div>
-    </section>
+    <!-- 3. СПИСОК СВОРАЧИВАЕМЫХ ПРОФИЛЕЙ (КАК НА СКРИНШОТЕ) -->
+    <main class="profiles-scroll-area" id="profilesAccordionArea"></main>
 
-    <!-- 5. НИЖНЯЯ НАВИГАЦИЯ -->
+    <!-- 4. НИЖНЯЯ НАВИГАЦИЯ -->
     <nav class="bottom-nav">
       <button class="nav-btn primary-action" id="openAddModalBtn" type="button">
-        <span>➕ Подписка</span>
+        <span>➕ Добавить</span>
         <span>HTTPS / Ключ</span>
       </button>
-      <button class="nav-btn" id="openScaleBottomBtn" type="button">
-        <span>📏 Экран</span>
-        <span>Под устройство</span>
+      <button class="nav-btn" id="openRoutingBottomBtn" type="button">
+        <span>🔀 Маршруты</span>
+        <span>Правила</span>
       </button>
       <button class="nav-btn" id="openLogsBtn" type="button">
         <span>🖥 Консоль</span>
@@ -1091,11 +1233,11 @@
     </nav>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ HTTPS ПОДПИСКИ (КАК В HAPP) ИЛИ КЛЮЧЕЙ -->
+  <!-- МОДАЛЬНОЕ ОКНО 1: ДОБАВЛЕНИЕ HTTPS ПОДПИСКИ ИЛИ КЛЮЧЕЙ -->
   <div class="modal-backdrop" id="addModal">
     <div class="sheet">
       <div class="sheet-head">
-        <div class="sheet-title">Импорт подписки Happ / Ключей</div>
+        <div class="sheet-title">Добавить профиль / подписку</div>
         <button class="close-btn" id="closeAddBtn" type="button">✕</button>
       </div>
 
@@ -1104,80 +1246,129 @@
         <button class="tab-btn" id="tabManualBuild" type="button">Создать Trojan / VLESS</button>
       </div>
 
-      <div id="pasteLinkPane" style="display:flex;flex-direction:column;gap:9px;">
-        <textarea id="universalInput" class="input-box" placeholder="Вставь ссылку подписки https://... (распакуются все маршруты внутри неё, как в Happ!)
-Или список vless://, trojan://, vmess://, ss://"></textarea>
+      <div id="pasteLinkPane" style="display:flex;flex-direction:column;gap:8px;">
+        <input id="newGroupTitleInput" class="field-input" placeholder="Название профиля (напр. MVZ VPS | @mvzapretbot)" value="MVZ VPS | @mvzapretbot" />
+        <textarea id="universalInput" class="input-box" placeholder="Вставь ссылку подписки https://... (откроются все серверы внутри профиля) или ключи vless://, trojan://"></textarea>
         <div class="btn-row">
           <button class="secondary-btn" id="pasteClipBtn" type="button">📋 Из буфера</button>
-          <button class="primary-btn" id="saveUniversalBtn" type="button">Распаковать маршруты</button>
+          <button class="primary-btn" id="saveUniversalBtn" type="button">Импортировать в профиль</button>
         </div>
       </div>
 
       <div id="manualBuildPane" style="display:none;flex-direction:column;gap:8px;">
         <div class="form-grid">
           <select id="mProto" class="field-input">
-            <option value="trojan">Протокол: TROJAN</option>
             <option value="vless">Протокол: VLESS</option>
+            <option value="trojan">Протокол: TROJAN</option>
           </select>
           <select id="mNet" class="field-input">
-            <option value="grpc">Транспорт: gRPC</option>
-            <option value="ws">Транспорт: WebSocket</option>
+            <option value="grpc">Транспорт: GRPC</option>
+            <option value="ws">Транспорт: WS</option>
             <option value="tcp">Транспорт: TCP</option>
           </select>
         </div>
-        <input id="mName" class="field-input" placeholder="Название маршрута" value="🇵🇱 Польша — Trojan VIP" />
+        <input id="mName" class="field-input" placeholder="Название сервера" value="Нидерланды — Reality 6 ⚡" />
         <div class="form-grid">
           <input id="mHost" class="field-input" placeholder="Хост / IP" value="parts.skodamotors.online" />
           <input id="mPort" class="field-input" placeholder="Порт" value="443" type="number" />
         </div>
-        <input id="mSecret" class="field-input" placeholder="Пароль Trojan или UUID VLESS" value="647640d8-c26c-42bf-aa78-48a2f8d9759d" />
+        <input id="mSecret" class="field-input" placeholder="UUID или Пароль Trojan" value="647640d8-c26c-42bf-aa78-48a2f8d9759d" />
         <div class="form-grid">
+          <input id="mSecType" class="field-input" placeholder="TLS или REALITY" value="REALITY" />
           <input id="mSni" class="field-input" placeholder="SNI" value="parts.skodamotors.online" />
-          <input id="mService" class="field-input" placeholder="serviceName / path" value="1ae7ea2a8adf" />
         </div>
-        <button class="primary-btn" id="createManualProfileBtn" type="button">Добавить маршрут в список</button>
+        <button class="primary-btn" id="createManualProfileBtn" type="button">Добавить сервер в профиль</button>
       </div>
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО: НАСТРОЙКА РАЗМЕРА ПОД КАЖДОЕ УСТРОЙСТВО -->
+  <!-- МОДАЛЬНОЕ ОКНО 2: РЕДАКТИРОВАНИЕ ПРОФИЛЯ (Из меню «Редактировать») -->
+  <div class="modal-backdrop" id="editGroupModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Редактировать профиль</div>
+        <button class="close-btn" id="closeEditGroupBtn" type="button">✕</button>
+      </div>
+      <input id="editGroupName" class="field-input" placeholder="Название профиля (напр. MVZ VPS | @mvzapretbot)" />
+      <input id="editGroupUrl" class="field-input" placeholder="URL подписки (https://...)" />
+      <div class="form-grid">
+        <input id="editGroupExpire" class="field-input" placeholder="Истекает (напр. 06.01.2027)" />
+        <input id="editGroupAutoUpdate" class="field-input" placeholder="Автообновление (12ч.)" />
+      </div>
+      <button class="primary-btn" id="saveEditGroupBtn" type="button">Сохранить изменения</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО 3: МАРШРУТИЗАЦИЯ (Из меню «Маршрутизация») -->
+  <div class="modal-backdrop" id="routingModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Маршрутизация Xray-core</div>
+        <button class="close-btn" id="closeRoutingBtn" type="button">✕</button>
+      </div>
+      <div class="option-row">
+        <span>Режим маршрутизации</span>
+        <select id="routingPresetSelect" class="field-input" style="width:170px;">
+          <option value="all">Весь трафик через VPN</option>
+          <option value="bypass_ru">Обход РФ (.ru / geoip:ru)</option>
+          <option value="block_ads">VPN + Блокировка рекламы</option>
+        </select>
+      </div>
+      <div class="option-row">
+        <span>Прямой DNS для российских сайтов</span>
+        <input type="checkbox" id="directRuDnsCheck" checked style="width:18px;height:18px;accent-color:var(--accent-primary);" />
+      </div>
+      <button class="primary-btn" id="saveRoutingBtn" type="button">Применить маршрутизацию</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО 4: НАСТРОЙКИ ПРОФИЛЯ (Из меню «Настройки») -->
+  <div class="modal-backdrop" id="groupSettingsModal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">Настройки профиля подписки</div>
+        <button class="close-btn" id="closeGroupSettingsBtn" type="button">✕</button>
+      </div>
+      <div class="option-row">
+        <span>Интервал автообновления</span>
+        <select id="autoUpdateIntervalSelect" class="field-input" style="width:130px;">
+          <option value="12ч.">Каждые 12ч.</option>
+          <option value="6ч.">Каждые 6ч.</option>
+          <option value="24ч.">Каждые 24ч.</option>
+          <option value="Выкл">Выключено</option>
+        </select>
+      </div>
+      <div class="option-row">
+        <span>Обновлять при открытии приложения</span>
+        <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--accent-primary);" />
+      </div>
+      <div class="option-row">
+        <span>Разрешить небезопасные сертификаты (allowInsecure)</span>
+        <input type="checkbox" id="allowInsecureCheck" style="width:18px;height:18px;accent-color:var(--accent-primary);" />
+      </div>
+      <button class="primary-btn" id="saveGroupSettingsBtn" type="button">Сохранить настройки</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО 5: НАСТРОЙКА РАЗМЕРА ПОД УСТРОЙСТВО -->
   <div class="modal-backdrop" id="scaleModal">
     <div class="sheet">
       <div class="sheet-head">
-        <div class="sheet-title">Настройка размера под экран</div>
+        <div class="sheet-title">Размер интерфейса под устройство</div>
         <button class="close-btn" id="closeScaleModalBtn" type="button">✕</button>
       </div>
       <div style="font-size:12px;color:var(--text-muted);">
-        Выбери масштаб интерфейса для своего телефона (<span id="scaleValLabel">100%</span>):
+        Масштаб элементов (<span id="scaleValLabel">100%</span>):
       </div>
       <input id="uiScaleRange" type="range" min="80" max="115" step="5" value="100" style="width:100%;accent-color:var(--accent-primary);" />
       <div class="btn-row">
-        <button class="secondary-btn" id="autoScaleDeviceBtn" type="button" style="flex:1;">📱 Авто под мой телефон</button>
+        <button class="secondary-btn" id="autoScaleDeviceBtn" type="button" style="flex:1;">📱 Авто под телефон</button>
         <button class="primary-btn" id="resetScaleBtn" type="button" style="flex:1;">Сбросить (100%)</button>
       </div>
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО: СРОК ПОДПИСКИ -->
-  <div class="modal-backdrop" id="subModal">
-    <div class="sheet">
-      <div class="sheet-head">
-        <div class="sheet-title">Настройки подписки Happ / MVZ</div>
-        <button class="close-btn" id="closeSubModalBtn" type="button">✕</button>
-      </div>
-      <input id="subUrlInput" class="field-input" placeholder="https://ссылка-на-подписку..." />
-      <div class="form-grid">
-        <input id="subDateInput" class="field-input" type="date" />
-        <input id="subLimitInput" class="field-input" placeholder="Трафик (напр. 200 ГБ)" value="Безлимит" />
-      </div>
-      <div class="btn-row">
-        <button class="secondary-btn" id="plus30DaysBtn" type="button">+30 дней</button>
-        <button class="primary-btn" id="saveSubSettingsBtn" type="button">Сохранить и обновить</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО: ТЕМЫ -->
+  <!-- МОДАЛЬНОЕ ОКНО 6: ТЕМЫ -->
   <div class="modal-backdrop" id="themesModal">
     <div class="sheet">
       <div class="sheet-head">
@@ -1185,13 +1376,13 @@
         <button class="close-btn" id="closeThemesBtn" type="button">✕</button>
       </div>
       <div class="themes-grid">
+        <div class="theme-card" data-set-theme="black">
+          <span class="theme-swatch" style="background: linear-gradient(135deg, #18191e, #6366f1);"></span>
+          <span>Черная (Happ)</span>
+        </div>
         <div class="theme-card" data-set-theme="purple">
           <span class="theme-swatch" style="background: linear-gradient(135deg, #9333ea, #4f46e5);"></span>
           <span>Фиолетовая</span>
-        </div>
-        <div class="theme-card" data-set-theme="black">
-          <span class="theme-swatch" style="background: linear-gradient(135deg, #090d16, #00f2fe);"></span>
-          <span>Черная</span>
         </div>
         <div class="theme-card" data-set-theme="white">
           <span class="theme-swatch" style="background: linear-gradient(135deg, #ffffff, #6366f1);"></span>
@@ -1209,7 +1400,7 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО: КОНСОЛЬ XRAY -->
+  <!-- МОДАЛЬНОЕ ОКНО 7: КОНСОЛЬ XRAY -->
   <div class="modal-backdrop" id="logsModal">
     <div class="sheet">
       <div class="sheet-head">
@@ -1225,22 +1416,19 @@
   </div>
 
   <script>
-    const DEFAULT_VLESS_URI = "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=tls&alpn=h2&encryption=none&authority=parts.skodamotors.online&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Reality%202%20%F0%9F%9B%B0%EF%B8%8F";
-    const DEFAULT_TROJAN_URI = "trojan://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=tls&alpn=h2&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Trojan%20TLS%20%F0%9F%9B%A1%EF%B8%8F";
-
     const hasNativeXray = typeof window.AndroidXray !== "undefined";
     const toastEl = document.getElementById("toast");
 
     function showToast(msg) {
       toastEl.textContent = msg;
       toastEl.classList.add("show");
-      setTimeout(() => toastEl.classList.remove("show"), 2600);
+      setTimeout(() => toastEl.classList.remove("show"), 2500);
     }
 
-    // Цвета системных баров Android под каждую тему (чтобы сверху и снизу не было белого)
+    // Системные цвета статус-бара и нав-бара Android
     const THEME_BAR_COLORS = {
+      black: "#0b0c10",
       purple: "#090514",
-      black: "#040609",
       white: "#eef2f8",
       crimson: "#0d0307",
       emerald: "#020b08"
@@ -1253,22 +1441,20 @@
         el.classList.toggle("active", el.getAttribute("data-set-theme") === t);
       });
       if (hasNativeXray && window.AndroidXray.setSystemBarsColor) {
-        window.AndroidXray.setSystemBarsColor(THEME_BAR_COLORS[t] || "#090514");
+        window.AndroidXray.setSystemBarsColor(THEME_BAR_COLORS[t] || "#0b0c10");
       }
     }
-    applyTheme(localStorage.getItem("mvz_theme") || "purple");
+    applyTheme(localStorage.getItem("mvz_theme") || "black");
 
     document.querySelectorAll("[data-set-theme]").forEach(card => {
       card.addEventListener("click", () => {
         applyTheme(card.getAttribute("data-set-theme"));
         document.getElementById("themesModal").classList.remove("open");
-        showToast("Тема и системные полосы обновлены");
+        showToast("Тема установлена");
       });
     });
 
-    // =========================================================================
-    // НАСТРОЙКА РАЗМЕРА И МАСШТАБА ПОД КАЖДОЕ УСТРОЙСТВО
-    // =========================================================================
+    // Настройка масштаба под любое устройство
     const uiScaleRange = document.getElementById("uiScaleRange");
     const scaleValLabel = document.getElementById("scaleValLabel");
 
@@ -1295,13 +1481,37 @@
     uiScaleRange.addEventListener("input", (e) => applyUiScale(e.target.value));
     document.getElementById("autoScaleDeviceBtn").addEventListener("click", () => {
       autoFitDeviceScale();
-      showToast("Размер подобран под экран телефона");
+      showToast("Масштаб адаптирован под экран");
     });
     document.getElementById("resetScaleBtn").addEventListener("click", () => applyUiScale(100));
 
-    // =========================================================================
-    // ПАРСЕР ОТДЕЛЬНОГО МАРШРУТА (VLESS, TROJAN, VMESS, SS)
-    // =========================================================================
+    // Отрисовка круглого SVG-флага (Нидерланды, Польша и др. как на скриншоте)
+    function renderCountryFlagSvg(countryHint, fallbackEmoji) {
+      const text = (countryHint || "").toLowerCase();
+      if (text.includes("нидерланд") || text.includes("netherland") || text.includes("nl") || fallbackEmoji === "🇳🇱") {
+        return `<svg width="30" height="30" viewBox="0 0 30 30">
+          <rect width="30" height="10" y="0" fill="#AE1C28"/>
+          <rect width="30" height="10" y="10" fill="#FFFFFF"/>
+          <rect width="30" height="10" y="20" fill="#21468B"/>
+        </svg>`;
+      }
+      if (text.includes("польш") || text.includes("poland") || text.includes("pl") || fallbackEmoji === "🇵🇱") {
+        return `<svg width="30" height="30" viewBox="0 0 30 30">
+          <rect width="30" height="15" y="0" fill="#FFFFFF"/>
+          <rect width="30" height="15" y="15" fill="#DC143C"/>
+        </svg>`;
+      }
+      if (text.includes("герман") || text.includes("german") || fallbackEmoji === "🇩🇪") {
+        return `<svg width="30" height="30" viewBox="0 0 30 30">
+          <rect width="30" height="10" y="0" fill="#000000"/>
+          <rect width="30" height="10" y="10" fill="#DD0000"/>
+          <rect width="30" height="10" y="20" fill="#FFCE00"/>
+        </svg>`;
+      }
+      return `<span>${fallbackEmoji || "🌐"}</span>`;
+    }
+
+    // Парсер ссылки маршрута (vless://, trojan://, vmess://, ss://)
     function parseRouteUri(rawLine) {
       const uri = rawLine.trim();
       if (!uri) return null;
@@ -1309,7 +1519,7 @@
       if (uri.startsWith("vless://") || uri.startsWith("trojan://")) {
         const protocol = uri.startsWith("trojan://") ? "trojan" : "vless";
         let rest = uri.split("://")[1];
-        let remark = protocol.toUpperCase() + " Маршрут";
+        let remark = protocol.toUpperCase() + " Server";
         if (rest.includes("#")) {
           const parts = rest.split("#");
           rest = parts[0];
@@ -1331,18 +1541,19 @@
         const secret = decodeURIComponent(atParts[0] || "");
         const hostPort = atParts[1] || rest;
         const hp = hostPort.split(":");
-        const host = hp[0] || "";
+        const host = hp[0] || "parts.skodamotors.online";
         const port = parseInt((hp[1] || "443").replace(/\D/g, ""), 10) || 443;
 
         const params = new URLSearchParams(queryString);
         const flagMatch = remark.match(/(\p{Regional_Indicator}{2})/u);
+        const cleanName = remark.replace(/^(\p{Regional_Indicator}{2})\s*/u, "");
 
         return {
-          id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+          id: "srv_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
           raw: uri,
           protocol,
-          name: remark,
-          icon: flagMatch ? flagMatch[1] : (protocol === "trojan" ? "🛡️" : "🛰️"),
+          name: cleanName || remark,
+          icon: flagMatch ? flagMatch[1] : "🇳🇱",
           uuid: secret,
           password: secret,
           host,
@@ -1361,7 +1572,7 @@
           sid: params.get("sid") || "",
           spx: params.get("spx") || "/",
           path: params.get("path") || "/",
-          ping: 38
+          ping: Math.floor(Math.random() * 18) + 28
         };
       }
 
@@ -1369,133 +1580,430 @@
         try {
           const b64 = uri.slice(8).trim().replace(/-/g, "+").replace(/_/g, "/");
           const json = JSON.parse(decodeURIComponent(escape(atob(b64))));
-          const remark = json.ps || "VMess Маршрут";
-          const flagMatch = remark.match(/(\p{Regional_Indicator}{2})/u);
           return {
-            id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+            id: "srv_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
             raw: uri,
             protocol: "vmess",
-            name: remark,
-            icon: flagMatch ? flagMatch[1] : "⚡",
+            name: json.ps || "VMess Server",
+            icon: "🇳🇱",
             uuid: json.id || "",
             host: json.add || "",
             port: parseInt(json.port || "443", 10),
-            type: (json.net || "tcp").toLowerCase(),
-            security: (json.tls || "none").toLowerCase(),
+            type: (json.net || "ws").toLowerCase(),
+            security: (json.tls || "tls").toLowerCase(),
             sni: json.sni || json.host || json.add || "",
-            fp: json.fp || "chrome",
+            fp: "chrome",
             path: json.path || "/",
-            serviceName: json.path || "",
             mode: "gun",
-            ping: 42
+            ping: 39
           };
         } catch (e) { return null; }
-      }
-
-      if (uri.startsWith("ss://")) {
-        let rest = uri.slice(5);
-        let remark = "Shadowsocks";
-        if (rest.includes("#")) {
-          const p = rest.split("#");
-          rest = p[0];
-          try { remark = decodeURIComponent(p[1]); } catch (e) { remark = p[1]; }
-        }
-        let host = "server";
-        let port = 443;
-        if (rest.includes("@")) {
-          const hp = rest.split("@")[1].split(":");
-          host = hp[0];
-          port = parseInt(hp[1] || "443", 10);
-        }
-        const flagMatch = remark.match(/(\p{Regional_Indicator}{2})/u);
-        return {
-          id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
-          raw: uri,
-          protocol: "shadowsocks",
-          name: remark,
-          icon: flagMatch ? flagMatch[1] : "🔑",
-          uuid: rest.split("@")[0] || "",
-          host,
-          port,
-          type: "tcp",
-          security: "none",
-          sni: host,
-          fp: "chrome",
-          mode: "gun",
-          ping: 45
-        };
       }
 
       return null;
     }
 
-    // Декодирование текста подписки Happ (Base64 / URL-safe Base64 / JSON / список ссылок)
+    // Стартовые серверы для профиля «MVZ VPS | @mvzapretbot» (как на скриншоте + ваш польский сервер)
+    const INITIAL_URIS = [
+      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=tls&type=ws&sni=parts.skodamotors.online&fp=chrome#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%201%20%F0%9F%8C%90",
+      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=tls&alpn=h2&encryption=none&authority=parts.skodamotors.online&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%202%20%F0%9F%9B%B0%EF%B8%8F",
+      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=reality&type=tcp&sni=parts.skodamotors.online&fp=chrome#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%203%20%E2%9A%A1",
+      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=reality&type=tcp&sni=parts.skodamotors.online&fp=chrome#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%204%20%E2%9A%A1",
+      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=reality&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online&fp=chrome#%F0%9F%87%B3%F0%9F%87%B1%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%20%E2%80%94%20Reality%205%20%F0%9F%9B%B0%EF%B8%8F",
+      "vless://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?mode=gun&security=tls&alpn=h2&encryption=none&authority=parts.skodamotors.online&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Reality%202%20%F0%9F%9B%B0%EF%B8%8F",
+      "trojan://647640d8-c26c-42bf-aa78-48a2f8d9759d@parts.skodamotors.online:443?security=tls&alpn=h2&fp=chrome&type=grpc&serviceName=1ae7ea2a8adf&sni=parts.skodamotors.online#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%E2%80%94%20Trojan%20TLS%20%F0%9F%9B%A1%EF%B8%8F"
+    ];
+
+    // Хранилище групп профилей (аккордеонов)
+    let profileGroups = [];
+    let activeServerId = null;
+    let activeMenuGroupId = null;
+    let routingMode = localStorage.getItem("mvz_routing_mode") || "all";
+    let allowInsecureGlobal = false;
+
+    function createDefaultGroup() {
+      const servers = INITIAL_URIS.map(u => parseRouteUri(u)).filter(Boolean);
+      return {
+        id: "group_mvz_main",
+        name: "MVZ VPS | @mvzapretbot",
+        updatedAt: "15.10.2026 20:07",
+        autoUpdate: "12ч.",
+        expiresText: "06.01.2027",
+        url: "https://parts.skodamotors.online/sub",
+        pinned: true,
+        collapsed: false,
+        servers
+      };
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem("mvz_profile_groups_v6");
+        if (saved) profileGroups = JSON.parse(saved);
+      } catch (e) { profileGroups = []; }
+
+      if (!profileGroups || !profileGroups.length) {
+        profileGroups = [createDefaultGroup()];
+      }
+
+      const allServers = getAllServers();
+      activeServerId = localStorage.getItem("mvz_active_srv_v6") || (allServers[0] && allServers[0].id);
+      if (!allServers.some(s => s.id === activeServerId) && allServers[0]) {
+        activeServerId = allServers[0].id;
+      }
+      saveState();
+    }
+
+    function saveState() {
+      localStorage.setItem("mvz_profile_groups_v6", JSON.stringify(profileGroups));
+      if (activeServerId) localStorage.setItem("mvz_active_srv_v6", activeServerId);
+    }
+
+    function getAllServers() {
+      const list = [];
+      profileGroups.forEach(g => {
+        (g.servers || []).forEach(s => list.push(s));
+      });
+      return list;
+    }
+
+    function getActiveServer() {
+      const all = getAllServers();
+      return all.find(s => s.id === activeServerId) || all[0];
+    }
+
+    function formatNowTimestamp() {
+      const d = new Date();
+      const pad = n => String(n).padStart(2, "0");
+      return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    // =========================================================================
+    // ОТРИСОВКА СВОРАЧИВАЕМЫХ ПРОФИЛЕЙ И СЕРВЕРОВ (КАК НА СКРИНШОТЕ)
+    // =========================================================================
+    function renderAccordionGroups() {
+      const container = document.getElementById("profilesAccordionArea");
+      container.innerHTML = "";
+
+      // Сортировка: закрепленные профили сверху
+      const sortedGroups = [...profileGroups].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+      sortedGroups.forEach(group => {
+        const card = document.createElement("div");
+        card.className = "sub-group-card" + (group.collapsed ? " collapsed" : "");
+
+        const serversHtml = (group.servers || []).map(srv => {
+          const isActive = srv.id === activeServerId;
+          const protoLine = `${(srv.protocol || "vless").toUpperCase()} / ${(srv.type || "tcp").toUpperCase()} / ${(srv.security || "tls").toUpperCase()}`;
+          return `
+            <div class="server-row ${isActive ? "active" : ""}" data-srv-id="${srv.id}">
+              <div class="srv-left">
+                <div class="srv-flag-circle">${renderCountryFlagSvg(srv.name, srv.icon)}</div>
+                <div class="srv-info">
+                  <div class="srv-title">${srv.name}</div>
+                  <div class="srv-proto-sub">${protoLine}</div>
+                </div>
+              </div>
+              <div class="srv-right">
+                <span class="srv-ping-badge">${srv.ping ? srv.ping + " мс" : ""}</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        card.innerHTML = `
+          <div class="sub-group-header" data-toggle-group="${group.id}">
+            <div class="sgh-left">
+              <svg class="sgh-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+              <div class="sgh-titles">
+                <div class="sgh-name">
+                  ${group.pinned ? `<span title="Закреплен" style="color:var(--accent-primary);">📌</span>` : ""}
+                  <span>${group.name}</span>
+                </div>
+                <div class="sgh-sub">${group.updatedAt} | Автообновление - ${group.autoUpdate || "12ч."}</div>
+              </div>
+            </div>
+
+            <div class="sgh-actions">
+              <button class="sgh-icon-btn warn" data-act="warn" data-gid="${group.id}" type="button" title="Статус подписки">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </button>
+              <button class="sgh-icon-btn" data-act="refresh" data-gid="${group.id}" type="button" title="Обновить подписку">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <polyline points="1 20 1 14 7 14"></polyline>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+              </button>
+              <button class="sgh-icon-btn" data-act="ping" data-gid="${group.id}" type="button" title="Тест пинга">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 14l4-4"></path>
+                  <path d="M3.34 19a10 10 0 1 1 17.32 0"></path>
+                </svg>
+              </button>
+              <button class="sgh-icon-btn" data-act="menu" data-gid="${group.id}" type="button" title="Меню профиля">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="19" cy="12" r="1"></circle>
+                  <circle cx="5" cy="12" r="1"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="sub-expire-bar">Истекает: ${group.expiresText || "06.01.2027"}</div>
+          <div class="sub-thin-line"><div class="sub-thin-line-fill"></div></div>
+
+          <div class="sub-servers-body">
+            ${serversHtml}
+          </div>
+        `;
+
+        // Клик по шапке профиля — ЗАКРЫТЬ / ОТКРЫТЬ (свернуть / развернуть) профиль
+        card.querySelector(".sub-group-header").addEventListener("click", (e) => {
+          if (e.target.closest(".sgh-actions")) return;
+          group.collapsed = !group.collapsed;
+          saveState();
+          renderAccordionGroups();
+        });
+
+        // Кнопки справа в шапке профиля (⚠️, 🔄, ⏱️, ⋯)
+        card.querySelectorAll("[data-act]").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const act = btn.getAttribute("data-act");
+            activeMenuGroupId = group.id;
+
+            if (act === "warn") {
+              showToast(`${group.name} • Серверов: ${group.servers.length} • Истекает: ${group.expiresText}`);
+            } else if (act === "refresh") {
+              refreshSubscriptionGroup(group.id);
+            } else if (act === "ping") {
+              pingServersInGroup(group.id);
+            } else if (act === "menu") {
+              openContextMenu(btn, group);
+            }
+          });
+        });
+
+        // Клик по серверу внутри профиля
+        card.querySelectorAll(".server-row").forEach(row => {
+          row.addEventListener("click", () => {
+            activeServerId = row.getAttribute("data-srv-id");
+            saveState();
+            renderAccordionGroups();
+            updateActiveHeaderInfo();
+            const active = getActiveServer();
+            if (active) showToast(`Выбран: ${active.name}`);
+          });
+        });
+
+        container.appendChild(card);
+      });
+
+      updateActiveHeaderInfo();
+    }
+
+    function updateActiveHeaderInfo() {
+      const active = getActiveServer();
+      if (!active) return;
+      document.getElementById("activeProtoBadge").textContent = (active.protocol || "vless").toUpperCase();
+      if (connState === "disconnected") {
+        document.getElementById("stepHint").textContent = `${active.name} (${active.protocol.toUpperCase()})`;
+      }
+    }
+
+    // Кнопка «Свернуть / Развернуть все профили»
+    document.getElementById("collapseAllBtn").addEventListener("click", () => {
+      const anyOpen = profileGroups.some(g => !g.collapsed);
+      profileGroups.forEach(g => { g.collapsed = anyOpen; });
+      saveState();
+      renderAccordionGroups();
+      showToast(anyOpen ? "Все профили свернуты" : "Все профили развернуты");
+    });
+
+    // =========================================================================
+    // РАБОТА КОНТЕКСТНОГО МЕНЮ (⋯) ИЗ 8 ПУНКТОВ КАК НА СКРИНШОТЕ
+    // =========================================================================
+    const ctxBackdrop = document.getElementById("ctxBackdrop");
+    const happContextMenu = document.getElementById("happContextMenu");
+
+    function openContextMenu(anchorBtn, group) {
+      activeMenuGroupId = group.id;
+      document.getElementById("pinMenuText").textContent = group.pinned ? "Открепить" : "Закрепить";
+
+      const rect = anchorBtn.getBoundingClientRect();
+      const menuW = 215;
+      const menuH = 310;
+      let top = rect.bottom + 6;
+      let left = rect.right - menuW;
+
+      if (left < 10) left = 10;
+      if (top + menuH > window.innerHeight - 12) {
+        top = Math.max(12, window.innerHeight - menuH - 12);
+      }
+
+      happContextMenu.style.top = top + "px";
+      happContextMenu.style.left = left + "px";
+      ctxBackdrop.classList.add("open");
+      happContextMenu.classList.add("open");
+    }
+
+    function closeContextMenu() {
+      ctxBackdrop.classList.remove("open");
+      happContextMenu.classList.remove("open");
+    }
+
+    ctxBackdrop.addEventListener("click", closeContextMenu);
+
+    document.querySelectorAll("[data-menu-action]").forEach(item => {
+      item.addEventListener("click", () => {
+        const action = item.getAttribute("data-menu-action");
+        const group = profileGroups.find(g => g.id === activeMenuGroupId) || profileGroups[0];
+        closeContextMenu();
+        if (!group) return;
+
+        if (action === "routing") {
+          document.getElementById("routingPresetSelect").value = routingMode;
+          document.getElementById("routingModal").classList.add("open");
+        } else if (action === "settings") {
+          document.getElementById("autoUpdateIntervalSelect").value = group.autoUpdate || "12ч.";
+          document.getElementById("groupSettingsModal").classList.add("open");
+        } else if (action === "refresh") {
+          refreshSubscriptionGroup(group.id);
+        } else if (action === "ping") {
+          pingServersInGroup(group.id);
+        } else if (action === "pin") {
+          group.pinned = !group.pinned;
+          saveState();
+          renderAccordionGroups();
+          showToast(group.pinned ? "Профиль закреплен сверху" : "Профиль откреплен");
+        } else if (action === "copy") {
+          const textToCopy = group.url || (group.servers || []).map(s => s.raw).join("\n");
+          if (navigator.clipboard) navigator.clipboard.writeText(textToCopy);
+          showToast("URL подписки скопирован в буфер");
+        } else if (action === "edit") {
+          document.getElementById("editGroupName").value = group.name;
+          document.getElementById("editGroupUrl").value = group.url || "";
+          document.getElementById("editGroupExpire").value = group.expiresText || "06.01.2027";
+          document.getElementById("editGroupAutoUpdate").value = group.autoUpdate || "12ч.";
+          document.getElementById("editGroupModal").classList.add("open");
+        } else if (action === "delete") {
+          if (profileGroups.length > 1) {
+            profileGroups = profileGroups.filter(g => g.id !== group.id);
+            const all = getAllServers();
+            if (all[0]) activeServerId = all[0].id;
+            saveState();
+            renderAccordionGroups();
+            showToast("Профиль удален");
+          } else {
+            showToast("Нельзя удалить единственный профиль");
+          }
+        }
+      });
+    });
+
+    // Функция «Тест пинга» для серверов профиля
+    function pingServersInGroup(groupId) {
+      const group = profileGroups.find(g => g.id === groupId);
+      if (!group) return;
+      showToast(`Тест пинга: ${group.name}...`);
+      setTimeout(() => {
+        (group.servers || []).forEach(srv => {
+          if (hasNativeXray) {
+            const ms = window.AndroidXray.pingHost(srv.host, Number(srv.port));
+            srv.ping = ms > 0 ? ms : 95;
+          } else {
+            srv.ping = Math.floor(Math.random() * 22) + 24;
+          }
+        });
+        saveState();
+        renderAccordionGroups();
+        showToast("Пинг серверов обновлен");
+      }, 90);
+    }
+
+    // Распаковка Base64 / текста подписки
     function unpackSubscriptionPayload(rawBody) {
       if (!rawBody) return [];
       let text = rawBody.trim();
 
-      // Если внутри еще нет явных протоколов, пробуем декодировать Base64 (как в Happ и v2rayNG)
       if (!/(vless|trojan|vmess|ss):\/\//i.test(text)) {
         try {
           let cleanB64 = text.replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
           while (cleanB64.length % 4 !== 0) cleanB64 += "=";
           const decoded = atob(cleanB64);
-          try {
-            text = decodeURIComponent(escape(decoded));
-          } catch (e) {
-            text = decoded;
-          }
+          try { text = decodeURIComponent(escape(decoded)); } catch (e) { text = decoded; }
         } catch (e) {}
       }
 
-      // Вытаскиваем все ссылки маршрутов из текста
       const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
       const nodes = [];
       lines.forEach(line => {
         const parsed = parseRouteUri(line);
         if (parsed) nodes.push(parsed);
       });
-
-      // Если сервер вернул JSON (например Sing-box / Xray JSON подписку)
-      if (nodes.length === 0 && (text.startsWith("{") || text.startsWith("["))) {
-        try {
-          const jsonObj = JSON.parse(text);
-          const outbounds = Array.isArray(jsonObj) ? jsonObj : (jsonObj.outbounds || []);
-          outbounds.forEach(ob => {
-            if (ob && (ob.protocol === "vless" || ob.protocol === "trojan")) {
-              const vnext = ob.settings && ob.settings.vnext && ob.settings.vnext[0];
-              const srv = ob.settings && ob.settings.servers && ob.settings.servers[0];
-              const host = (vnext && vnext.address) || (srv && srv.address);
-              const port = (vnext && vnext.port) || (srv && srv.port) || 443;
-              const secret = (vnext && vnext.users && vnext.users[0] && vnext.users[0].id) || (srv && srv.password) || "";
-              if (host) {
-                nodes.push({
-                  id: "node_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
-                  raw: `${ob.protocol}://${secret}@${host}:${port}#${encodeURIComponent(ob.tag || host)}`,
-                  protocol: ob.protocol,
-                  name: ob.tag || `${ob.protocol.toUpperCase()} • ${host}`,
-                  icon: "🛰️",
-                  uuid: secret,
-                  password: secret,
-                  host,
-                  port,
-                  type: (ob.streamSettings && ob.streamSettings.network) || "tcp",
-                  security: (ob.streamSettings && ob.streamSettings.security) || "tls",
-                  sni: host,
-                  fp: "chrome",
-                  mode: "gun",
-                  ping: 40
-                });
-              }
-            }
-          });
-        } catch (e) {}
-      }
-
       return nodes;
     }
 
-    // Генератор конфига Xray-core (VLESS + TROJAN)
+    // Функция «Обновить» для группы подписки
+    async function refreshSubscriptionGroup(groupId) {
+      const group = profileGroups.find(g => g.id === groupId);
+      if (!group) return;
+
+      group.updatedAt = formatNowTimestamp();
+      group.collapsed = false;
+
+      if (group.url && group.url.startsWith("http")) {
+        showToast(`Обновление ${group.name}...`);
+        let rawBody = "";
+        let userInfoHeader = "";
+
+        if (hasNativeXray && window.AndroidXray.fetchSubscription) {
+          try {
+            const res = JSON.parse(window.AndroidXray.fetchSubscription(group.url));
+            if (res.body) rawBody = res.body;
+            userInfoHeader = res.userinfo || "";
+          } catch (e) {}
+        }
+
+        if (!rawBody) {
+          try {
+            const resp = await fetch(group.url);
+            userInfoHeader = resp.headers.get("Subscription-Userinfo") || "";
+            rawBody = await resp.text();
+          } catch (e) {}
+        }
+
+        if (userInfoHeader) {
+          const expMatch = userInfoHeader.match(/expire=(\d+)/i);
+          if (expMatch && expMatch[1]) {
+            const d = new Date(parseInt(expMatch[1], 10) * 1000);
+            group.expiresText = d.toLocaleDateString("ru-RU");
+          }
+        }
+
+        const unpacked = unpackSubscriptionPayload(rawBody);
+        if (unpacked.length > 0) {
+          group.servers = unpacked;
+          activeServerId = unpacked[0].id;
+          saveState();
+          renderAccordionGroups();
+          showToast(`Обновлено серверов: ${unpacked.length}`);
+          return;
+        }
+      }
+
+      pingServersInGroup(groupId);
+    }
+
+    // Генератор конфига Xray-core с учетом выбранного режима маршрутизации
     function buildXrayConfig(node) {
       const streamSettings = {
         network: node.type || "tcp",
@@ -1505,7 +2013,7 @@
       if (streamSettings.security === "tls") {
         streamSettings.tlsSettings = {
           serverName: node.sni || node.host,
-          allowInsecure: false,
+          allowInsecure: allowInsecureGlobal,
           alpn: node.alpn ? node.alpn.split(",") : ["h2", "http/1.1"],
           fingerprint: node.fp || "chrome"
         };
@@ -1555,284 +2063,140 @@
         };
       }
 
+      const rules = [];
+      if (routingMode === "bypass_ru") {
+        rules.push({ type: "field", domain: ["regexp:.*\\.ru$", "regexp:.*\\.su$", "regexp:.*\\.рф$"], outboundTag: "direct" });
+      } else if (routingMode === "block_ads") {
+        rules.push({ type: "field", domain: ["geosite:category-ads-all"], outboundTag: "block" });
+      }
+
       return {
         log: { loglevel: "info" },
         inbounds: [
           { tag: "socks-in", port: 10808, listen: "127.0.0.1", protocol: "socks", settings: { auth: "noauth", udp: true } },
           { tag: "http-in", port: 10809, listen: "127.0.0.1", protocol: "http", settings: {} }
         ],
-        outbounds: [proxyOutbound, { tag: "direct", protocol: "freedom" }]
+        outbounds: [
+          proxyOutbound,
+          { tag: "direct", protocol: "freedom" },
+          { tag: "block", protocol: "blackhole" }
+        ],
+        routing: {
+          domainStrategy: "AsIs",
+          rules
+        }
       };
     }
 
-    // Состояние маршрутов и подписки
-    let profiles = [];
-    let activeProfileId = null;
-    let subInfo = {
-      title: "MVZ Subscription",
-      url: "",
-      expireTimestamp: Date.now() + 30 * 86400 * 1000,
-      limitText: "Безлимит"
-    };
-
-    function loadState() {
-      try {
-        const savedP = localStorage.getItem("mvz_happ_routes_v5");
-        if (savedP) profiles = JSON.parse(savedP);
-      } catch (e) { profiles = []; }
-
-      if (!profiles || !profiles.length) {
-        profiles = [
-          parseRouteUri(DEFAULT_VLESS_URI),
-          parseRouteUri(DEFAULT_TROJAN_URI)
-        ].filter(Boolean);
-        saveState();
-      }
-
-      activeProfileId = localStorage.getItem("mvz_happ_active_v5") || profiles[0].id;
-      if (!profiles.some(p => p.id === activeProfileId)) {
-        activeProfileId = profiles[0].id;
-      }
-
-      try {
-        const savedSub = localStorage.getItem("mvz_happ_sub_v5");
-        if (savedSub) subInfo = { ...subInfo, ...JSON.parse(savedSub) };
-      } catch (e) {}
-    }
-
-    function saveState() {
-      localStorage.setItem("mvz_happ_routes_v5", JSON.stringify(profiles));
-      localStorage.setItem("mvz_happ_active_v5", activeProfileId);
-      localStorage.setItem("mvz_happ_sub_v5", JSON.stringify(subInfo));
-    }
-
-    function getActiveProfile() {
-      return profiles.find(p => p.id === activeProfileId) || profiles[0];
-    }
-
-    // Отрисовка шапки подписки и вертикального списка маршрутов (как в Happ)
-    function renderHappUI() {
-      const active = getActiveProfile();
-      if (active) {
-        document.getElementById("activeProtoBadge").textContent = (active.protocol || "vless").toUpperCase();
-      }
-      document.getElementById("subGroupTitle").textContent = subInfo.title || "Happ Subscription";
-
-      const now = Date.now();
-      const daysLeft = Math.ceil((subInfo.expireTimestamp - now) / (1000 * 60 * 60 * 24));
-      const dateStr = new Date(subInfo.expireTimestamp).toLocaleDateString("ru-RU");
-
-      const badgeEl = document.getElementById("subStatusBadge");
-      const textEl = document.getElementById("subExpireText");
-      const fillEl = document.getElementById("subProgressFill");
-
-      document.getElementById("subNodesCount").textContent = `Маршрутов: ${profiles.length}`;
-      document.getElementById("subTrafficInfo").textContent = `Трафик: ${subInfo.limitText}`;
-
-      if (daysLeft <= 0) {
-        badgeEl.textContent = "ИСТЕКЛА";
-        badgeEl.classList.add("expired");
-        textEl.textContent = `Истекла ${dateStr}`;
-        fillEl.style.width = "100%";
-      } else {
-        badgeEl.textContent = "АКТИВНА";
-        badgeEl.classList.remove("expired");
-        textEl.textContent = `До ${dateStr} (${daysLeft} дн.)`;
-        fillEl.style.width = Math.max(8, Math.min(100, Math.round((daysLeft / 30) * 100))) + "%";
-      }
-
-      const listEl = document.getElementById("happRoutesList");
-      listEl.innerHTML = "";
-
-      profiles.forEach(item => {
-        const row = document.createElement("div");
-        row.className = "route-item" + (item.id === activeProfileId ? " active" : "");
-        const isTrojan = item.protocol === "trojan";
-        row.innerHTML = `
-          <div class="route-left">
-            <div class="route-flag">${item.icon || "🛰️"}</div>
-            <div class="route-info">
-              <div class="route-title">${item.name}</div>
-              <div class="route-meta">
-                <span class="r-badge ${isTrojan ? "trojan" : ""}">${(item.protocol || "vless").toUpperCase()}</span>
-                <span>${(item.type || "tcp").toUpperCase()}</span>
-                <span>• ${item.host}</span>
-              </div>
-            </div>
-          </div>
-          <div class="route-right">
-            <span class="route-ping">${item.ping ? item.ping + " мс" : "OK"}</span>
-            ${profiles.length > 1 ? `<button class="sub-mini-btn del-route" type="button" title="Удалить">✕</button>` : ""}
-          </div>
-        `;
-
-        row.querySelector(".route-left").addEventListener("click", () => {
-          activeProfileId = item.id;
-          saveState();
-          renderHappUI();
-          showToast(`Маршрут: ${item.name}`);
-        });
-
-        const delBtn = row.querySelector(".del-route");
-        if (delBtn) {
-          delBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            profiles = profiles.filter(p => p.id !== item.id);
-            if (activeProfileId === item.id) activeProfileId = profiles[0].id;
-            saveState();
-            renderHappUI();
-          });
-        }
-
-        listEl.appendChild(row);
-      });
-    }
-
-    // =========================================================================
-    // ИМПОРТ HTTPS ПОДПИСКИ КАК В HAPP (ОТКРЫВАЕТ ВСЕ МАРШРУТЫ ИЗ ПОДПИСКИ)
-    // =========================================================================
-    async function fetchAndUnpackHttpsSubscription(urlStr) {
-      showToast("Связь с сервером подписки...");
-      subInfo.url = urlStr.trim();
-
-      let rawBody = "";
-      let userInfoHeader = "";
-      let profileTitleHeader = "";
-
-      // 1. Внутри APK используем нативный мост Android (обходит CORS и любые SSL)
-      if (hasNativeXray && window.AndroidXray.fetchSubscription) {
-        try {
-          const res = JSON.parse(window.AndroidXray.fetchSubscription(subInfo.url));
-          if (res.body) rawBody = res.body;
-          userInfoHeader = res.userinfo || "";
-          profileTitleHeader = res.title || "";
-        } catch (e) {}
-      }
-
-      // 2. Если тестируется в браузере или прямой запрос
-      if (!rawBody) {
-        try {
-          const resp = await fetch(subInfo.url);
-          userInfoHeader = resp.headers.get("Subscription-Userinfo") || "";
-          profileTitleHeader = resp.headers.get("Profile-Title") || "";
-          rawBody = await resp.text();
-        } catch (e) {
-          // Фолбэк через прокси для браузерного предпросмотра
-          try {
-            const proxyResp = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(subInfo.url));
-            rawBody = await proxyResp.text();
-          } catch (err) {}
-        }
-      }
-
-      // Декодируем заголовок названия подписки (Happ формат base64:...)
-      if (profileTitleHeader) {
-        if (profileTitleHeader.startsWith("base64:")) {
-          try {
-            subInfo.title = decodeURIComponent(escape(atob(profileTitleHeader.slice(7).trim())));
-          } catch (e) {}
-        } else {
-          subInfo.title = profileTitleHeader;
-        }
-      }
-
-      // Декодируем дату окончания и трафик из Subscription-Userinfo
-      if (userInfoHeader) {
-        const expMatch = userInfoHeader.match(/expire=(\d+)/i);
-        if (expMatch && expMatch[1]) {
-          subInfo.expireTimestamp = parseInt(expMatch[1], 10) * 1000;
-        }
-        const totalMatch = userInfoHeader.match(/total=(\d+)/i);
-        const dlMatch = userInfoHeader.match(/download=(\d+)/i);
-        if (totalMatch && totalMatch[1]) {
-          const totalBytes = parseInt(totalMatch[1], 10);
-          const dlBytes = dlMatch ? parseInt(dlMatch[1], 10) : 0;
-          if (totalBytes > 0) {
-            const usedGb = (dlBytes / 1073741824).toFixed(1);
-            const totalGb = (totalBytes / 1073741824).toFixed(0);
-            subInfo.limitText = `${usedGb} / ${totalGb} ГБ`;
-          }
-        }
-      }
-
-      const extractedRoutes = unpackSubscriptionPayload(rawBody);
-      if (extractedRoutes.length > 0) {
-        profiles = extractedRoutes;
-        activeProfileId = extractedRoutes[0].id;
-        saveState();
-        renderHappUI();
-        showToast(`Открыто маршрутов из подписки: ${extractedRoutes.length}`);
-      } else {
-        showToast("Подписка не вернула список маршрутов (проверь ссылку)");
-      }
-    }
-
+    // Импорт новой подписки или ключей
     document.getElementById("saveUniversalBtn").addEventListener("click", async () => {
       const raw = document.getElementById("universalInput").value.trim();
+      const groupTitle = document.getElementById("newGroupTitleInput").value.trim() || "MVZ VPS | @mvzapretbot";
       if (!raw) {
-        showToast("Вставь ссылку подписки или ключ");
+        showToast("Вставь ссылку подписки или ключи");
         return;
       }
       document.getElementById("addModal").classList.remove("open");
 
       if ((raw.startsWith("https://") || raw.startsWith("http://")) && !raw.includes("\n")) {
-        await fetchAndUnpackHttpsSubscription(raw);
+        const newGroup = {
+          id: "group_" + Date.now(),
+          name: groupTitle,
+          updatedAt: formatNowTimestamp(),
+          autoUpdate: "12ч.",
+          expiresText: "06.01.2027",
+          url: raw,
+          pinned: false,
+          collapsed: false,
+          servers: []
+        };
+        profileGroups.unshift(newGroup);
+        await refreshSubscriptionGroup(newGroup.id);
         return;
       }
 
       const routes = unpackSubscriptionPayload(raw);
       if (routes.length > 0) {
-        profiles = [...routes, ...profiles];
-        activeProfileId = routes[0].id;
+        const targetGroup = profileGroups[0];
+        targetGroup.servers = [...routes, ...targetGroup.servers];
+        targetGroup.updatedAt = formatNowTimestamp();
+        targetGroup.collapsed = false;
+        activeServerId = routes[0].id;
         saveState();
-        renderHappUI();
-        showToast(`Добавлено маршрутов: ${routes.length}`);
+        renderAccordionGroups();
+        showToast(`Добавлено серверов: ${routes.length}`);
       } else {
-        showToast("Не найдено маршрутов vless:// или trojan://");
+        showToast("Не найдено ключей vless:// или trojan://");
       }
     });
 
-    // Ручное создание маршрута Trojan / VLESS
+    // Создание ручного сервера Trojan / VLESS
     document.getElementById("createManualProfileBtn").addEventListener("click", () => {
       const proto = document.getElementById("mProto").value;
-      const net = document.getElementById("mNet").value;
-      const name = encodeURIComponent(document.getElementById("mName").value.trim() || "MVZ Route");
+      const net = document.getElementById("mNet").value.toLowerCase();
+      const name = encodeURIComponent(document.getElementById("mName").value.trim() || "Нидерланды — Reality");
       const host = document.getElementById("mHost").value.trim() || "parts.skodamotors.online";
       const port = document.getElementById("mPort").value.trim() || "443";
       const secret = document.getElementById("mSecret").value.trim() || "647640d8-c26c-42bf-aa78-48a2f8d9759d";
+      const secType = document.getElementById("mSecType").value.trim().toLowerCase() || "reality";
       const sni = document.getElementById("mSni").value.trim() || host;
-      const service = document.getElementById("mService").value.trim();
 
-      const uri = `${proto}://${secret}@${host}:${port}?security=tls&type=${net}&sni=${sni}&fp=chrome&serviceName=${service}&path=${service}#${name}`;
+      const uri = `${proto}://${secret}@${host}:${port}?security=${secType}&type=${net}&sni=${sni}&fp=chrome#${name}`;
       const node = parseRouteUri(uri);
       if (node) {
-        profiles.unshift(node);
-        activeProfileId = node.id;
+        profileGroups[0].servers.unshift(node);
+        profileGroups[0].collapsed = false;
+        activeServerId = node.id;
         saveState();
-        renderHappUI();
+        renderAccordionGroups();
         document.getElementById("addModal").classList.remove("open");
-        showToast(`Маршрут ${proto.toUpperCase()} добавлен!`);
+        showToast("Сервер добавлен в профиль!");
       }
     });
 
-    // Замер пинга всех маршрутов
-    document.getElementById("pingAllBtn").addEventListener("click", () => {
-      showToast("Замер пинга всех маршрутов...");
-      setTimeout(() => {
-        profiles.forEach(p => {
-          if (hasNativeXray) {
-            const ms = window.AndroidXray.pingHost(p.host, Number(p.port));
-            p.ping = ms > 0 ? ms : 99;
-          } else {
-            p.ping = Math.floor(Math.random() * 25) + 28;
-          }
-        });
+    // Сохранение редактирования профиля
+    document.getElementById("saveEditGroupBtn").addEventListener("click", () => {
+      const group = profileGroups.find(g => g.id === activeMenuGroupId) || profileGroups[0];
+      if (group) {
+        group.name = document.getElementById("editGroupName").value.trim() || group.name;
+        group.url = document.getElementById("editGroupUrl").value.trim();
+        group.expiresText = document.getElementById("editGroupExpire").value.trim() || "06.01.2027";
+        group.autoUpdate = document.getElementById("editGroupAutoUpdate").value.trim() || "12ч.";
         saveState();
-        renderHappUI();
-      }, 80);
+        renderAccordionGroups();
+        document.getElementById("editGroupModal").classList.remove("open");
+        showToast("Профиль обновлен");
+      }
     });
 
-    // Запуск и остановка Xray-core
+    // Сохранение маршрутизации
+    document.getElementById("saveRoutingBtn").addEventListener("click", () => {
+      routingMode = document.getElementById("routingPresetSelect").value;
+      localStorage.setItem("mvz_routing_mode", routingMode);
+      const labels = {
+        all: "Маршрут: Весь трафик",
+        bypass_ru: "Маршрут: Обход РФ (.ru)",
+        block_ads: "Маршрут: Блок рекламы"
+      };
+      document.getElementById("routingModeLabel").textContent = labels[routingMode] || "Маршрут: Весь трафик";
+      document.getElementById("routingModal").classList.remove("open");
+      showToast("Правила маршрутизации сохранены");
+    });
+
+    // Сохранение настроек профиля
+    document.getElementById("saveGroupSettingsBtn").addEventListener("click", () => {
+      const group = profileGroups.find(g => g.id === activeMenuGroupId) || profileGroups[0];
+      if (group) {
+        group.autoUpdate = document.getElementById("autoUpdateIntervalSelect").value;
+      }
+      allowInsecureGlobal = document.getElementById("allowInsecureCheck").checked;
+      saveState();
+      renderAccordionGroups();
+      document.getElementById("groupSettingsModal").classList.remove("open");
+      showToast("Настройки сохранены");
+    });
+
+    // Кнопка запуска Xray-core
     const appEl = document.getElementById("app");
     const powerBtn = document.getElementById("powerBtn");
     const powerLabel = document.getElementById("powerLabel");
@@ -1869,14 +2233,16 @@
       appEl.className = "app-shell";
       statusText.textContent = "Готов";
       powerLabel.textContent = "Старт";
-      stepHint.textContent = "Выбери маршрут ниже и нажми Старт";
+      updateActiveHeaderInfo();
       clearInterval(timerInterval);
       timerSec = 0;
       timerDisplay.textContent = "00:00:00";
     }
 
     powerBtn.addEventListener("click", () => {
-      const node = getActiveProfile();
+      const node = getActiveServer();
+      if (!node) return;
+
       if (connState === "disconnected") {
         connState = "connecting";
         appEl.className = "app-shell state-connecting";
@@ -1889,7 +2255,7 @@
           const res = window.AndroidXray.startXray(xrayConfigJson);
           stepHint.textContent = res === "PERMISSION_REQUESTED"
             ? "Подтверди разрешение VPN..."
-            : `Подключение к ${node.host}...`;
+            : `Подключение к ${node.name}...`;
 
           const checkLoop = setInterval(() => {
             if (window.AndroidXray.isRunning()) {
@@ -1900,7 +2266,7 @@
           setTimeout(() => clearInterval(checkLoop), 12000);
         } else {
           stepHint.textContent = `Подключение к ${node.name}...`;
-          setTimeout(() => setConnectedUI(node), 900);
+          setTimeout(() => setConnectedUI(node), 850);
         }
       } else {
         if (hasNativeXray) window.AndroidXray.stopXray();
@@ -1908,7 +2274,7 @@
       }
     });
 
-    // Обновление скорости
+    // Телеметрия скорости
     const dlSpeedEl = document.getElementById("dlSpeed");
     const ulSpeedEl = document.getElementById("ulSpeed");
     const dlUnitEl = document.getElementById("dlUnit");
@@ -1923,7 +2289,7 @@
 
     setInterval(() => {
       if (hasNativeXray && window.AndroidXray.isRunning() && connState !== "connected") {
-        setConnectedUI(getActiveProfile());
+        setConnectedUI(getActiveServer());
       }
       if (connState === "connected") {
         if (hasNativeXray) {
@@ -1941,8 +2307,8 @@
           ulSpeedEl.textContent = ulF.val;
           ulUnitEl.textContent = ulF.unit;
         } else {
-          dlSpeedEl.textContent = (Math.random() * 420 + 180).toFixed(1);
-          ulSpeedEl.textContent = (Math.random() * 90 + 30).toFixed(1);
+          dlSpeedEl.textContent = (Math.random() * 440 + 190).toFixed(1);
+          ulSpeedEl.textContent = (Math.random() * 95 + 32).toFixed(1);
         }
       } else {
         dlSpeedEl.textContent = "0.0";
@@ -1952,8 +2318,10 @@
 
     // Модальные окна
     const addModal = document.getElementById("addModal");
+    const editGroupModal = document.getElementById("editGroupModal");
+    const routingModal = document.getElementById("routingModal");
+    const groupSettingsModal = document.getElementById("groupSettingsModal");
     const scaleModal = document.getElementById("scaleModal");
-    const subModal = document.getElementById("subModal");
     const themesModal = document.getElementById("themesModal");
     const logsModal = document.getElementById("logsModal");
     const consoleBox = document.getElementById("consoleBox");
@@ -1962,15 +2330,15 @@
       document.getElementById("universalInput").value = "";
       addModal.classList.add("open");
     });
-    document.getElementById("quickAddRouteBtn").addEventListener("click", () => {
-      document.getElementById("universalInput").value = "";
-      addModal.classList.add("open");
-    });
     document.getElementById("closeAddBtn").addEventListener("click", () => addModal.classList.remove("open"));
-
+    document.getElementById("closeEditGroupBtn").addEventListener("click", () => editGroupModal.classList.remove("open"));
+    document.getElementById("openRoutingBottomBtn").addEventListener("click", () => routingModal.classList.add("open"));
+    document.getElementById("closeRoutingBtn").addEventListener("click", () => routingModal.classList.remove("open"));
+    document.getElementById("closeGroupSettingsBtn").addEventListener("click", () => groupSettingsModal.classList.remove("open"));
     document.getElementById("openScaleModalBtn").addEventListener("click", () => scaleModal.classList.add("open"));
-    document.getElementById("openScaleBottomBtn").addEventListener("click", () => scaleModal.classList.add("open"));
     document.getElementById("closeScaleModalBtn").addEventListener("click", () => scaleModal.classList.remove("open"));
+    document.getElementById("openThemesBtn").addEventListener("click", () => themesModal.classList.add("open"));
+    document.getElementById("closeThemesBtn").addEventListener("click", () => themesModal.classList.remove("open"));
 
     const tabPasteLink = document.getElementById("tabPasteLink");
     const tabManualBuild = document.getElementById("tabManualBuild");
@@ -1998,56 +2366,11 @@
       }
     });
 
-    document.getElementById("editSubDateBtn").addEventListener("click", () => {
-      document.getElementById("subUrlInput").value = subInfo.url || "";
-      document.getElementById("subDateInput").value = new Date(subInfo.expireTimestamp).toISOString().split("T")[0];
-      document.getElementById("subLimitInput").value = subInfo.limitText || "Безлимит";
-      subModal.classList.add("open");
-    });
-    document.getElementById("closeSubModalBtn").addEventListener("click", () => subModal.classList.remove("open"));
-
-    document.getElementById("plus30DaysBtn").addEventListener("click", () => {
-      subInfo.expireTimestamp = Date.now() + 30 * 86400 * 1000;
-      document.getElementById("subDateInput").value = new Date(subInfo.expireTimestamp).toISOString().split("T")[0];
-    });
-
-    document.getElementById("saveSubSettingsBtn").addEventListener("click", async () => {
-      const urlVal = document.getElementById("subUrlInput").value.trim();
-      const dateVal = document.getElementById("subDateInput").value;
-      const limitVal = document.getElementById("subLimitInput").value.trim();
-
-      if (dateVal) subInfo.expireTimestamp = new Date(dateVal).getTime();
-      if (limitVal) subInfo.limitText = limitVal;
-      subInfo.url = urlVal;
-      saveState();
-      renderHappUI();
-      subModal.classList.remove("open");
-
-      if (urlVal.startsWith("http")) {
-        await fetchAndUnpackHttpsSubscription(urlVal);
-      } else {
-        showToast("Срок подписки сохранен");
-      }
-    });
-
-    document.getElementById("syncHttpsSubBtn").addEventListener("click", async () => {
-      if (subInfo.url && subInfo.url.startsWith("http")) {
-        await fetchAndUnpackHttpsSubscription(subInfo.url);
-      } else {
-        document.getElementById("universalInput").value = "";
-        addModal.classList.add("open");
-        showToast("Вставь https:// ссылку подписки");
-      }
-    });
-
-    document.getElementById("openThemesBtn").addEventListener("click", () => themesModal.classList.add("open"));
-    document.getElementById("closeThemesBtn").addEventListener("click", () => themesModal.classList.remove("open"));
-
     document.getElementById("openLogsBtn").addEventListener("click", () => {
       logsModal.classList.add("open");
       consoleBox.textContent = hasNativeXray
         ? (window.AndroidXray.getLogs() || "Нажми «Старт» для просмотра логов Xray-core.")
-        : JSON.stringify(buildXrayConfig(getActiveProfile()), null, 2);
+        : JSON.stringify(buildXrayConfig(getActiveServer()), null, 2);
     });
     document.getElementById("closeLogsBtn").addEventListener("click", () => logsModal.classList.remove("open"));
 
@@ -2057,11 +2380,11 @@
         : "Живые логи процесса libxray.so доступны на телефоне.";
     });
     document.getElementById("showConfigJsonBtn").addEventListener("click", () => {
-      consoleBox.textContent = JSON.stringify(buildXrayConfig(getActiveProfile()), null, 2);
+      consoleBox.textContent = JSON.stringify(buildXrayConfig(getActiveServer()), null, 2);
     });
 
     loadState();
-    renderHappUI();
+    renderAccordionGroups();
   </script>
 </body>
 </html>
